@@ -1,0 +1,53 @@
+<div
+  class="flex items-center justify-center min-h-screen bg-gray-100 bg-cover bg-center bg-no-repeat"
+  style="background-image: url('./.jpeg')"
+>
+  <div class="bg-white p-8 rounded-lg shadow-md w-96">
+    <div class="flex justify-center mb-6">
+      <img src="./Jitech.png" class="h-16" />
+    </div>
+
+    <!-- Input Fields Wrapper with Space -->
+    <div class="space-y-5">
+      <!-- Username Input -->
+      <div class="flex items-center border rounded-3xl px-4 py-2">
+        <input
+          type="text"
+          placeholder="Username"
+          class="w-full outline-none pl-3 pr-3 placeholder:text-black placeholder:text-sm opacity-80"
+        />
+        <img src="./user-solid.svg" class="h-4.5 w-4.5" />
+      </div>
+
+      <!-- Password Input -->
+      <div class="flex items-center border rounded-3xl px-4 py-2">
+        <input
+          type="password"
+          placeholder="Password"
+          class="w-full outline-none pl-3 pr-3 placeholder:text-black placeholder:text-sm opacity-80"
+        />
+        <img src="./lock-solid.svg" class="h-4.5 w-4.5" />
+      </div>
+    </div>
+
+    <!-- Remember Me & Forgot Password -->
+    <div class="flex items-center justify-between text-sm my-5">
+      <label class="flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          class="h-4 w-4 border border-black rounded-sm appearance-none checked:bg-black checked:border-transparent focus:outline-none transition duration-200 ease-in-out"
+        />
+        <span class="ml-2 text-black">Remember Me</span>
+      </label>
+      <a href="#" class="text-black hover:underline">Forgot Password?</a>
+    </div>
+
+    <!-- Login Button with Extra Margin -->
+    <button
+      class="w-full bg-black text-white py-2 rounded-3xl flex items-center justify-center gap-2 text-sm mt-3"
+    >
+      <img src="./login.svg" class="h-4.5 w-4.5" />
+      Login
+    </button>
+  </div>
+</div>

@@ -6,12 +6,8 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { ComponentsRoutingModule } from './components-routing.module';
 
-
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    ComponentsRoutingModule,
-  ]
+  imports: [CommonModule, ComponentsRoutingModule],
 })
-export class ComponentsModule { }
+export class ComponentsModule {}
