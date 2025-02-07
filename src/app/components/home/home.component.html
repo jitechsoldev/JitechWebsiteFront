@@ -1,0 +1,60 @@
+<div
+  class="fixed top-0 left-0 w-full bg-white shadow-md p-4 flex justify-between items-center z-10"
+>
+  <button class="p-2" (click)="toggleSidebar()">
+    <img src="./menu.svg" alt="Menu" class="h-6" />
+  </button>
+  <div class="text-xl font-bold flex items-center">
+    <img src="./Jitech.png" alt="Logo" class="h-10" />
+  </div>
+  <button class="p-2">
+    <img src="./logout.svg" alt="Logout" class="h-6" />
+  </button>
+</div>
+
+<div class="flex h-screen pt-16">
+  <!-- Sidebar -->
+  <div
+    class="w-64 bg-white shadow-lg h-full p-4 transition-all duration-300"
+    [class.hidden]="!sidebarOpen"
+  >
+    <div class="flex items-center space-x-2 mb-4">
+      <img src="./account.png" class="h-8" />
+      <span>Account Name</span>
+    </div>
+    <ul class="space-y-3">
+      <li class="flex items-center space-x-2 cursor-pointer">
+        <img src="./job_orders.png" class="h-6" />
+        <span>Job Orders</span>
+      </li>
+      <li class="flex items-center space-x-2 cursor-pointer">
+        <img src="./products.png" class="h-6" />
+        <span>Products</span>
+      </li>
+      <li class="flex items-center space-x-2 cursor-pointer">
+        <img src="./sales.png" class="h-6" />
+        <span>Sales</span>
+      </li>
+      <li class="flex items-center space-x-2 cursor-pointer">
+        <img src="./inventory.png" class="h-6" />
+        <span>Inventory</span>
+      </li>
+      <li class="flex items-center space-x-2 cursor-pointer">
+        <img src="./quotations.png" class="h-6" />
+        <span>Quotations</span>
+      </li>
+    </ul>
+    <div class="mt-auto pt-6">
+      <button class="flex items-center space-x-2 text-red-600 cursor-pointer">
+        <img src="./logout.svg" class="h-6" />
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 p-6">
+    <h1 class="text-xl font-bold">Dashboard</h1>
+    <p>Welcome to the dashboard.</p>
+  </div>
+</div>
