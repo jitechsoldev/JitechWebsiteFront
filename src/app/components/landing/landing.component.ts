@@ -30,7 +30,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   startAutoSlide(): void {
     this.intervalId = setInterval(() => {
       this.nextSlide();
-    }, 3000); // Change slide every 3 seconds
+    }, 2000); // Change slide every 3 seconds
   }
 
   stopAutoSlide(): void {
