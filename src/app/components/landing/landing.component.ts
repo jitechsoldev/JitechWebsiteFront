@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,10 +8,36 @@ import { Router } from '@angular/router';
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit, OnDestroy {
   constructor(private router: Router) {}
-  slides = [1, 2, 3]; // Placeholder for slides
+  slides = [
+    { title: 'Slide 1', description: 'This is the first slide.' },
+    { title: 'Slide 2', description: 'This is the second slide.' },
+    { title: 'Slide 3', description: 'This is the third slide.' },
+  ];
+
   currentIndex = 0;
+  intervalId: any;
+
+  ngOnInit(): void {
+    this.startAutoSlide();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoSlide();
+  }
+
+  startAutoSlide(): void {
+    this.intervalId = setInterval(() => {
+      this.nextSlide();
+    }, 3000); // Change slide every 3 seconds
+  }
+
+  stopAutoSlide(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
 
   prevSlide() {
     this.currentIndex =
