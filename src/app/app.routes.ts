@@ -1,7 +1,9 @@
+import { JobOrderComponent } from './components/job-order/job-order.component';
 import { Routes } from '@angular/router';
 import { LandingComponent } from './components/landing/landing.component';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
+import { CalendarComponent } from './components/calendar/calendar.component';
 
 export const routes: Routes = [
   {
@@ -15,5 +17,13 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent,
+  },
+  {
+    path: 'calendar',
+    component: CalendarComponent,
+  },
+  {
+    path: 'job-order',
+    component: JobOrderComponent,
   },
 ];

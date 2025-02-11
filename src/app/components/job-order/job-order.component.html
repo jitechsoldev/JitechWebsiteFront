@@ -1,0 +1,138 @@
+<div class="flex flex-col items-center w-full max-w-screen-lg mx-auto p-6">
+  <!-- Job Order Form -->
+  <div class="w-full bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-4">Create Job Order</h2>
+
+    <form (submit)="addJobOrder()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Client Name -->
+      <div>
+        <label class="block text-gray-700 font-semibold">Client Name</label>
+        <input type="text" [(ngModel)]="newJobOrder.clientName" name="clientName"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400">
+      </div>
+
+      <!-- Contact Number -->
+      <div>
+        <label class="block text-gray-700 font-semibold">Contact Number</label>
+        <input type="text" [(ngModel)]="newJobOrder.contactNo" name="contactNo"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400">
+      </div>
+
+      <!-- Address -->
+      <div class="md:col-span-2">
+        <label class="block text-gray-700 font-semibold">Address</label>
+        <input type="text" [(ngModel)]="newJobOrder.address" name="address"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400">
+      </div>
+
+      <!-- Description -->
+      <div class="md:col-span-2">
+        <label class="block text-gray-700 font-semibold">Description</label>
+        <textarea [(ngModel)]="newJobOrder.description" name="description"
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400 h-32"></textarea>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <label class="block text-gray-700 font-semibold">Date</label>
+        <input type="date" [(ngModel)]="newJobOrder.date" name="date"
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400">
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label class="block text-gray-700 font-semibold">Status</label>
+        <select [(ngModel)]="newJobOrder.status" name="status"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400">
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+
+      <!-- Priority -->
+      <div class="md:col-span-2">
+        <label class="block text-gray-700 font-semibold">Priority</label>
+        <select [(ngModel)]="newJobOrder.priority" name="priority"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-400">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="md:col-span-2 flex justify-center">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow">
+          Submit Job Order
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Job Order List Table -->
+  <div class="w-full bg-white p-6 rounded-lg shadow-md mt-6">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-4">Job Orders</h2>
+
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto border-collapse border border-gray-300">
+        <!-- Table Head -->
+        <thead>
+          <tr class="bg-gray-200 text-gray-700 text-left">
+            <th class="p-3 border border-gray-300">Client Name</th>
+            <th class="p-3 border border-gray-300">Contact</th>
+            <th class="p-3 border border-gray-300">Address</th>
+            <th class="p-3 border border-gray-300">Description</th>
+            <th class="p-3 border border-gray-300">Date</th>
+            <th class="p-3 border border-gray-300">Status</th>
+            <th class="p-3 border border-gray-300">Priority</th>
+            <th class="p-3 border border-gray-300 text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody>
+          <tr *ngFor="let job of jobOrders" class="hover:bg-gray-100">
+            <td class="p-3 border border-gray-300">{{ job.clientName }}</td>
+            <td class="p-3 border border-gray-300">{{ job.contactNo }}</td>
+            <td class="p-3 border border-gray-300">{{ job.address }}</td>
+            <td class="p-3 border border-gray-300">{{ job.description }}</td>
+            <td class="p-3 border border-gray-300">{{ job.date }}</td>
+
+            <!-- Status Column -->
+            <td class="p-3 border border-gray-300">
+              <span class="px-2 py-1 rounded-lg"
+                    [ngClass]="{
+                      'bg-yellow-500 text-white': job.status === 'Pending',
+                      'bg-blue-500 text-white': job.status === 'In Progress',
+                      'bg-green-500 text-white': job.status === 'Completed'
+                    }">
+                {{ job.status }}
+              </span>
+            </td>
+
+            <!-- Priority Column -->
+            <td class="p-3 border border-gray-300">
+              <span class="px-2 py-1 rounded-lg"
+                    [ngClass]="{
+                      'bg-green-500 text-white': job.priority === 'Low',
+                      'bg-yellow-500 text-white': job.priority === 'Medium',
+                      'bg-red-500 text-white': job.priority === 'High'
+                    }">
+                {{ job.priority }}
+              </span>
+            </td>
+
+            <!-- Actions Column -->
+            <td class="p-3 border border-gray-300 text-center">
+              <button (click)="job._id ? deleteJobOrder(job._id) : null"
+                      class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
