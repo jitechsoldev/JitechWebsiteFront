@@ -1,0 +1,191 @@
+<nav class="bg-white text-blue-900 text-1xl p-4 shadow-md">
+  <div class="container mx-auto flex justify-between items-center">
+    <div class="flex items-center">
+      <img src="./JitechBlue.png" class="h-10 animate-fade-in" />
+    </div>
+    <ul class="hidden md:flex space-x-6">
+      <li>
+        <a
+          href="#home"
+          class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
+          >Home</a
+        >
+      </li>
+      <li>
+        <a
+          href="#products"
+          class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
+          >Products</a
+        >
+      </li>
+      <li>
+        <a
+          href="#contact"
+          class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
+          >Contact</a
+        >
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<header
+  id="home"
+  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-15"
+>
+  <div
+    class="container mx-auto flex flex-col-reverse lg:flex-row items-center px-5 lg:px-12"
+  >
+    <!-- Left Side: Hero Text -->
+    <div class="lg:w-1/2 text-center lg:text-left animate-fade-in-up">
+      <h1 class="text-5xl font-extrabold leading-tight">
+        Innovate. Integrate. Succeed.
+      </h1>
+      <p class="text-lg text-gray-200 mt-4">
+        Empowering businesses with cutting-edge digital solutions.
+      </p>
+      <div
+        class="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+      >
+        <button
+          class="bg-transparent border border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition transform hover:scale-105"
+        >
+          Learn More
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Side: Hero Image -->
+    <div class="lg:w-1/2 flex justify-center animate-floating">
+      <img src="./JitechLogoOnly2.png" class="w-4/5 lg:w-full max-w-lg" />
+    </div>
+  </div>
+</header>
+
+<!-- Carousel Section -->
+<section id="products" class="py-16 bg-gray-100">
+  <h2 class="text-center text-3xl font-bold text-blue-900 mb-8">
+    Our Products
+  </h2>
+
+  <div class="relative max-w-4xl mx-auto flex items-center justify-between">
+    <!-- Left Navigation Button (New Design) -->
+    <button
+      class="absolute left-[-70px] top-1/2 transform -translate-y-1/2 bg-white border border-blue-900 text-blue-900 p-4 rounded-full shadow-lg hover:bg-blue-900 hover:text-white transition-all duration-300 ease-in-out z-10 flex items-center justify-center w-12 h-12"
+      (click)="scrollLeft()"
+      [disabled]="currentIndex === 0"
+      [ngClass]="{ 'opacity-50 cursor-not-allowed': currentIndex === 0 }"
+    >
+      ❮
+    </button>
+
+    <!-- Carousel Container -->
+    <div class="overflow-hidden px-8 py-6 relative w-full">
+      <div #carousel class="flex transition-transform duration-500 ease-in-out">
+        <div
+          *ngFor="let product of products; let i = index"
+          class="bg-white shadow-xl rounded-xl p-6 w-72 h-96 flex-shrink-0 mx-4 transition-transform duration-500 transform"
+          [ngClass]="{
+            'scale-110 shadow-lg': i === currentIndex,
+            'scale-95 opacity-75': i !== currentIndex
+          }"
+        >
+          <img [src]="product.image" class="h-48 mx-auto object-cover" />
+          <h3 class="text-xl font-semibold text-blue-900 mt-4 text-center">
+            {{ product.name }}
+          </h3>
+          <p class="text-gray-600 text-sm text-center mt-2">
+            {{ product.description }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Navigation Button (New Design) -->
+    <button
+      class="absolute right-[-70px] top-1/2 transform -translate-y-1/2 bg-white border border-blue-900 text-blue-900 p-4 rounded-full shadow-lg hover:bg-blue-900 hover:text-white transition-all duration-300 ease-in-out z-10 flex items-center justify-center w-12 h-12"
+      (click)="scrollRight()"
+      [disabled]="currentIndex === products.length - 1"
+      [ngClass]="{
+        'opacity-50 cursor-not-allowed': currentIndex === products.length - 1
+      }"
+    >
+      ❯
+    </button>
+  </div>
+
+  <!-- Dot Indicators -->
+  <div class="flex justify-center mt-6 space-x-3">
+    <div
+      *ngFor="let product of products; let i = index"
+      class="w-3 h-3 rounded-full bg-gray-400 transition-all duration-300 cursor-pointer transform"
+      [ngClass]="{
+        'bg-blue-900 scale-150': currentIndex === i,
+        'bg-gray-400 scale-100': currentIndex !== i
+      }"
+      (click)="goToSlide(i)"
+    ></div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer
+  id="contact"
+  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-8"
+>
+  <div
+    class="max-w-6xl mx-auto px-6 flex flex-col lg:flex-row justify-center items-center lg:items-start text-center lg:text-left gap-8"
+  >
+    <!-- Contact Info (Left) -->
+    <div class="flex-1 flex flex-col items-center lg:items-start">
+      <h2 class="text-xl font-semibold">Contact Us</h2>
+      <div class="flex items-center mt-2 space-x-2">
+        <img src="./Telephone.png" class="w-5 h-5" alt="Phone Icon" />
+        <a href="tel:+639123456789" class="hover:text-white transition-all">
+          +63 912 345 6789
+        </a>
+      </div>
+      <div class="flex items-center mt-2 space-x-2">
+        <img src="./Email.png" class="w-5 h-5" alt="Email Icon" />
+        <a
+          href="mailto:support@jitechsolutions.com"
+          class="hover:text-white transition-all"
+        >
+          jitechsolutions&#64;gmail.com
+        </a>
+      </div>
+    </div>
+
+    <!-- Logo and Branding (Centered) -->
+    <div class="flex-1 flex flex-col items-center text-center">
+      <img
+        src="./Jitech.png"
+        class="h-16 mb-2 filter invert"
+        alt="Jitech Logo"
+      />
+      <p class="text-white">Innovate. Integrate. Succeed.</p>
+    </div>
+
+    <!-- Social Media Links (Right) -->
+    <div class="flex-1 flex flex-col items-center lg:items-end">
+      <h2 class="text-xl font-semibold">Follow Us</h2>
+      <div class="flex items-center mt-3 space-x-2">
+        <a
+          href="#"
+          target="_blank"
+          class="hover:text-blue-500 transition-all flex items-center space-x-2"
+          aria-label="Follow us on Facebook"
+        >
+          <img src="./Facebook.png" alt="Facebook" class="w-5 h-5" />
+          <span class="text-white text-sm">Facebook</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="mt-4 pt-4 text-center text-white text-sm">
+    © 2025 Jitech Solutions. All Rights Reserved.
+  </div>
+</footer>

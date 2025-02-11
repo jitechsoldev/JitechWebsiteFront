@@ -9,6 +9,11 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
+  currentSlide = 0;
+  username: string = '';
+  password: string = '';
+  rememberMe: boolean = false;
+
   slides = [
     {
       image: './Innovate.png',
@@ -23,10 +28,6 @@ export class LoginComponent {
       title: 'Succeed',
     },
   ];
-  currentSlide = 0;
-  username: string = '';
-  password: string = '';
-  rememberMe: boolean = false;
 
   constructor() {
     setInterval(() => {

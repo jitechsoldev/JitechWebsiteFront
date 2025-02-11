@@ -1,128 +1,91 @@
-<!-- Navbar -->
-<div
-  class="fixed top-0 left-0 w-full bg-white shadow-md p-4 flex justify-between items-center z-20 transition-all duration-300"
-  [class.bg-opacity-90]="isScrolled"
+<!-- Navbar Section -->
+<header
+  class="fixed top-0 bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-lg p-4 flex items-center justify-between transition-all duration-300"
+  [ngClass]="{
+    'ml-64 w-[calc(100%-16rem)]': isSidebarOpen,
+    'ml-0 w-full': !isSidebarOpen
+  }"
 >
+  <!-- Sidebar Icon -->
   <button
-    class="p-2 rounded-full transition-transform duration-300 hover:bg-gray-100"
-    [class.rotate-180]="isRotated"
     (click)="toggleSidebar()"
+    class="transition-transform transform hover:scale-110 p-2 rounded"
   >
-    <img src="./menu.svg" alt="Menu" class="h-6" />
+    <img
+      src="./MenuWhite.png"
+      class="w-6 h-6 transition-transform duration-300"
+    />
   </button>
-  <div class="text-xl font-bold flex items-center">
-    <img src="./Jitech.png" alt="Logo" class="h-10" />
-  </div>
-  <button
-    class="p-2 rounded-full hover:bg-red-100 transition-transform duration-150 active:scale-90"
-    (click)="logout()"
-  >
-    <img src="./logout.svg" alt="Logout" class="h-6" />
-  </button>
-</div>
 
-<div class="flex h-screen pt-16">
-  <!-- Sidebar -->
-  <div
-    id="sidebar"
-    class="fixed top-16 left-0 w-64 bg-white shadow-lg h-full flex flex-col p-4 transform transition-transform duration-300 border-r border-gray-200"
-    [class.-translate-x-full]="!sidebarOpen"
-  >
-    <div class="flex flex-col items-center space-y-2 mb-6 mt-4">
-      <img src="./account.png" class="h-14 w-14 rounded-full shadow-md" />
-      <span class="font-semibold text-center text-gray-800">Account Name</span>
-      <span class="text-xs text-gray-500">Administrator</span>
-    </div>
-    <ul class="space-y-3">
-      <li
-        class="flex items-center space-x-2 cursor-pointer hover:bg-blue-50 hover:text-blue-500 p-2 rounded-md transition-all duration-200"
-      >
-        <img src="./home-solid.svg" class="h-6" />
-        <span class="font-medium">Home</span>
-      </li>
-      <li
-        class="flex items-center space-x-2 cursor-pointer hover:bg-blue-50 hover:text-blue-500 p-2 rounded-md transition-all duration-200"
-      >
-        <img src="./job_orders.png" class="h-6" />
-        <span class="font-medium">Job Orders</span>
-      </li>
-      <li
-        class="flex items-center space-x-2 cursor-pointer hover:bg-blue-50 hover:text-blue-500 p-2 rounded-md transition-all duration-200"
-      >
-        <img src="./products.png" class="h-6" />
-        <span class="font-medium">Products</span>
-      </li>
-      <li
-        class="flex items-center space-x-2 cursor-pointer hover:bg-blue-50 hover:text-blue-500 p-2 rounded-md transition-all duration-200"
-      >
-        <img src="./sales.png" class="h-6" />
-        <span class="font-medium">Sales</span>
-      </li>
-      <li
-        class="flex items-center space-x-2 cursor-pointer hover:bg-blue-50 hover:text-blue-500 p-2 rounded-md transition-all duration-200"
-      >
-        <img src="./inventory.png" class="h-6" />
-        <span class="font-medium">Inventory</span>
-      </li>
-      <li
-        class="flex items-center space-x-2 cursor-pointer hover:bg-blue-50 hover:text-blue-500 p-2 rounded-md transition-all duration-200"
-      >
-        <img src="./quotations.png" class="h-6" />
-        <span class="font-medium">Quotations</span>
-      </li>
-    </ul>
+  <!-- User Profile -->
+  <div>
+    <button class="transition-transform transform hover:scale-110 p-2 rounded">
+      <img
+        src="./UserWhite.png"
+        class="w-6 h-6 transition-transform duration-300"
+      />
+    </button>
   </div>
+</header>
 
-  <!-- Main Content -->
-  <div
-    class="flex-1 p-8 transition-all duration-300 bg-gray-50 min-h-full"
-    [class.ml-64]="sidebarOpen"
-    [class.ml-0]="!sidebarOpen"
+<div
+  class="flex transition-all duration-300 pt-16 bg-gradient-to-b from-gray-100 to-gray-300 min-h-screen"
+>
+  <!-- Sidebar Section -->
+  <aside
+    [ngClass]="{ 'w-64': isSidebarOpen, 'w-0 overflow-hidden': !isSidebarOpen }"
+    class="fixed top-0 left-0 h-full bg-gradient-to-b from-blue-800 to-blue-700 text-white shadow-2xl transition-all duration-300 ease-in-out flex flex-col justify-between"
   >
-    <!-- Schedule Table -->
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg p-6">
-      <h2 class="text-lg font-semibold mb-4 text-gray-800">Schedule</h2>
-      <table class="min-w-full border border-gray-200">
-        <thead>
-          <tr class="bg-gray-100 border-b">
-            <th class="px-2 py-2 text-left font-semibold">Monday</th>
-            <th class="px-2 py-2 text-left font-semibold">Tuesday</th>
-            <th class="px-2 py-2 text-left font-semibold">Wednesday</th>
-            <th class="px-2 py-2 text-left font-semibold">Thursday</th>
-            <th class="px-2 py-2 text-left font-semibold">Friday</th>
-            <th class="px-2 py-2 text-left font-semibold">Saturday</th>
-            <th class="px-2 py-2 text-left font-semibold">Sunday</th>
-            <th class="px-2 py-2 text-center font-semibold">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            *ngFor="let schedule of schedules; let i = index"
-            class="border-b hover:bg-gray-50 transition-all duration-150"
+    <!-- Company Logo -->
+    <div>
+      <div class="flex justify-center py-4">
+        <img src="./JitechWhite.png" alt="Company Logo" class="h-12" />
+      </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="px-2">
+        <ul>
+          <li
+            *ngFor="let item of menuItems"
+            (click)="setActiveItem(item.name)"
+            [ngClass]="{
+              'bg-blue-900': activeMenuItem === item.name,
+              'hover:bg-blue-700': activeMenuItem !== item.name
+            }"
+            class="py-3 px-6 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
           >
-            <td class="px-2 py-2">{{ schedule.monday }}</td>
-            <td class="px-2 py-2">{{ schedule.tuesday }}</td>
-            <td class="px-2 py-2">{{ schedule.wednesday }}</td>
-            <td class="px-2 py-2">{{ schedule.thursday }}</td>
-            <td class="px-2 py-2">{{ schedule.friday }}</td>
-            <td class="px-2 py-2">{{ schedule.saturday }}</td>
-            <td class="px-2 py-2">{{ schedule.sunday }}</td>
-            <td class="px-2 py-2 text-center">
-              <button
-                class="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200 mr-2"
-              >
-                Edit
-              </button>
-              <button
-                class="px-3 py-1 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-all duration-200"
-                (click)="deleteSchedule(i)"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <img
+              [src]="item.icon"
+              alt="{{ item.name }} icon"
+              class="w-6 h-6 mr-2"
+            />
+            {{ item.name }}
+          </li>
+        </ul>
+      </nav>
     </div>
-  </div>
+
+    <!-- Logout Button in Sidebar -->
+    <div class="p-4">
+      <ul>
+        <li
+          class="py-3 px-6 hover:bg-red-700 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
+        >
+          <img src="./LogoutWhite.svg" alt="Logout icon" class="w-5 h-5 mr-2" />
+          Logout
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content Section -->
+  <main
+    class="flex-1 p-6 transition-all duration-300 bg-white min-h-screen"
+    [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-0': !isSidebarOpen }"
+  >
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <h1 class="text-2xl font-semibold text-gray-800">Title</h1>
+      <p class="text-gray-600 mt-2">...</p>
+    </div>
+  </main>
 </div>

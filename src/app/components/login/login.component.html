@@ -26,7 +26,7 @@
       </div>
 
       <h2
-        class="mt-6 text-2xl font-bold text-center text-white uppercase tracking-wide drop-shadow-lg"
+        class="mt-8 text-2xl font-bold text-center text-white uppercase tracking-wide drop-shadow-lg"
       >
         {{ slides[currentSlide].title }}
       </h2>
@@ -34,44 +34,57 @@
       <div class="absolute bottom-4 flex space-x-2 justify-center w-full">
         <span
           *ngFor="let slide of slides; let i = index"
-          class="h-3 w-3 rounded-full bg-white cursor-pointer transition-all duration-300 hover:bg-gray-300"
-          [ngClass]="{ 'scale-150 bg-blue-900': i === currentSlide }"
+          class="h-3 w-3 rounded-full border border-white cursor-pointer transition-all duration-300"
+          [ngClass]="{
+            'bg-white scale-125': i === currentSlide,
+            'bg-transparent': i !== currentSlide
+          }"
           (click)="setSlide(i)"
         ></span>
       </div>
     </div>
 
     <!-- Right Side (Login Form) -->
-    <div class="flex-1 flex items-center justify-center p-8 bg-blue-50">
+    <div class="flex-1 flex items-center justify-center p-8 bg-white">
       <div class="w-full max-w-md">
         <div class="flex justify-center mb-6">
           <img src="./JitechBlue.png" class="h-16" />
         </div>
         <form class="mt-6" (submit)="onSubmit()">
-          <div class="mb-4">
+          <div class="mb-4 relative">
             <label for="username" class="block text-blue-900">Username:</label>
-            <input
-              type="text"
-              id="username"
-              class="w-full px-4 py-2 mt-1 border border-blue-300 rounded-lg focus:ring focus:ring-blue-500"
-              [(ngModel)]="username"
-              name="username"
-              required
-              placeholder="Enter your username"
-            />
+            <div
+              class="flex items-center border border-blue-300 rounded-3xl px-4 py-2"
+            >
+              <img src="./user-solid.svg" class="h-5 w-5 opacity-50" />
+              <input
+                type="text"
+                id="username"
+                class="w-full outline-none pl-3"
+                [(ngModel)]="username"
+                name="username"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
           </div>
 
-          <div class="mb-4">
+          <div class="mb-4 relative">
             <label for="password" class="block text-blue-900">Password:</label>
-            <input
-              type="password"
-              id="password"
-              class="w-full px-4 py-2 mt-1 border border-blue-300 rounded-lg focus:ring focus:ring-blue-500"
-              [(ngModel)]="password"
-              name="password"
-              required
-              placeholder="Enter your password"
-            />
+            <div
+              class="flex items-center border border-blue-300 rounded-3xl px-4 py-2"
+            >
+              <img src="./lock-solid.svg" class="h-5 w-5 opacity-50" />
+              <input
+                type="password"
+                id="password"
+                class="w-full outline-none pl-3"
+                [(ngModel)]="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
           </div>
 
           <div class="flex items-center justify-between text-sm my-5">
@@ -94,8 +107,9 @@
 
           <button
             type="submit"
-            class="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2 rounded-lg hover:scale-105 hover:shadow-md transition-all"
+            class="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2 rounded-lg hover:scale-105 hover:shadow-lg transition-all flex items-center justify-center gap-2"
           >
+            <img src="./LoginWhite.svg" class="h-5 w-5" />
             Log-in
           </button>
         </form>

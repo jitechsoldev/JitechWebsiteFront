@@ -8,6 +8,12 @@ import { ComponentsRoutingModule } from './components-routing.module';
 
 @NgModule({
   declarations: [],
-  imports: [CommonModule, ComponentsRoutingModule],
+  imports: [
+    CommonModule,
+    ComponentsRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    BrowserModule,
+  ],
 })
 export class ComponentsModule {}
