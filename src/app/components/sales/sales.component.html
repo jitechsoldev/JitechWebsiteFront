@@ -17,13 +17,17 @@
     />
   </button>
 
-  <!-- User Profile -->
+  <!-- Jitech Logo in Center -->
+  <div class="absolute left-1/2 transform -translate-x-1/2">
+    <img src="./JitechWhite.png" alt="Company Logo" class="h-10" />
+  </div>
+
+  <!-- Logout Button in Navbar -->
   <div>
-    <button class="transition-transform transform hover:scale-110 p-2 rounded">
-      <img
-        src="./UserWhite.png"
-        class="w-6 h-6 transition-transform duration-300"
-      />
+    <button
+      class="transition-transform transform hover:scale-110 p-2 flex items-center px-3 py-1 rounded-lg"
+    >
+      <img src="./LogoutWhite.svg" alt="Logout icon" class="w-5 h-5" />
     </button>
   </div>
 </header>
@@ -34,39 +38,45 @@
   <!-- Sidebar Section -->
   <aside
     [ngClass]="{ 'w-64': isSidebarOpen, 'w-0 overflow-hidden': !isSidebarOpen }"
-    class="fixed top-0 left-0 h-full bg-gradient-to-b from-blue-800 to-blue-700 text-white shadow-2xl transition-all duration-300 ease-in-out flex flex-col justify-between"
+    class="fixed top-0 left-0 h-full bg-gradient-to-b from-blue-800 to-blue-700 text-white shadow-2xl transition-all duration-300 ease-in-out flex flex-col"
   >
-    <!-- Company Logo -->
-    <div>
-      <div class="flex justify-center py-4">
-        <img src="./JitechWhite.png" alt="Company Logo" class="h-12" />
+    <!-- Profile Section -->
+    <div
+      class="flex flex-col items-center justify-center py-4 border-b border-blue-600 text-center"
+    >
+      <div
+        class="w-20 h-20 flex items-center justify-center bg-blue-900 rounded-full"
+      >
+        <img src="./User.png" alt="Profile Icon" class="w-14 h-14" />
       </div>
-
-      <!-- Sidebar Navigation -->
-      <nav class="px-2">
-        <ul>
-          <li
-            *ngFor="let item of menuItems"
-            (click)="setActiveItem(item.name)"
-            [ngClass]="{
-              'bg-blue-900': activeMenuItem === item.name,
-              'hover:bg-blue-700': activeMenuItem !== item.name
-            }"
-            class="py-3 px-6 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
-          >
-            <img
-              [src]="item.icon"
-              alt="{{ item.name }} icon"
-              class="w-6 h-6 mr-2"
-            />
-            {{ item.name }}
-          </li>
-        </ul>
-      </nav>
+      <h2 class="text-lg font-semibold mt-2">John</h2>
+      <p class="text-sm text-gray-300">Administrator</p>
     </div>
 
+    <!-- Sidebar Navigation -->
+    <nav class="px-2 mt-2">
+      <ul>
+        <li
+          *ngFor="let item of menuItems"
+          (click)="setActiveItem(item.name)"
+          [ngClass]="{
+            'bg-blue-900': activeMenuItem === item.name,
+            'hover:bg-blue-700': activeMenuItem !== item.name
+          }"
+          class="py-3 px-6 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
+        >
+          <img
+            [src]="item.icon"
+            alt="{{ item.name }} icon"
+            class="w-6 h-6 mr-2"
+          />
+          {{ item.name }}
+        </li>
+      </ul>
+    </nav>
+
     <!-- Logout Button in Sidebar -->
-    <div class="p-4">
+    <div class="p-4 mt-auto">
       <ul>
         <li
           class="py-3 px-6 hover:bg-red-700 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
@@ -77,4 +87,15 @@
       </ul>
     </div>
   </aside>
+
+  <!-- Main Content Section -->
+  <main
+    class="flex-1 p-6 transition-all duration-300 bg-white min-h-screen"
+    [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-0': !isSidebarOpen }"
+  >
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <h1 class="text-2xl font-semibold text-gray-800">Title</h1>
+      <p class="text-gray-600 mt-2">...</p>
+    </div>
+  </main>
 </div>

@@ -23,28 +23,33 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   products = [
     {
       image: './Responsive.png',
-      name: 'Product 1',
-      description: 'Brief description of product 1.',
+      name: 'AN-15',
+      description: 'Brief description of AN-15.',
     },
     {
       image: './Responsive.png',
-      name: 'Product 2',
-      description: 'Brief description of product 2.',
+      name: 'OC-2120',
+      description: 'Brief description of OC-2120.',
     },
     {
       image: './Responsive.png',
-      name: 'Product 3',
-      description: 'Brief description of product 3.',
+      name: 'JU-22',
+      description: 'Brief description of JU-22.',
     },
     {
       image: './Responsive.png',
-      name: 'Product 4',
-      description: 'Brief description of product 4.',
+      name: 'N-21',
+      description: 'Brief description of N-21.',
     },
     {
       image: './Responsive.png',
-      name: 'Product 5',
-      description: 'Brief description of product 5.',
+      name: 'NU-27',
+      description: 'Brief description of NU-27.',
+    },
+    {
+      image: './Responsive.png',
+      name: 'FoodPOS',
+      description: 'Brief description of FoodPOS.',
     },
   ];
 
