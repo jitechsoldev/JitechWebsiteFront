@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { ComponentsRoutingModule } from './components-routing.module';
+import { CalendarComponent } from './calendar/calendar.component';
 
 @NgModule({
   declarations: [],
@@ -14,6 +15,7 @@ import { ComponentsRoutingModule } from './components-routing.module';
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,
+    CalendarComponent,
   ],
 })
 export class ComponentsModule {}
