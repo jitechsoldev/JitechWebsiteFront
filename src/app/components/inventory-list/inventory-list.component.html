@@ -17,41 +17,30 @@
   </div>
 
   <div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow-md rounded-lg">
-      <thead class="bg-gray-200">
-        <tr>
-          <th
-            class="p-3 text-left cursor-pointer"
-            (click)="changeSorting('productName')"
-          >
-            Product Name
-          </th>
-          <th
-            class="p-3 text-left cursor-pointer"
-            (click)="changeSorting('sku')"
-          >
-            SKU
-          </th>
-          <th
-            class="p-3 text-left cursor-pointer"
-            (click)="changeSorting('category')"
-          >
-            Category
-          </th>
-          <th
-            class="p-3 text-left cursor-pointer"
-            (click)="changeSorting('stockLevel')"
-          >
-            Stock Level
-          </th>
+    <table class="w-full border border-gray-300">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border px-4 py-2">Product</th>
+          <th class="border px-4 py-2">SKU</th>
+          <th class="border px-4 py-2">Category</th>
+          <th class="border px-4 py-2">Stock Level</th>
+          <th class="border px-4 py-2">Serial Numbers</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of inventory" class="border-b hover:bg-gray-100">
-          <td class="p-3">{{ item.productName }}</td>
-          <td class="p-3">{{ item.sku }}</td>
-          <td class="p-3">{{ item.category }}</td>
-          <td class="p-3">{{ item.stockLevel }}</td>
+        <tr *ngFor="let item of inventory">
+          <td class="border px-4 py-2">{{ item.productId?.productName }}</td>
+          <td class="border px-4 py-2">{{ item.sku }}</td>
+          <td class="border px-4 py-2">{{ item.productId?.category }}</td>
+          <td class="border px-4 py-2">{{ item.stockLevel }}</td>
+          <td class="border px-4 py-2">
+            <ul *ngIf="item.serialNumbers?.length > 0; else noSerials">
+              <li *ngFor="let sn of item.serialNumbers">{{ sn }}</li>
+            </ul>
+            <ng-template #noSerials>
+              <span class="text-gray-500">No Serial Numbers</span>
+            </ng-template>
+          </td>
         </tr>
       </tbody>
     </table>

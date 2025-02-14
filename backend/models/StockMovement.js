@@ -9,8 +9,8 @@ const StockMovementSchema = new mongoose.Schema(
     },
     type: { type: String, enum: ["INCREASE", "DECREASE"], required: true },
     quantity: { type: Number, required: true },
+    serialNumbers: [{ type: String }],
     reason: { type: String },
-    serialNumbers: [{ type: String }], // ✅ Store serial numbers as an array
     timestamp: { type: Date, default: Date.now },
   },
   { timestamps: true }

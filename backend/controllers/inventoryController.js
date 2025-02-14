@@ -14,12 +14,17 @@ exports.getInventoryList = async (req, res) => {
     limit = parseInt(limit);
     const sortOrder = order === "desc" ? -1 : 1;
 
-    const inventory = await Inventory.find()
+    // ✅ Fetch inventory and include serial numbers
+    const inventory = await Inventory.find({ active: true })
+      .populate(
+        "productId",
+        "productName sku category price active serialNumbers"
+      )
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const total = await Inventory.countDocuments();
+    const total = await Inventory.countDocuments({ active: true });
 
     res.json({
       data: inventory,

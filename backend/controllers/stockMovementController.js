@@ -4,33 +4,49 @@ const Inventory = require("../models/Inventory");
 // Add stock movement (increase/decrease stock)
 exports.addStockMovement = async (req, res) => {
   try {
-    const { inventoryId, type, quantity, reason } = req.body;
+    const { inventoryId, type, quantity, serialNumbers, reason } = req.body;
 
-    // Ensure inventory exists before adding stock movement
     const inventoryItem = await Inventory.findById(inventoryId);
     if (!inventoryItem) {
       return res.status(404).json({ error: "Inventory item not found" });
     }
 
-    // Create stock movement record
+    // Validate serial numbers for INCREASE type
+    if (
+      type === "INCREASE" &&
+      (!serialNumbers || serialNumbers.length !== quantity)
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Serial numbers must match the quantity" });
+    }
+
+    // Update inventory stock level
+    if (type === "INCREASE") {
+      inventoryItem.stockLevel += quantity;
+      inventoryItem.serialNumbers.push(...serialNumbers); // ✅ Store serial numbers in Inventory
+    } else if (type === "DECREASE") {
+      inventoryItem.stockLevel -= quantity;
+
+      // ✅ Remove serial numbers from Inventory when stock decreases
+      inventoryItem.serialNumbers = inventoryItem.serialNumbers.filter(
+        (sn) => !serialNumbers.includes(sn)
+      );
+    }
+
+    await inventoryItem.save();
+
+    // Create Stock Movement record
     const stockMovement = new StockMovement({
       inventoryId,
       type,
       quantity,
+      serialNumbers,
       reason,
       timestamp: new Date(),
     });
 
     await stockMovement.save();
-
-    // Update inventory stock level automatically
-    if (type === "INCREASE") {
-      inventoryItem.stockLevel += quantity;
-    } else if (type === "DECREASE") {
-      inventoryItem.stockLevel -= quantity;
-    }
-
-    await inventoryItem.save();
 
     res.json({
       message: "Stock successfully updated!",

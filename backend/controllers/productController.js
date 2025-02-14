@@ -25,6 +25,7 @@ exports.createProduct = async (req, res) => {
 
     // Create Inventory Entry with stockLevel: 0
     const newInventory = new Inventory({
+      productId: newProduct._id,
       productName,
       sku,
       category,
@@ -68,7 +69,7 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-// Update Product and Inventory
+// ✅ Update Product and Sync Inventory Active Status
 exports.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -83,20 +84,18 @@ exports.updateProduct = async (req, res) => {
     if (!existingProduct)
       return res.status(404).json({ error: "Product not found" });
 
-    // Update product
+    // ✅ Update Product
     const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
+      productId,
       { productName, sku, category, price, active, requiresSerialNumber },
       { new: true }
     );
 
-    // Update inventory if SKU or Category changes
-    if (existingProduct.sku !== sku || existingProduct.category !== category) {
-      await Inventory.updateMany({ productId }, { $set: { sku, category } });
-    }
-
-    // Update inventory active status
-    await Inventory.updateMany({ productId }, { $set: { active: active } });
+    // ✅ Sync Inventory Status (Mark inactive if product is inactive)
+    await Inventory.updateMany(
+      { productId },
+      { $set: { sku, category, active: active } } // ✅ Ensure inventory follows product active status
+    );
 
     res.json({
       message: "Product and inventory updated successfully!",
@@ -107,7 +106,7 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// Manually trigger inventory update
+// ✅ Manually trigger inventory update
 exports.updateInventoryForProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -115,13 +114,13 @@ exports.updateInventoryForProduct = async (req, res) => {
 
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    const updatedInventory = await Inventory.updateMany(
+    await Inventory.updateMany(
       { productId },
       {
         $set: {
           sku: product.sku,
           category: product.category,
-          active: product.active,
+          active: product.active, // ✅ Ensure active status syncs
         },
       }
     );
@@ -132,15 +131,15 @@ exports.updateInventoryForProduct = async (req, res) => {
   }
 };
 
-// Delete Product & Remove from Inventory
+// ✅ Delete Product & Remove from Inventory
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    // Remove product and associated inventory
+    // ✅ Remove product and associated inventory
     await Product.findByIdAndDelete(req.params.id);
-    await Inventory.findOneAndDelete({ sku: product.sku });
+    await Inventory.findOneAndDelete({ productId: product._id });
 
     res.json({ message: "Product and linked inventory deleted successfully" });
   } catch (error) {

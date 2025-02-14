@@ -1,42 +1,43 @@
 <div class="container mx-auto p-6">
   <h2 class="text-2xl font-bold mb-4">Products</h2>
 
-  <table class="min-w-full bg-white shadow-md rounded-lg">
-    <thead class="bg-gray-200">
-      <tr>
-        <th class="p-3 text-left">Product Name</th>
-        <th class="p-3 text-left">SKU</th>
-        <th class="p-3 text-left">Category</th>
-        <th class="p-3 text-left">Price</th>
-        <th class="p-3 text-left">With Serial Number</th>
-        <th class="p-3 text-left">Actions</th>
+  <table class="w-full border border-gray-300">
+    <thead>
+      <tr class="bg-gray-200">
+        <th class="border px-4 py-2">Product</th>
+        <th class="border px-4 py-2">SKU</th>
+        <th class="border px-4 py-2">Category</th>
+        <th class="border px-4 py-2">Price</th>
+        <th class="border px-4 py-2">Status</th>
+        <th class="border px-4 py-2">Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let product of products" class="border-b">
-        <td class="p-3">{{ product.productName }}</td>
-        <td class="p-3">{{ product.sku }}</td>
-        <td class="p-3">{{ product.category }}</td>
-        <td class="p-3">{{ product.price }}</td>
-        <td>
-          <span *ngIf="product.requiresSerialNumber">✅ Yes</span>
-          <span *ngIf="!product.requiresSerialNumber">❌ No</span>
+      <tr *ngFor="let product of products">
+        <td class="border px-4 py-2">{{ product.productName }}</td>
+        <td class="border px-4 py-2">{{ product.sku }}</td>
+        <td class="border px-4 py-2">{{ product.category }}</td>
+        <td class="border px-4 py-2">{{ product.price }}</td>
+        <td class="border px-4 py-2">
+          <span [ngClass]="product.active ? 'text-green-600' : 'text-red-600'">
+            {{ product.active ? "Active" : "Inactive" }}
+          </span>
         </td>
-        <td class="p-3">
+        <td class="border px-4 py-2">
           <button
-            (click)="toggleStatus(product._id)"
-            class="px-4 py-2 rounded-lg text-white"
-            [ngClass]="product.active ? 'bg-red-600' : 'bg-green-600'"
+            (click)="toggleProductStatus(product)"
+            class="px-4 py-2 rounded-lg"
+            [ngClass]="
+              product.active
+                ? 'bg-red-600 text-white'
+                : 'bg-green-600 text-white'
+            "
           >
             {{ product.active ? "Deactivate" : "Activate" }}
           </button>
-          <a
-            [routerLink]="['/products-list/edit', product._id]"
-            (click)="logProductId(product._id)"
-            class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Edit
-          </a>
+          <button class="px-4 py-2 rounded-lg bg-blue-600 text-white ml-2">
+            <a [routerLink]="['/products-list/edit', product._id]">Edit</a>
+          </button>
         </td>
       </tr>
     </tbody>

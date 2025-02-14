@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service';
+import { InventoryService } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-product-list',
@@ -12,35 +13,51 @@ import { ProductService } from '../../services/product.service';
 })
 export class ProductListComponent implements OnInit {
   products: any[] = [];
-  showInactive = false;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private inventoryService: InventoryService
+  ) {}
 
   ngOnInit() {
     this.loadProducts();
   }
 
   loadProducts() {
-    this.productService.getProducts().subscribe((response) => {
-      console.log('Loaded Products:', response.data); // ✅ Log API response
-      this.products = response.data;
-    });
-  }
-
-  toggleStatus(productId: string) {
-    console.log('Toggling status for Product ID:', productId); // ✅ Log to see if it's triggered
-    this.productService.toggleProductStatus(productId).subscribe(
-      () => {
-        console.log('Product status updated!');
-        this.loadProducts(); // ✅ Refresh the product list
+    this.productService.getProducts().subscribe(
+      (response) => {
+        this.products = response.data;
       },
       (error) => {
-        console.error('Error updating product status:', error);
+        console.error('❌ Error loading products:', error);
       }
     );
   }
 
-  logProductId(productId: string) {
-    console.log('🖊 Editing Product ID:', productId);
+  toggleProductStatus(product: any) {
+    const updatedStatus = !product.active; // Toggle active state
+    this.productService
+      .updateProduct(product._id, { active: updatedStatus })
+      .subscribe(
+        (response) => {
+          console.log('✅ Product updated:', response);
+          this.loadProducts(); // Refresh product list
+          this.loadInventory(); // ✅ Refresh inventory to remove inactive items
+        },
+        (error) => {
+          console.error('❌ Error updating product:', error);
+        }
+      );
+  }
+
+  loadInventory() {
+    this.inventoryService.getInventory(1, 1000, 'updatedAt', 'desc').subscribe(
+      (response) => {
+        console.log('✅ Inventory updated after product toggle:', response);
+      },
+      (error) => {
+        console.error('❌ Error loading inventory:', error);
+      }
+    );
   }
 }

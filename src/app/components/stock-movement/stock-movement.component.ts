@@ -16,6 +16,7 @@ export class StockMovementComponent implements OnInit {
   type: string = 'INCREASE';
   quantity: number = 0;
   reason: string = '';
+  serialNumbers: string[] = []; // ✅ Dynamic array for serial numbers
   message: string = '';
 
   constructor(
@@ -35,9 +36,26 @@ export class StockMovementComponent implements OnInit {
       });
   }
 
+  generateSerialFields() {
+    if (this.type === 'INCREASE') {
+      this.serialNumbers = Array(this.quantity).fill(''); // ✅ Create empty serial number fields
+    } else {
+      this.serialNumbers = []; // ✅ Reset serials when decreasing stock
+    }
+  }
+
   updateStock() {
     if (!this.selectedInventoryId || this.quantity <= 0) {
       this.message = 'Please select a product and enter a valid quantity.';
+      return;
+    }
+
+    // ✅ Validate serial numbers when increasing stock
+    if (
+      this.type === 'INCREASE' &&
+      this.serialNumbers.some((sn) => sn.trim() === '')
+    ) {
+      this.message = 'Please enter all serial numbers.';
       return;
     }
 
@@ -45,6 +63,7 @@ export class StockMovementComponent implements OnInit {
       inventoryId: this.selectedInventoryId,
       type: this.type,
       quantity: this.quantity,
+      serialNumbers: this.type === 'INCREASE' ? this.serialNumbers : [], // ✅ Only send serials for INCREASE
       reason: this.reason,
     };
 
@@ -52,6 +71,7 @@ export class StockMovementComponent implements OnInit {
       (response) => {
         this.message = `Stock successfully updated! New Stock Level: ${response.newStockLevel}`;
         this.loadInventory(); // Refresh inventory list
+        this.serialNumbers = []; // ✅ Reset serial numbers after submission
       },
       (error) => {
         this.message = `Error: ${error.error.message}`;
