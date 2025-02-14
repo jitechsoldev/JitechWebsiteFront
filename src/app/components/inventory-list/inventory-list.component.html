@@ -1,0 +1,75 @@
+<div class="container mx-auto p-6">
+  <h2 class="text-2xl font-bold mb-4">Inventory List</h2>
+
+  <div class="flex items-center space-x-4 mb-4">
+    <input
+      type="text"
+      [(ngModel)]="categoryFilter"
+      placeholder="Filter by Category"
+      class="border border-gray-300 rounded-lg px-4 py-2"
+    />
+    <button
+      (click)="filterByCategory(categoryFilter)"
+      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+    >
+      Apply
+    </button>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white shadow-md rounded-lg">
+      <thead class="bg-gray-200">
+        <tr>
+          <th
+            class="p-3 text-left cursor-pointer"
+            (click)="changeSorting('productName')"
+          >
+            Product Name
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer"
+            (click)="changeSorting('sku')"
+          >
+            SKU
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer"
+            (click)="changeSorting('category')"
+          >
+            Category
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer"
+            (click)="changeSorting('stockLevel')"
+          >
+            Stock Level
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of inventory" class="border-b hover:bg-gray-100">
+          <td class="p-3">{{ item.productName }}</td>
+          <td class="p-3">{{ item.sku }}</td>
+          <td class="p-3">{{ item.category }}</td>
+          <td class="p-3">{{ item.stockLevel }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-between mt-4">
+    <button
+      (click)="page = page - 1; loadInventory()"
+      [disabled]="page === 1"
+      class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
+    >
+      Previous
+    </button>
+    <button
+      (click)="page = page + 1; loadInventory()"
+      class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+    >
+      Next
+    </button>
+  </div>
+</div>

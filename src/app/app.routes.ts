@@ -1,10 +1,11 @@
-import { JobOrderComponent } from './components/job-order/job-order.component';
 import { Routes } from '@angular/router';
 import { LandingComponent } from './components/landing/landing.component';
 import { LoginComponent } from './components/login/login.component';
-import { HomeComponent } from './components/home/home.component';
-import { SalesComponent } from './components/sales/sales.component';
-import { CalendarComponent } from './components/calendar/calendar.component';
+import { InventoryDashboardComponent } from './components/inventory-dashboard/inventory-dashboard.component';
+import { InventoryListComponent } from './components/inventory-list/inventory-list.component';
+import { StockMovementComponent } from './components/stock-movement/stock-movement.component';
+import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductFormComponent } from './components/product-form/product-form.component';
 
 export const routes: Routes = [
   {
@@ -16,19 +17,28 @@ export const routes: Routes = [
     component: LoginComponent,
   },
   {
-    path: 'home',
-    component: HomeComponent,
+    path: 'inventory-dashboard',
+    component: InventoryDashboardComponent,
   },
   {
-    path: 'sales',
-    component: SalesComponent,
+    path: 'inventory-list',
+    component: InventoryListComponent,
   },
   {
-    path: 'calendar',
-    component: CalendarComponent,
+    path: 'stock-movement',
+    component: StockMovementComponent,
   },
   {
-    path: 'job-order',
-    component: JobOrderComponent,
+    path: 'products-list',
+    component: ProductListComponent,
   },
+  {
+    path: 'products-list/add',
+    component: ProductFormComponent,
+  },
+  {
+    path: 'products-list/edit/:id',
+    component: ProductFormComponent,
+  },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

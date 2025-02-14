@@ -3,29 +3,33 @@
     <div class="flex items-center">
       <img src="./JitechBlue.png" class="h-10 animate-fade-in" />
     </div>
-    <ul class="hidden md:flex space-x-6">
-      <li>
-        <a
-          href="#home"
-          class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
-          >Home</a
-        >
-      </li>
-      <li>
-        <a
-          href="#products"
-          class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
-          >Products</a
-        >
-      </li>
-      <li>
-        <a
-          href="#contact"
-          class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
-          >Contact</a
-        >
-      </li>
-    </ul>
+
+    <!-- Navigation Links and Login Button (Now in a Single Flex Container) -->
+    <div class="hidden md:flex space-x-6 items-center">
+      <a
+        href="#home"
+        class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
+        >Home</a
+      >
+      <a
+        href="#products"
+        class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
+        >Products</a
+      >
+      <a
+        href="#contact"
+        class="hover:text-blue-300 transition duration-300 ease-in-out smooth-scroll"
+        >Contact</a
+      >
+
+      <!-- Login Button -->
+      <button
+        [routerLink]="['/login']"
+        class="bg-gradient-to-r from-blue-700 to-blue-900 text-white px-4 py-2 rounded-lg transition duration-300 cursor-pointer"
+      >
+        Login
+      </button>
+    </div>
   </div>
 </nav>
 
@@ -45,15 +49,6 @@
       <p class="text-lg text-gray-200 mt-4">
         Empowering businesses with cutting-edge digital solutions.
       </p>
-      <div
-        class="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
-      >
-        <button
-          class="bg-transparent border border-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition transform hover:scale-105"
-        >
-          Learn More
-        </button>
-      </div>
     </div>
 
     <!-- Right Side: Hero Image -->
@@ -141,13 +136,13 @@
     <div class="flex-1 flex flex-col items-center lg:items-start">
       <h2 class="text-xl font-semibold">Contact Us</h2>
       <div class="flex items-center mt-2 space-x-2">
-        <img src="./Telephone.png" class="w-5 h-5" alt="Phone Icon" />
+        <img src="./Telephone.png" class="w-5 h-5" />
         <a href="tel:+639123456789" class="hover:text-white transition-all">
-          +63 912 345 6789
+          +12 345 6789
         </a>
       </div>
       <div class="flex items-center mt-2 space-x-2">
-        <img src="./Email.png" class="w-5 h-5" alt="Email Icon" />
+        <img src="./Email.png" class="w-5 h-5" />
         <a
           href="mailto:support@jitechsolutions.com"
           class="hover:text-white transition-all"
@@ -178,14 +173,14 @@
           aria-label="Follow us on Facebook"
         >
           <img src="./Facebook.png" class="w-5 h-5" />
-          <span class="text-white text-sm">Facebook</span>
+          <span class="text-white">Facebook</span>
         </a>
       </div>
     </div>
   </div>
 
   <!-- Bottom Bar -->
-  <div class="mt-4 pt-4 text-center text-white text-sm">
+  <div class="mt-4 pt-4 text-center text-white">
     © 2025 Jitech Solutions. All Rights Reserved.
   </div>
 </footer>

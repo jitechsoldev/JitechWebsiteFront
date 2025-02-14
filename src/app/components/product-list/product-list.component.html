@@ -1,0 +1,44 @@
+<div class="container mx-auto p-6">
+  <h2 class="text-2xl font-bold mb-4">Products</h2>
+
+  <table class="min-w-full bg-white shadow-md rounded-lg">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="p-3 text-left">Product Name</th>
+        <th class="p-3 text-left">SKU</th>
+        <th class="p-3 text-left">Category</th>
+        <th class="p-3 text-left">Price</th>
+        <th class="p-3 text-left">With Serial Number</th>
+        <th class="p-3 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products" class="border-b">
+        <td class="p-3">{{ product.productName }}</td>
+        <td class="p-3">{{ product.sku }}</td>
+        <td class="p-3">{{ product.category }}</td>
+        <td class="p-3">{{ product.price }}</td>
+        <td>
+          <span *ngIf="product.requiresSerialNumber">✅ Yes</span>
+          <span *ngIf="!product.requiresSerialNumber">❌ No</span>
+        </td>
+        <td class="p-3">
+          <button
+            (click)="toggleStatus(product._id)"
+            class="px-4 py-2 rounded-lg text-white"
+            [ngClass]="product.active ? 'bg-red-600' : 'bg-green-600'"
+          >
+            {{ product.active ? "Deactivate" : "Activate" }}
+          </button>
+          <a
+            [routerLink]="['/products-list/edit', product._id]"
+            (click)="logProductId(product._id)"
+            class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            Edit
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

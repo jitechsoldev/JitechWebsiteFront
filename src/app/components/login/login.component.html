@@ -1,5 +1,5 @@
 <div
-  class="flex min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 items-center justify-center backdrop-blur-md"
+  class="flex min-h-screen bg-blue-100 items-center justify-center backdrop-blur-md"
 >
   <div
     class="w-full max-w-3xl bg-white shadow-lg rounded-3xl flex overflow-hidden"
@@ -11,7 +11,7 @@
       <div
         class="carousel w-full relative flex items-center justify-center"
         id="carousel"
-        style="height: 300px"
+        style="height: 250px"
       >
         <div
           *ngFor="let slide of slides; let i = index"
@@ -21,12 +21,12 @@
             'opacity-0': i !== currentSlide
           }"
         >
-          <img [src]="slide.image" class="max-w-xs mx-auto" />
+          <img [src]="slide.image" class="max-w-sm h-67 w-67 mx-auto" />
         </div>
       </div>
 
       <h2
-        class="mt-8 text-2xl font-bold text-center text-white uppercase tracking-wide drop-shadow-lg"
+        class="mt-6 text-2xl font-bold text-center text-white uppercase tracking-wide drop-shadow-lg"
       >
         {{ slides[currentSlide].title }}
       </h2>
@@ -48,61 +48,27 @@
     <div class="flex-1 flex items-center justify-center p-8 bg-white">
       <div class="w-full max-w-md">
         <div class="flex justify-center mb-6">
-          <img src="./JitechBlue.png" class="h-16" />
+          <img src="./JitechBlue.png" class="h-18" />
         </div>
         <form class="mt-6" (submit)="onSubmit()">
-          <div class="mb-4 relative">
-            <label for="username" class="block text-blue-900">Username:</label>
-            <div
-              class="flex items-center border border-blue-300 rounded-3xl px-4 py-2"
+          <div class="mb-6 relative">
+            <label for="username" class="block text-blue-900 mb-1"
+              >Password:</label
             >
-              <img src="./user-solid.svg" class="h-5 w-5 opacity-50" />
-              <input
-                type="text"
-                id="username"
-                class="w-full outline-none pl-3"
-                [(ngModel)]="username"
-                name="username"
-                placeholder="Enter your username"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="mb-4 relative">
-            <label for="password" class="block text-blue-900">Password:</label>
             <div
               class="flex items-center border border-blue-300 rounded-3xl px-4 py-2"
             >
               <img src="./lock-solid.svg" class="h-5 w-5 opacity-50" />
               <input
-                type="password"
-                id="password"
+                type="text"
+                id="username"
                 class="w-full outline-none pl-3"
-                [(ngModel)]="password"
+                [(ngModel)]="username"
                 name="password"
                 placeholder="Enter your password"
                 required
               />
             </div>
-          </div>
-
-          <div class="flex items-center justify-between text-sm my-5">
-            <label class="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                class="peer hidden"
-                [(ngModel)]="rememberMe"
-                name="rememberMe"
-              />
-              <div
-                class="h-4 w-4 border border-blue-900 peer-checked:bg-blue-900 peer-checked:border-blue-900 rounded-sm transition-all"
-              ></div>
-              <span class="ml-2 text-blue-900">Remember Me</span>
-            </label>
-            <a href="#" class="text-blue-900 hover:underline"
-              >Forgot Password?</a
-            >
           </div>
 
           <button

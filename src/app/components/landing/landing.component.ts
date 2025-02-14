@@ -6,10 +6,11 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-landing',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
 })

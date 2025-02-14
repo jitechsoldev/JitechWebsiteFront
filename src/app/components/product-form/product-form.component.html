@@ -1,0 +1,69 @@
+<div class="container mx-auto p-6">
+  <h2 class="text-2xl font-bold mb-4">
+    {{ isEditing ? "Edit Product" : "Add Product" }}
+  </h2>
+
+  <form
+    [formGroup]="productForm"
+    (ngSubmit)="saveProduct()"
+    class="space-y-4 bg-white p-6 rounded-lg shadow-md"
+  >
+    <div>
+      <label class="block font-semibold">Product Name</label>
+      <input
+        type="text"
+        formControlName="productName"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full"
+      />
+    </div>
+
+    <div>
+      <label class="block font-semibold">SKU</label>
+      <input
+        type="text"
+        formControlName="sku"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full"
+      />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Category</label>
+      <input
+        type="text"
+        formControlName="category"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full"
+      />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Price</label>
+      <input
+        type="number"
+        formControlName="price"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full"
+      />
+    </div>
+
+    <div class="flex items-center">
+      <input type="checkbox" formControlName="active" class="mr-2" />
+      <label class="font-semibold">Active</label>
+    </div>
+
+    <div class="flex items-center">
+      <input
+        type="checkbox"
+        formControlName="requiresSerialNumber"
+        class="mr-2"
+      />
+      <label class="font-semibold">Requires Serial Number</label>
+    </div>
+
+    <button
+      type="submit"
+      (click)="saveProduct()"
+      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full"
+    >
+      {{ isEditing ? "Update Product" : "Add Product" }}
+    </button>
+  </form>
+</div>
