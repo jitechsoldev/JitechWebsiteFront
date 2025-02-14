@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { InventoryService } from '../../services/inventory.service';
 import { StockMovementService } from '../../services/stock-movement.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-inventory-dashboard',
   imports: [CommonModule],
   templateUrl: './inventory-dashboard.component.html',
-  styleUrl: './inventory-dashboard.component.css',
+  styleUrls: ['./inventory-dashboard.component.css'],
 })
 export class InventoryDashboardComponent implements OnInit {
   totalStock: number = 0;
   recentMovements: any[] = [];
+  incomingStock: number = 0; // ✅ New: Total of all INCREASE movements
+  outgoingStock: number = 0; // ✅ New: Total of all DECREASE movements
 
   constructor(
     private inventoryService: InventoryService,
@@ -21,6 +23,7 @@ export class InventoryDashboardComponent implements OnInit {
   ngOnInit() {
     this.getTotalStock();
     this.getRecentStockMovements();
+    this.calculateIncomingOutgoingStock();
   }
 
   getTotalStock() {
@@ -35,9 +38,22 @@ export class InventoryDashboardComponent implements OnInit {
   }
 
   getRecentStockMovements() {
-    this.stockMovementService.getStockMovements('all').subscribe((response) => {
-      console.log('Stock Movements API Response:', response); // ✅ Log response
+    this.stockMovementService.getStockMovements().subscribe((response) => {
       this.recentMovements = response.data.slice(0, 5);
+    });
+  }
+
+  calculateIncomingOutgoingStock() {
+    this.stockMovementService.getStockMovements().subscribe((response) => {
+      const movements = response.data;
+
+      this.incomingStock = movements
+        .filter((m: any) => m.type === 'INCREASE')
+        .reduce((acc: number, m: any) => acc + m.quantity, 0);
+
+      this.outgoingStock = movements
+        .filter((m: any) => m.type === 'DECREASE')
+        .reduce((acc: number, m: any) => acc + m.quantity, 0);
     });
   }
 }

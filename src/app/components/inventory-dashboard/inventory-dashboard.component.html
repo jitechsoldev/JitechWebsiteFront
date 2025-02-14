@@ -1,49 +1,56 @@
 <div class="container mx-auto p-6">
   <h2 class="text-2xl font-bold mb-4">Inventory Dashboard</h2>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="bg-white shadow-md rounded-lg p-4 text-center">
-      <h3 class="text-lg font-semibold">Total Stock</h3>
-      <p class="text-3xl font-bold text-blue-600">{{ totalStock }}</p>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+    <!-- ✅ Total Stock Level -->
+    <div class="bg-blue-100 p-4 rounded-lg shadow">
+      <h3 class="text-lg font-semibold">Total Stock Level</h3>
+      <p class="text-2xl font-bold">{{ totalStock }}</p>
+    </div>
+
+    <!-- ✅ Incoming Stock -->
+    <div class="bg-green-100 p-4 rounded-lg shadow">
+      <h3 class="text-lg font-semibold">Incoming Stock</h3>
+      <p class="text-2xl font-bold">{{ incomingStock }}</p>
+    </div>
+
+    <!-- ✅ Outgoing Stock -->
+    <div class="bg-red-100 p-4 rounded-lg shadow">
+      <h3 class="text-lg font-semibold">Outgoing Stock</h3>
+      <p class="text-2xl font-bold">{{ outgoingStock }}</p>
     </div>
   </div>
 
-  <h3 class="mt-6 text-xl font-semibold">Recent Stock Movements</h3>
-
-  <div *ngIf="recentMovements.length === 0" class="text-red-500">
-    No stock movements found.
-  </div>
-
-  <div class="overflow-x-auto mt-2">
-    <table
-      *ngIf="recentMovements.length > 0"
-      class="min-w-full bg-white shadow-md rounded-lg"
-    >
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="p-3 text-left">Product</th>
-          <th class="p-3 text-left">Type</th>
-          <th class="p-3 text-left">Quantity</th>
-          <th class="p-3 text-left">Reason</th>
-          <th class="p-3 text-left">Timestamp</th>
+  <!-- ✅ Recent Stock Movements -->
+  <div class="mt-6">
+    <h3 class="text-lg font-bold">Recent Stock Movements</h3>
+    <table class="w-full border border-gray-300 mt-2">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border px-4 py-2">Product</th>
+          <th class="border px-4 py-2">Type</th>
+          <th class="border px-4 py-2">Quantity</th>
+          <th class="border px-4 py-2">Date</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let movement of recentMovements" class="border-b">
-          <td class="p-3">
-            {{ movement.inventoryId?.productName || "Unknown Product" }}
+        <tr *ngFor="let movement of recentMovements">
+          <td class="border px-4 py-2">
+            {{ movement.inventoryId?.productName }}
           </td>
-          <td
-            class="p-3"
-            [ngClass]="
-              movement.type === 'INCREASE' ? 'text-green-600' : 'text-red-600'
-            "
-          >
-            {{ movement.type }}
+          <td class="border px-4 py-2">
+            <span
+              [ngClass]="
+                movement.type === 'INCREASE' ? 'text-green-600' : 'text-red-600'
+              "
+            >
+              {{ movement.type }}
+            </span>
           </td>
-          <td class="p-3">{{ movement.quantity }}</td>
-          <td class="p-3">{{ movement.reason || "No reason provided" }}</td>
-          <td class="p-3">{{ movement.timestamp | date : "short" }}</td>
+          <td class="border px-4 py-2">{{ movement.quantity }}</td>
+          <td class="border px-4 py-2">
+            {{ movement.timestamp | date : "short" }}
+          </td>
         </tr>
       </tbody>
     </table>
