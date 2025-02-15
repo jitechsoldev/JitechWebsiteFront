@@ -88,6 +88,7 @@ exports.createSale = async (req, res) => {
 exports.getSales = async (req, res) => {
   try {
     const sales = await Sale.find().populate("product", "productName sku category price");
+    // The returned documents will include the custom saleID field automatically.
     res.json({ data: sales });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -105,14 +106,14 @@ exports.getSaleById = async (req, res) => {
   }
 };
 
-// Update a sale (Note: Adjusting a sale after creation may require inventory adjustments)
+// Update sale and synchronize inventory and stock movements
 exports.updateSale = async (req, res) => {
   try {
     const saleId = req.params.id;
     const {
       clientName,
-      product: productId,
-      quantity,
+      product: newProductId,
+      quantity: newQuantity,
       dateOfPurchase,
       warranty,
       termPayable,
@@ -120,20 +121,75 @@ exports.updateSale = async (req, res) => {
       status,
     } = req.body;
 
-    // Find existing sale
-    const sale = await Sale.findById(saleId);
-    if (!sale) return res.status(404).json({ error: "Sale not found" });
+    // 1. Fetch the existing sale record
+    const oldSale = await Sale.findById(saleId);
+    if (!oldSale) return res.status(404).json({ error: "Sale not found" });
 
-    // Optional: Handle inventory reconciliation if the quantity or product changes.
-    // For simplicity, we'll assume no inventory adjustment is done on update.
-    // In a real-world scenario, you'd need to reverse the previous sale's effect on inventory and apply the new change.
+    // 2. Reverse the effects of the old sale on inventory
+    // Fetch the old product's inventory record
+    const oldInventory = await Inventory.findOne({ productId: oldSale.product });
+    if (!oldInventory)
+      return res.status(404).json({ error: "Old product inventory not found" });
 
+    // Add back the old quantity to the old product's inventory
+    oldInventory.stockLevel += oldSale.quantity;
+    await oldInventory.save();
+
+    // Optionally, record a stock movement for reversal:
+    const reversalMovement = new StockMovement({
+      inventoryId: oldInventory._id,
+      type: "INCREASE",
+      quantity: oldSale.quantity,
+      serialNumbers: [], // Adjust if serials are handled
+      reason: "Sale update reversal",
+      timestamp: new Date(),
+    });
+    await reversalMovement.save();
+
+    // 3. Apply the new sale details
+
+    // If the product has changed, the new inventory must be used.
+    // Fetch the new product details
+    const newProduct = await Product.findById(newProductId);
+    if (!newProduct)
+      return res.status(404).json({ error: "New product not found" });
+
+    // Calculate the new total amount based on the new product price and quantity
+    const newTotalAmount = newProduct.price * newQuantity;
+
+    // Fetch the new product's inventory record
+    const newInventory = await Inventory.findOne({ productId: newProductId });
+    if (!newInventory)
+      return res.status(404).json({ error: "New product inventory not found" });
+
+    // Check if there is enough stock for the new sale quantity
+    if (newInventory.stockLevel < newQuantity) {
+      return res.status(400).json({ error: "Insufficient stock for new product" });
+    }
+
+    // Deduct the new quantity from the new product's inventory
+    newInventory.stockLevel -= newQuantity;
+    await newInventory.save();
+
+    // Optionally, record a stock movement for the new sale:
+    const saleMovement = new StockMovement({
+      inventoryId: newInventory._id,
+      type: "DECREASE",
+      quantity: newQuantity,
+      serialNumbers: [], // Adjust if serial numbers are needed
+      reason: "Sale update deduction",
+      timestamp: new Date(),
+    });
+    await saleMovement.save();
+
+    // 4. Update the sale document with new details
     const updatedSale = await Sale.findByIdAndUpdate(
       saleId,
       {
         clientName,
-        product: productId,
-        quantity,
+        product: newProductId,
+        quantity: newQuantity,
+        totalAmount: newTotalAmount,
         dateOfPurchase,
         warranty,
         termPayable,
@@ -145,9 +201,11 @@ exports.updateSale = async (req, res) => {
 
     res.json({ message: "Sale updated successfully", sale: updatedSale });
   } catch (error) {
+    console.error("Error updating sale:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Delete a sale (Optionally, you might consider reversing the stock deduction)
 exports.deleteSale = async (req, res) => {

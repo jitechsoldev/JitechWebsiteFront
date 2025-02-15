@@ -15,6 +15,7 @@
     <table class="min-w-full leading-normal">
       <thead>
         <tr>
+          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Sale ID</th>
           <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Client</th>
           <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Product</th>
           <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Quantity</th>
@@ -29,6 +30,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let sale of sales">
+          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.saleID }}</td>
           <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.clientName }}</td>
           <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
             {{ sale.product?.productName || 'N/A' }}
@@ -44,8 +46,7 @@
           <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.status }}</td>
           <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
             <!-- Placeholders for actions -->
-            <button class="text-blue-600 hover:text-blue-900 mr-2">Edit</button>
-            <button class="text-red-600 hover:text-red-900">Delete</button>
+            <button (click)="editSale(sale)" class="text-blue-600 hover:text-blue-900">Edit</button>
           </td>
         </tr>
       </tbody>
@@ -54,146 +55,168 @@
   </div>
 
   <!-- Modal for Adding New Sale -->
-  <div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center z-50">
-    <div class="fixed inset-0 bg-black opacity-50"></div>
-    <div class="bg-white rounded-lg shadow-lg z-50 w-full max-w-lg p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold">Add New Sale</h3>
-        <button (click)="closeModal()" class="text-gray-600 hover:text-gray-800">&times;</button>
+  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center">
+    <!-- Modal Backdrop -->
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-4">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center mb-3 border-b pb-2">
+        <h3 class="text-xl font-semibold text-gray-800">Add New Sale</h3>
+        <button (click)="closeModal()" class="text-gray-600 hover:text-gray-800 text-2xl leading-none">&times;</button>
       </div>
-      <form (ngSubmit)="onSubmit()" [formGroup]="saleForm" class="space-y-4">
-        <!-- Client Name -->
-        <div>
-          <label for="clientName" class="block text-gray-700">Client Name</label>
-          <input
-            id="clientName"
-            formControlName="clientName"
-            type="text"
-            placeholder="Enter client name"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          />
-          <div *ngIf="saleForm.get('clientName')?.invalid && saleForm.get('clientName')?.touched" class="text-red-500 text-xs">
-            Client Name is required.
+
+      <!-- Modal Form -->
+      <form (ngSubmit)="onSubmit()" [formGroup]="saleForm" class="space-y-3">
+        <!-- Row 1: Client Name & Product -->
+        <div class="flex flex-wrap -mx-2">
+          <!-- Client Name -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="clientName" class="block text-gray-700 text-sm">Client Name</label>
+            <input
+              id="clientName"
+              formControlName="clientName"
+              type="text"
+              placeholder="Enter client name"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            />
+            <div *ngIf="saleForm.get('clientName')?.invalid && saleForm.get('clientName')?.touched" class="text-red-500 text-xs mt-1">
+              Client Name is required.
+            </div>
+          </div>
+          <!-- Product -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="product" class="block text-gray-700 text-sm">Product</label>
+            <select
+              id="product"
+              formControlName="product"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            >
+              <option value="">Select Product</option>
+              <option *ngFor="let product of products" [value]="product._id">
+                {{ product.productName }}
+              </option>
+            </select>
+            <div *ngIf="saleForm.get('product')?.invalid && saleForm.get('product')?.touched" class="text-red-500 text-xs mt-1">
+              Product is required.
+            </div>
           </div>
         </div>
-        <!-- Product -->
-        <div>
-          <label for="product" class="block text-gray-700">Product</label>
-          <select
-            id="product"
-            formControlName="product"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          >
-            <option value="">Select Product</option>
-            <option *ngFor="let product of products" [value]="product._id">
-              {{ product.productName }}
-            </option>
-          </select>
-          <div *ngIf="saleForm.get('product')?.invalid && saleForm.get('product')?.touched" class="text-red-500 text-xs">
-            Product is required.
+
+        <!-- Row 2: Quantity & Date of Purchase -->
+        <div class="flex flex-wrap -mx-2">
+          <!-- Quantity -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="quantity" class="block text-gray-700 text-sm">Quantity</label>
+            <input
+              id="quantity"
+              formControlName="quantity"
+              type="number"
+              min="1"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            />
+            <div *ngIf="saleForm.get('quantity')?.invalid && saleForm.get('quantity')?.touched" class="text-red-500 text-xs mt-1">
+              Please enter a valid quantity.
+            </div>
+          </div>
+          <!-- Date of Purchase -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="dateOfPurchase" class="block text-gray-700 text-sm">Date of Purchase</label>
+            <input
+              id="dateOfPurchase"
+              formControlName="dateOfPurchase"
+              type="date"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            />
+            <div *ngIf="saleForm.get('dateOfPurchase')?.invalid && saleForm.get('dateOfPurchase')?.touched" class="text-red-500 text-xs mt-1">
+              Date of Purchase is required.
+            </div>
           </div>
         </div>
-        <!-- Quantity -->
-        <div>
-          <label for="quantity" class="block text-gray-700">Quantity</label>
-          <input
-            id="quantity"
-            formControlName="quantity"
-            type="number"
-            min="1"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          />
-          <div *ngIf="saleForm.get('quantity')?.invalid && saleForm.get('quantity')?.touched" class="text-red-500 text-xs">
-            Please enter a valid quantity.
+
+        <!-- Row 3: Warranty & Term Payable -->
+        <div class="flex flex-wrap -mx-2">
+          <!-- Warranty -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="warranty" class="block text-gray-700 text-sm">Warranty</label>
+            <select
+              id="warranty"
+              formControlName="warranty"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            >
+              <option value="3 Months">3 Months</option>
+              <option value="6 Months">6 Months</option>
+              <option value="1 Year">1 Year</option>
+            </select>
+            <div *ngIf="saleForm.get('warranty')?.invalid && saleForm.get('warranty')?.touched" class="text-red-500 text-xs mt-1">
+              Warranty is required.
+            </div>
+          </div>
+          <!-- Term Payable -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="termPayable" class="block text-gray-700 text-sm">Term Payable</label>
+            <select
+              id="termPayable"
+              formControlName="termPayable"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            >
+              <option value="15 Days">15 Days</option>
+              <option value="1 Month">1 Month</option>
+              <option value="3 Months">3 Months</option>
+            </select>
+            <div *ngIf="saleForm.get('termPayable')?.invalid && saleForm.get('termPayable')?.touched" class="text-red-500 text-xs mt-1">
+              Term Payable is required.
+            </div>
           </div>
         </div>
-        <!-- Date of Purchase -->
-        <div>
-          <label for="dateOfPurchase" class="block text-gray-700">Date of Purchase</label>
-          <input
-            id="dateOfPurchase"
-            formControlName="dateOfPurchase"
-            type="date"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          />
-          <div *ngIf="saleForm.get('dateOfPurchase')?.invalid && saleForm.get('dateOfPurchase')?.touched" class="text-red-500 text-xs">
-            Date of Purchase is required.
+
+        <!-- Row 4: Mode of Payment & Status -->
+        <div class="flex flex-wrap -mx-2">
+          <!-- Mode of Payment -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="modeOfPayment" class="block text-gray-700 text-sm">Mode of Payment</label>
+            <select
+              id="modeOfPayment"
+              formControlName="modeOfPayment"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            >
+              <option value="Cash">Cash</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+            </select>
+            <div *ngIf="saleForm.get('modeOfPayment')?.invalid && saleForm.get('modeOfPayment')?.touched" class="text-red-500 text-xs mt-1">
+              Mode of Payment is required.
+            </div>
+          </div>
+          <!-- Status -->
+          <div class="w-full sm:w-1/2 px-2 mb-3">
+            <label for="status" class="block text-gray-700 text-sm">Status</label>
+            <select
+              id="status"
+              formControlName="status"
+              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+            >
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+            </select>
+            <div *ngIf="saleForm.get('status')?.invalid && saleForm.get('status')?.touched" class="text-red-500 text-xs mt-1">
+              Status is required.
+            </div>
           </div>
         </div>
-        <!-- Warranty -->
-        <div>
-          <label for="warranty" class="block text-gray-700">Warranty</label>
-          <input
-            id="warranty"
-            formControlName="warranty"
-            type="text"
-            placeholder="Enter warranty details"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          />
-          <div *ngIf="saleForm.get('warranty')?.invalid && saleForm.get('warranty')?.touched" class="text-red-500 text-xs">
-            Warranty is required.
-          </div>
-        </div>
-        <!-- Term Payable -->
-        <div>
-          <label for="termPayable" class="block text-gray-700">Term Payable</label>
-          <select
-            id="termPayable"
-            formControlName="termPayable"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          >
-            <option value="">Select Term</option>
-            <option value="cash">Cash</option>
-            <option value="credit">Credit</option>
-          </select>
-          <div *ngIf="saleForm.get('termPayable')?.invalid && saleForm.get('termPayable')?.touched" class="text-red-500 text-xs">
-            Term Payable is required.
-          </div>
-        </div>
-        <!-- Mode of Payment -->
-        <div>
-          <label for="modeOfPayment" class="block text-gray-700">Mode of Payment</label>
-          <select
-            id="modeOfPayment"
-            formControlName="modeOfPayment"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          >
-            <option value="">Select Payment Mode</option>
-            <option value="card">Card</option>
-            <option value="cash">Cash</option>
-            <option value="transfer">Transfer</option>
-          </select>
-          <div *ngIf="saleForm.get('modeOfPayment')?.invalid && saleForm.get('modeOfPayment')?.touched" class="text-red-500 text-xs">
-            Mode of Payment is required.
-          </div>
-        </div>
-        <!-- Status -->
-        <div>
-          <label for="status" class="block text-gray-700">Status</label>
-          <select
-            id="status"
-            formControlName="status"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
-          >
-            <option value="">Select Status</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
-          </select>
-          <div *ngIf="saleForm.get('status')?.invalid && saleForm.get('status')?.touched" class="text-red-500 text-xs">
-            Status is required.
-          </div>
-        </div>
+
         <!-- Submit Button -->
         <div class="flex justify-end">
           <button
             type="submit"
             [disabled]="saleForm.invalid || isLoading"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded focus:outline-none focus:ring focus:ring-blue-200"
           >
             Submit Sale
           </button>
         </div>
-        <div *ngIf="errorMessage" class="mt-2 text-red-600 text-sm">
+        <div *ngIf="errorMessage" class="mt-2 text-red-600 text-xs">
           {{ errorMessage }}
         </div>
       </form>

@@ -5,7 +5,6 @@ import { SaleService } from '../../services/sale.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-
 @Component({
   selector: 'app-sale',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
@@ -20,6 +19,25 @@ export class SaleComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   isModalOpen = false; // controls modal visibility
+  isEditMode = false;
+  editingSaleId: string | null = null;
+
+  editSale(sale: any): void {
+    this.isEditMode = true;
+    this.editingSaleId = sale._id; // or sale.saleID if you want to reference by your custom id
+    // Populate the form with the sale data
+    this.saleForm.patchValue({
+      clientName: sale.clientName,
+      product: sale.product?._id || sale.product, // Adjust if sale.product is populated differently
+      quantity: sale.quantity,
+      dateOfPurchase: new Date(sale.dateOfPurchase).toISOString().substring(0, 10),
+      warranty: sale.warranty,
+      termPayable: sale.termPayable,
+      modeOfPayment: sale.modeOfPayment,
+      status: sale.status
+    });
+    this.openModal(); // Open the modal to display the form for editing
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -82,18 +100,38 @@ export class SaleComponent implements OnInit {
     }
     this.isLoading = true;
     const saleData = this.saleForm.value;
-    this.saleService.createSale(saleData).subscribe({
-      next: (res) => {
-        console.log('Sale created successfully:', res);
-        this.loadSales(); // Refresh the table after creation
-        this.isLoading = false;
-        this.closeModal();
-      },
-      error: (err) => {
-        console.error('Error creating sale:', err);
-        this.errorMessage = err.error?.message || 'An error occurred';
-        this.isLoading = false;
-      },
-    });
+    if (this.isEditMode && this.editingSaleId) {
+      // Call update API method (make sure your saleService has an updateSale method)
+      this.saleService.updateSale(this.editingSaleId, saleData).subscribe({
+        next: (res) => {
+          console.log('Sale updated successfully:', res);
+          this.loadSales(); // Refresh the table after update
+          this.isLoading = false;
+          this.closeModal();
+          this.isEditMode = false;
+          this.editingSaleId = null;
+        },
+        error: (err) => {
+          console.error('Error updating sale:', err);
+          this.errorMessage = err.error?.message || 'An error occurred';
+          this.isLoading = false;
+        },
+      });
+    } else {
+      // If not in edit mode, create a new sale
+      this.saleService.createSale(saleData).subscribe({
+        next: (res) => {
+          console.log('Sale created successfully:', res);
+          this.loadSales(); // Refresh the table after creation
+          this.isLoading = false;
+          this.closeModal();
+        },
+        error: (err) => {
+          console.error('Error creating sale:', err);
+          this.errorMessage = err.error?.message || 'An error occurred';
+          this.isLoading = false;
+        },
+      });
+    }
   }
 }

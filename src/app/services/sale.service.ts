@@ -29,9 +29,4 @@ export class SaleService {
   updateSale(id: string, sale: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, sale);
   }
-
-  // Delete a sale
-  deleteSale(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
 }
