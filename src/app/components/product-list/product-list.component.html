@@ -8,8 +8,8 @@
           <th class="px-4 py-3">Product</th>
           <th class="px-4 py-3">SKU</th>
           <th class="px-4 py-3">Category</th>
+          <th class="px-4 py-3">Quantity</th>
           <th class="px-4 py-3">Price</th>
-          <th class="px-4 py-3">Stock Level</th>
           <th class="px-4 py-3">Serial Numbers</th>
           <th class="px-4 py-3">Status</th>
           <th class="px-4 py-3 text-center">Actions</th>
@@ -23,18 +23,27 @@
           <td class="px-4 py-3">{{ product.productName }}</td>
           <td class="px-4 py-3">{{ product.sku }}</td>
           <td class="px-4 py-3">{{ product.category }}</td>
+          <td class="px-4 py-3">{{ product.stockLevel }}</td>
           <td class="px-4 py-3 font-semibold text-gray-700">
             {{ product.price }}
           </td>
-          <td class="px-4 py-3">{{ product.stockLevel }}</td>
           <td class="px-4 py-3">
-            <ul *ngIf="product.serialNumbers.length > 0; else noSerials">
-              <li *ngFor="let sn of product.serialNumbers">{{ sn }}</li>
-            </ul>
+            <div
+              *ngIf="product.serialNumbers.length > 0; else noSerials"
+              class="flex flex-wrap gap-2"
+            >
+              <span
+                *ngFor="let sn of product.serialNumbers"
+                class="px-3 py-1 text-sm font-semibold bg-gray-200 text-gray-800 rounded-full"
+              >
+                {{ sn }}
+              </span>
+            </div>
             <ng-template #noSerials>
               <span class="text-gray-500">No Serial Numbers</span>
             </ng-template>
           </td>
+
           <td class="px-4 py-3">
             <span
               [ngClass]="product.active ? 'text-green-600' : 'text-red-600'"
