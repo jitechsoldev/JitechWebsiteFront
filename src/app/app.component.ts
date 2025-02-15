@@ -18,29 +18,28 @@ export class AppComponent {
   menuItems = [
     { name: 'Home', icon: './HomeWhite.png', routes: '/home' },
     {
-      name: 'Job Orders',
-      icon: './JobOrderWhite.png',
-      routes: '/job-order',
-    },
-    {
       name: 'Products',
       icon: './ProductsWhite.png',
       expanded: false,
       children: [
-        { name: 'Products List', routes: '/products-list' },
+        { name: 'Product List', routes: '/products-list' },
         { name: 'Add Product', routes: '/products-list/add' },
       ],
     },
-    { name: 'Sales', icon: './SalesWhite.png', routes: '/sales' },
     {
       name: 'Inventory',
       icon: './InventoryWhite.png',
       expanded: false,
       children: [
         { name: 'Dashboard', routes: '/inventory-dashboard' },
-        { name: 'Inventory List', routes: '/inventory-list' },
-        { name: 'Stock Movement', routes: '/stock-movement' },
+        { name: 'Product Movement', routes: '/product-movement' },
       ],
+    },
+    { name: 'Sales', icon: './SalesWhite.png', routes: '/sales' },
+    {
+      name: 'Job Orders',
+      icon: './JobOrderWhite.png',
+      routes: '/job-order',
     },
     {
       name: 'Quotations',

@@ -1,45 +1,67 @@
 <div class="container mx-auto p-6">
-  <h2 class="text-2xl font-bold mb-4">Products</h2>
+  <h2 class="text-3xl font-extrabold text-blue-900 mb-6">Product List</h2>
 
-  <table class="w-full border border-gray-300">
-    <thead>
-      <tr class="bg-gray-200">
-        <th class="border px-4 py-2">Product</th>
-        <th class="border px-4 py-2">SKU</th>
-        <th class="border px-4 py-2">Category</th>
-        <th class="border px-4 py-2">Price</th>
-        <th class="border px-4 py-2">Status</th>
-        <th class="border px-4 py-2">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let product of products">
-        <td class="border px-4 py-2">{{ product.productName }}</td>
-        <td class="border px-4 py-2">{{ product.sku }}</td>
-        <td class="border px-4 py-2">{{ product.category }}</td>
-        <td class="border px-4 py-2">{{ product.price }}</td>
-        <td class="border px-4 py-2">
-          <span [ngClass]="product.active ? 'text-green-600' : 'text-red-600'">
-            {{ product.active ? "Active" : "Inactive" }}
-          </span>
-        </td>
-        <td class="border px-4 py-2">
-          <button
-            (click)="toggleProductStatus(product)"
-            class="px-4 py-2 rounded-lg"
-            [ngClass]="
-              product.active
-                ? 'bg-red-600 text-white'
-                : 'bg-green-600 text-white'
-            "
-          >
-            {{ product.active ? "Deactivate" : "Activate" }}
-          </button>
-          <button class="px-4 py-2 rounded-lg bg-blue-600 text-white ml-2">
-            <a [routerLink]="['/products-list/edit', product._id]">Edit</a>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-blue-900 text-white">
+          <th class="px-4 py-3">Product</th>
+          <th class="px-4 py-3">SKU</th>
+          <th class="px-4 py-3">Category</th>
+          <th class="px-4 py-3">Price</th>
+          <th class="px-4 py-3">Stock Level</th>
+          <th class="px-4 py-3">Serial Numbers</th>
+          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr
+          *ngFor="let product of products"
+          class="hover:bg-gray-100 transition"
+        >
+          <td class="px-4 py-3">{{ product.productName }}</td>
+          <td class="px-4 py-3">{{ product.sku }}</td>
+          <td class="px-4 py-3">{{ product.category }}</td>
+          <td class="px-4 py-3 font-semibold text-gray-700">
+            {{ product.price }}
+          </td>
+          <td class="px-4 py-3">{{ product.stockLevel }}</td>
+          <td class="px-4 py-3">
+            <ul *ngIf="product.serialNumbers.length > 0; else noSerials">
+              <li *ngFor="let sn of product.serialNumbers">{{ sn }}</li>
+            </ul>
+            <ng-template #noSerials>
+              <span class="text-gray-500">No Serial Numbers</span>
+            </ng-template>
+          </td>
+          <td class="px-4 py-3">
+            <span
+              [ngClass]="product.active ? 'text-green-600' : 'text-red-600'"
+            >
+              {{ product.active ? "Active" : "Inactive" }}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-center space-x-2">
+            <button
+              (click)="toggleProductStatus(product)"
+              class="px-4 py-2 rounded-lg text-white font-semibold transition duration-300"
+              [ngClass]="
+                product.active
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-green-600 hover:bg-green-700'
+              "
+            >
+              {{ product.active ? "Deactivate" : "Activate" }}
+            </button>
+            <button
+              class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition duration-300"
+            >
+              <a [routerLink]="['/products-list/edit', product._id]">Edit</a>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

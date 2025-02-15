@@ -34,7 +34,7 @@
   <!-- Sidebar (Always below Navbar) -->
   <aside
     [ngClass]="{ 'w-64': isSidebarOpen, 'w-0': !isSidebarOpen }"
-    class="bg-gradient-to-b from-blue-800 to-blue-700 text-white shadow-2xl transition-all duration-300 ease-in-out h-full fixed top-16 left-0 flex flex-col z-40 overflow-hidden"
+    class="bg-gradient-to-b from-blue-800 to-blue-700 text-white shadow-2xl transition-all duration-300 ease-in-out h-full fixed top-18 left-0 flex flex-col z-40 overflow-hidden"
   >
     <!-- Profile Section -->
     <div
@@ -42,9 +42,9 @@
       [ngClass]="{ 'opacity-100': isSidebarOpen, 'opacity-0': !isSidebarOpen }"
     >
       <div
-        class="w-20 h-20 flex items-center justify-center bg-blue-900 rounded-full"
+        class="w-18 h-18 flex items-center justify-center bg-blue-900 rounded-full"
       >
-        <img src="./User.png" class="w-14 h-14" />
+        <img src="./User.png" class="w-12 h-12" />
       </div>
       <h2
         class="text-lg font-semibold mt-2 whitespace-nowrap"

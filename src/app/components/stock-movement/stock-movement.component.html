@@ -1,12 +1,16 @@
-<div class="container mx-auto p-6">
-  <h2 class="text-2xl font-bold mb-4">Stock Management</h2>
+<div class="container mx-auto p-6 bg-white shadow-lg rounded-lg max-w-lg">
+  <h2 class="text-3xl font-extrabold text-blue-900 mb-6">Product Movement</h2>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- ✅ Grid Layout for Inputs -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Product Selection -->
     <div>
-      <label class="block mb-1 font-semibold">Product:</label>
+      <label class="block mb-2 font-semibold text-gray-700"
+        >Product Name:</label
+      >
       <select
         [(ngModel)]="selectedInventoryId"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
       >
         <option *ngFor="let item of inventory" [value]="item._id">
           {{ item.productId.productName }} ({{ item.stockLevel }} in stock)
@@ -14,12 +18,13 @@
       </select>
     </div>
 
+    <!-- Change Type -->
     <div>
-      <label class="block mb-1 font-semibold">Change Type:</label>
+      <label class="block mb-2 font-semibold text-gray-700">Change Type:</label>
       <select
         [(ngModel)]="type"
         (change)="generateSerialFields()"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
       >
         <option value="INCREASE">Incoming</option>
         <option value="DECREASE">Outgoing</option>
@@ -27,46 +32,52 @@
     </div>
   </div>
 
-  <div class="mt-4">
-    <label class="block mb-1 font-semibold">Stock Quantity:</label>
+  <!-- Stock Quantity -->
+  <div class="mt-6">
+    <label class="block mb-2 font-semibold text-gray-700"
+      >Stock Quantity:</label
+    >
     <input
       type="number"
       [(ngModel)]="quantity"
       (input)="generateSerialFields()"
-      class="w-full border border-gray-300 rounded-lg px-4 py-2"
+      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
     />
   </div>
 
-  <!-- ✅ Serial Number Inputs: Only Show When Increasing Stock -->
-  <div *ngIf="type === 'INCREASE' && quantity > 0" class="mt-4">
-    <h4 class="font-semibold">Enter Serial Numbers:</h4>
-    <div *ngFor="let sn of serialNumbers; let i = index">
+  <!-- ✅ Serial Number Inputs (Only When Increasing Stock) -->
+  <div *ngIf="type === 'INCREASE' && quantity > 0" class="mt-6">
+    <h4 class="font-semibold text-gray-700">Enter Serial Numbers:</h4>
+    <div *ngFor="let sn of serialNumbers; let i = index" class="mt-2">
       <input
         [(ngModel)]="serialNumbers[i]"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2 my-1"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
         placeholder="Serial Number {{ i + 1 }}"
       />
     </div>
   </div>
 
-  <div class="mt-4">
-    <label class="block mb-1 font-semibold">Reason:</label>
+  <!-- Reason Input -->
+  <div class="mt-6">
+    <label class="block mb-2 font-semibold text-gray-700">Reason:</label>
     <input
       type="text"
       [(ngModel)]="reason"
-      class="w-full border border-gray-300 rounded-lg px-4 py-2"
+      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
     />
   </div>
 
+  <!-- ✅ Update Stock Button -->
   <button
     (click)="updateStock()"
-    class="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+    class="mt-6 w-full bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300"
   >
     Update Stock
   </button>
 
+  <!-- ✅ Success/Error Message -->
   <p
-    class="mt-4 text-lg font-semibold"
+    class="mt-4 text-lg font-semibold text-center"
     [ngClass]="message.includes('Error') ? 'text-red-600' : 'text-green-600'"
   >
     {{ message }}

@@ -17,18 +17,6 @@ export const routes: Routes = [
     component: LoginComponent,
   },
   {
-    path: 'inventory-dashboard',
-    component: InventoryDashboardComponent,
-  },
-  {
-    path: 'inventory-list',
-    component: InventoryListComponent,
-  },
-  {
-    path: 'stock-movement',
-    component: StockMovementComponent,
-  },
-  {
     path: 'products-list',
     component: ProductListComponent,
   },
@@ -40,5 +28,14 @@ export const routes: Routes = [
     path: 'products-list/edit/:id',
     component: ProductFormComponent,
   },
+  {
+    path: 'inventory-dashboard',
+    component: InventoryDashboardComponent,
+  },
+  {
+    path: 'product-movement',
+    component: StockMovementComponent,
+  },
+
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

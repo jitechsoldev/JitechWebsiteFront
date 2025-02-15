@@ -35,14 +35,13 @@ export class ProductListComponent implements OnInit {
   }
 
   toggleProductStatus(product: any) {
-    const updatedStatus = !product.active; // Toggle active state
+    const updatedStatus = !product.active;
     this.productService
       .updateProduct(product._id, { active: updatedStatus })
       .subscribe(
         (response) => {
           console.log('✅ Product updated:', response);
-          this.loadProducts(); // Refresh product list
-          this.loadInventory(); // ✅ Refresh inventory to remove inactive items
+          this.loadProducts(); // ✅ Refresh list after status change
         },
         (error) => {
           console.error('❌ Error updating product:', error);

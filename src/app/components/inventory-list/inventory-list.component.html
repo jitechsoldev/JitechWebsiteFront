@@ -1,64 +1,42 @@
 <div class="container mx-auto p-6">
-  <h2 class="text-2xl font-bold mb-4">Inventory List</h2>
+  <h2 class="text-3xl font-extrabold text-blue-900 mb-6">Inventory List</h2>
 
-  <div class="flex items-center space-x-4 mb-4">
-    <input
-      type="text"
-      [(ngModel)]="categoryFilter"
-      placeholder="Filter by Category"
-      class="border border-gray-300 rounded-lg px-4 py-2"
-    />
-    <button
-      (click)="filterByCategory(categoryFilter)"
-      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-    >
-      Apply
-    </button>
-  </div>
-
-  <div class="overflow-x-auto">
-    <table class="w-full border border-gray-300">
+  <!-- ✅ Inventory Table -->
+  <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+    <table class="w-full text-left border-collapse">
       <thead>
-        <tr class="bg-gray-200">
-          <th class="border px-4 py-2">Product</th>
-          <th class="border px-4 py-2">SKU</th>
-          <th class="border px-4 py-2">Category</th>
-          <th class="border px-4 py-2">Stock Level</th>
-          <th class="border px-4 py-2">Serial Numbers</th>
+        <tr class="bg-blue-900 text-white">
+          <th class="px-4 py-3">Product</th>
+          <th class="px-4 py-3">SKU</th>
+          <th class="px-4 py-3">Category</th>
+          <th class="px-4 py-3">Stock Level</th>
+          <th class="px-4 py-3">Serial Numbers</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let item of inventory">
-          <td class="border px-4 py-2">{{ item.productId?.productName }}</td>
-          <td class="border px-4 py-2">{{ item.sku }}</td>
-          <td class="border px-4 py-2">{{ item.productId?.category }}</td>
-          <td class="border px-4 py-2">{{ item.stockLevel }}</td>
-          <td class="border px-4 py-2">
-            <ul *ngIf="item.serialNumbers?.length > 0; else noSerials">
-              <li *ngFor="let sn of item.serialNumbers">{{ sn }}</li>
-            </ul>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let item of inventory" class="hover:bg-gray-100 transition">
+          <td class="px-4 py-3">{{ item.productId?.productName }}</td>
+          <td class="px-4 py-3">{{ item.sku }}</td>
+          <td class="px-4 py-3">{{ item.productId?.category }}</td>
+          <td class="px-4 py-3 font-semibold">{{ item.stockLevel }}</td>
+          <td class="px-4 py-3">
+            <div
+              *ngIf="item.serialNumbers?.length > 0; else noSerials"
+              class="flex flex-wrap gap-2"
+            >
+              <span
+                *ngFor="let sn of item.serialNumbers"
+                class="px-3 py-1 text-sm font-semibold bg-gray-200 dixt-gray-800 rounded-full"
+              >
+                {{ sn }}
+              </span>
+            </div>
             <ng-template #noSerials>
-              <span class="text-gray-500">No Serial Numbers</span>
+              <span class="text-gray-500 italic">No Serial Numbers</span>
             </ng-template>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <div class="flex justify-between mt-4">
-    <button
-      (click)="page = page - 1; loadInventory()"
-      [disabled]="page === 1"
-      class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
-    >
-      Previous
-    </button>
-    <button
-      (click)="page = page + 1; loadInventory()"
-      class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-    >
-      Next
-    </button>
   </div>
 </div>

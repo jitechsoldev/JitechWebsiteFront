@@ -41,11 +41,28 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// Get All Products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.json({ data: products.length ? products : [] });
+    const products = await Product.find().lean(); // ✅ Use lean() for faster queries
+
+    // ✅ Fetch inventory details for each product
+    const inventoryData = await Inventory.find()
+      .select("productId stockLevel serialNumbers")
+      .lean();
+
+    // ✅ Merge inventory data into products list
+    const mergedProducts = products.map((product) => {
+      const inventoryItem = inventoryData.find(
+        (inv) => inv.productId.toString() === product._id.toString()
+      );
+      return {
+        ...product,
+        stockLevel: inventoryItem ? inventoryItem.stockLevel : 0, // Default 0 if no stock entry
+        serialNumbers: inventoryItem ? inventoryItem.serialNumbers : [], // Default empty array
+      };
+    });
+
+    res.json({ data: mergedProducts });
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }

@@ -39,17 +39,6 @@ export class InventoryListComponent implements OnInit {
     );
   }
 
-  changeSorting(sortBy: string) {
-    this.sortBy = sortBy;
-    this.order = this.order === 'desc' ? 'asc' : 'desc';
-    this.loadInventory();
-  }
-
-  filterByCategory(category: string) {
-    this.categoryFilter = category;
-    this.loadInventory();
-  }
-
   refreshInventoryAfterEdit(productId: string) {
     this.productService.updateInventoryAfterProductUpdate(productId).subscribe(
       (invResponse) => {
