@@ -5,6 +5,7 @@ const cors = require("cors");
 const inventoryRoutes = require("./routes/inventoryRoute");
 const productRoutes = require("./routes/productRoute");
 const stockMovementRoutes = require("./routes/stockMovementRoute");
+const saleRoutes = require("./routes/saleRoute");
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use(cors());
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/stock-movements", stockMovementRoutes);
+app.use("/api/sales", saleRoutes);
 
 module.exports = app;

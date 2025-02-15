@@ -5,6 +5,7 @@ import { InventoryDashboardComponent } from './components/inventory-dashboard/in
 import { StockMovementComponent } from './components/stock-movement/stock-movement.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductFormComponent } from './components/product-form/product-form.component';
+import { SaleComponent } from './components/sale/sale.component';
 
 export const routes: Routes = [
   {
@@ -34,6 +35,10 @@ export const routes: Routes = [
   {
     path: 'product-movement',
     component: StockMovementComponent,
+  },
+  {
+    path: 'sale',
+    component: SaleComponent,
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

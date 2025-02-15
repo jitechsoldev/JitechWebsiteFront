@@ -35,7 +35,10 @@ export class AppComponent {
         { name: 'Product Movement', routes: '/product-movement' },
       ],
     },
-    { name: 'Sales', icon: './SalesWhite.png', routes: '/sales' },
+    { name: 'Sales',
+      icon: './SalesWhite.png',
+      expanded: false,
+      routes: '/sale' },
     {
       name: 'Job Orders',
       icon: './JobOrderWhite.png',
