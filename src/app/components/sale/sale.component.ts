@@ -9,19 +9,25 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-sale',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,],
   templateUrl: './sale.component.html',
   styleUrls: ['./sale.component.css']
 })
+
 export class SaleComponent implements OnInit {
   saleForm: FormGroup;
   products: any[] = [];
   sales: any[] = [];
-  isLoading = false;
-  errorMessage = '';
-  isModalOpen = false; // controls modal visibility
-  isEditMode = false;
+  isLoading: boolean = false;
+  errorMessage: string = '';
+  isModalOpen: boolean = false;
+  isEditMode: boolean = false;
   editingSaleId: string | null = null;
+
+  // Pagination properties
+  currentPage: number = 1;
+  totalPages: number = 1;
+  pages: number[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -35,203 +41,78 @@ export class SaleComponent implements OnInit {
       termPayable: ['', Validators.required],
       modeOfPayment: ['', Validators.required],
       status: ['', Validators.required],
-      saleItems: this.fb.array([]) // array to hold multiple sale items
+      saleItems: this.fb.array([])
     });
   }
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadSales();
-    // Initialize with one sale item
-    this.addSaleItem();
+    if (this.saleItems.length === 0) {
+      this.addSaleItem();
+    }
   }
 
-  // Getter for saleItems form array
+  // Getter for the saleItems FormArray
   get saleItems(): FormArray {
     return this.saleForm.get('saleItems') as FormArray;
   }
 
-  // Create a new sale item form group
+  // Create a new sale item FormGroup
   createSaleItem(): FormGroup {
     return this.fb.group({
       product: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]],
-      // Optionally include a computed field for item total; you can compute this dynamically as well.
       itemTotal: [{ value: 0, disabled: true }]
     });
   }
 
-  // Add a new sale item to the form array
+  // Add a new sale item to the FormArray
   addSaleItem(): void {
     this.saleItems.push(this.createSaleItem());
   }
 
-  // Remove a sale item at a given index
+  // Remove a sale item from the FormArray by index
   removeSaleItem(index: number): void {
     this.saleItems.removeAt(index);
   }
 
-  // Helper: Returns available stock for a given product ID
-  getAvailableStock(productId: string): number {
-    const product = this.products.find(p => p._id === productId);
-    return product ? product.stockLevel : 0;
-  }
-
-  // Calculate the overall total amount for the sale
-  get overallTotal(): number {
-    return this.saleItems.controls.reduce((sum, itemGroup) => {
-      const productId = itemGroup.get('product')?.value;
-      const quantity = itemGroup.get('quantity')?.value;
-      const product = this.products.find(p => p._id === productId);
-      const price = product ? product.price : 0;
-      return sum + (price * quantity);
-    }, 0);
-  }
-
-  // (Optional) Update individual sale item total when product or quantity changes.
-  // Update the item total and validate quantity against available stock.
+  // Update the total for a sale item and validate quantity against available stock.
   updateItemTotal(index: number): void {
     const itemGroup = this.saleItems.at(index);
     const productId = itemGroup.get('product')?.value;
     const quantity = itemGroup.get('quantity')?.value;
-
-    // Find the product details (assuming it contains price and stockLevel)
     const product = this.products.find(p => p._id === productId);
     if (product) {
       const available = product.stockLevel;
-
-      // If quantity exceeds available stock, set a custom error.
       if (quantity > available) {
         itemGroup.get('quantity')?.setErrors({ exceedsAvailable: true });
         itemGroup.get('itemTotal')?.setValue(0);
       } else {
-        // If quantity is valid, remove the custom error (if present) and update the total.
         if (itemGroup.get('quantity')?.hasError('exceedsAvailable')) {
           itemGroup.get('quantity')?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
         }
-        const price = product.price;
-        const itemTotal = price * quantity;
+        const itemTotal = product.price * quantity;
         itemGroup.get('itemTotal')?.setValue(itemTotal);
       }
     }
   }
 
-  loadProducts(): void {
-    this.productService.getProducts().subscribe({
-      next: (res) => {
-        this.products = res.data || res;
-      },
-      error: (err) => {
-        console.error('Error fetching products:', err);
-      },
-    });
+  // Compute the overall total from all sale items
+  get overallTotal(): number {
+    return this.saleItems.controls.reduce((sum, control) => {
+      const total = control.get('itemTotal')?.value;
+      return sum + (total ? parseFloat(total) : 0);
+    }, 0);
   }
 
-  loadSales(): void {
-    this.saleService.getSales().subscribe({
-      next: (res) => {
-        this.sales = res.data || res;
-      },
-      error: (err) => {
-        console.error('Error fetching sales:', err);
-      },
-    });
+  // Helper: Return available stock for a given product ID
+  getAvailableStock(productId: string): number {
+    const product = this.products.find(p => p._id === productId);
+    return product ? product.stockLevel : 0;
   }
 
-  openModal(): void {
-    this.isModalOpen = true;
-  }
-
-  closeModal(): void {
-    this.isModalOpen = false;
-    this.saleForm.reset();
-    // Reset the saleItems FormArray:
-    while (this.saleItems.length !== 0) {
-      this.saleItems.removeAt(0);
-    }
-    // Re-add an empty sale item
-    this.addSaleItem();
-    this.errorMessage = '';
-    this.isEditMode = false;
-    this.editingSaleId = null;
-  }
-
-  // Called on editing an existing sale (if needed)
-  editSale(sale: any): void {
-    this.isEditMode = true;
-    this.editingSaleId = sale._id; // or sale.saleID if using your custom id
-
-    // Populate the main sale fields
-    this.saleForm.patchValue({
-      clientName: sale.clientName,
-      dateOfPurchase: new Date(sale.dateOfPurchase).toISOString().substring(0, 10),
-      warranty: sale.warranty,
-      termPayable: sale.termPayable,
-      modeOfPayment: sale.modeOfPayment,
-      status: sale.status
-    });
-
-    // Clear any existing saleItems
-    while (this.saleItems.length !== 0) {
-      this.saleItems.removeAt(0);
-    }
-
-    // Populate saleItems array from sale.saleItems
-    sale.saleItems.forEach((item: any) => {
-      const saleItemGroup = this.createSaleItem();
-      saleItemGroup.patchValue({
-        product: item.product?._id || item.product,
-        quantity: item.quantity,
-        itemTotal: item.totalAmount
-      });
-      this.saleItems.push(saleItemGroup);
-    });
-    this.openModal();
-  }
-
-  onSubmit(): void {
-    if (this.saleForm.invalid) {
-      this.saleForm.markAllAsTouched();
-      return;
-    }
-    this.isLoading = true;
-    // Prepare payload. Include overall total if desired.
-    const saleData = {
-      ...this.saleForm.value,
-      overallTotalAmount: this.overallTotal
-    };
-
-    if (this.isEditMode && this.editingSaleId) {
-      this.saleService.updateSale(this.editingSaleId, saleData).subscribe({
-        next: (res) => {
-          console.log('Sale updated successfully:', res);
-          this.loadSales();
-          this.isLoading = false;
-          this.closeModal();
-        },
-        error: (err) => {
-          console.error('Error updating sale:', err);
-          this.errorMessage = err.error?.message || 'An error occurred';
-          this.isLoading = false;
-        },
-      });
-    } else {
-      this.saleService.createSale(saleData).subscribe({
-        next: (res) => {
-          console.log('Sale created successfully:', res);
-          this.loadSales();
-          this.isLoading = false;
-          this.closeModal();
-        },
-        error: (err) => {
-          console.error('Error creating sale:', err);
-          this.errorMessage = err.error?.message || 'An error occurred';
-          this.isLoading = false;
-        },
-      });
-    }
-  }
-
+  // Helper: Return badge classes based on status (ensuring case-insensitive match)
   getBadgeClasses(status: string): string {
     if (!status) {
       return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800';
@@ -244,7 +125,130 @@ export class SaleComponent implements OnInit {
     } else if (s === 'cancelled' || s === 'canceled') {
       return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800';
     }
-    // Default badge style if none match
     return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800';
+  }
+
+  // Load products from the ProductService
+  loadProducts(): void {
+    this.productService.getProducts().subscribe({
+      next: res => {
+        this.products = res.data || res;
+      },
+      error: err => {
+        console.error('Error fetching products:', err);
+      }
+    });
+  }
+
+  // Load sales from the SaleService with pagination
+  loadSales(): void {
+    // Assume your saleService.getSales() accepts pagination parameters (e.g., { page: this.currentPage })
+    this.saleService.getSales().subscribe({
+      next: res => {
+        this.sales = res.data || res;
+        this.totalPages = res.totalPages || 1;
+        this.currentPage = res.currentPage || 1;
+        this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+      },
+      error: err => {
+        console.error('Error fetching sales:', err);
+      }
+    });
+  }
+
+  // Paginator: Navigate to a specific page
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+    this.currentPage = page;
+    this.loadSales();
+  }
+
+  // Open the modal for adding/editing a sale
+  openModal(): void {
+    this.isModalOpen = true;
+  }
+
+  // Close the modal and reset the form
+  closeModal(): void {
+    this.isModalOpen = false;
+    this.saleForm.reset();
+    while (this.saleItems.length !== 0) {
+      this.saleItems.removeAt(0);
+    }
+    this.addSaleItem();
+    this.errorMessage = '';
+    this.isEditMode = false;
+    this.editingSaleId = null;
+  }
+
+  // Populate the form for editing an existing sale
+  editSale(sale: any): void {
+    this.isEditMode = true;
+    this.editingSaleId = sale._id;
+    this.saleForm.patchValue({
+      clientName: sale.clientName,
+      dateOfPurchase: new Date(sale.dateOfPurchase).toISOString().substring(0, 10),
+      warranty: sale.warranty,
+      termPayable: sale.termPayable,
+      modeOfPayment: sale.modeOfPayment,
+      status: sale.status
+    });
+    while (this.saleItems.length !== 0) {
+      this.saleItems.removeAt(0);
+    }
+    sale.saleItems.forEach((item: any) => {
+      const saleItemGroup = this.createSaleItem();
+      saleItemGroup.patchValue({
+        product: item.product?._id || item.product,
+        quantity: item.quantity,
+        itemTotal: item.totalAmount
+      });
+      this.saleItems.push(saleItemGroup);
+    });
+    this.openModal();
+  }
+
+  // Handle form submission for creating or updating a sale
+  onSubmit(): void {
+    if (this.saleForm.invalid) {
+      this.saleForm.markAllAsTouched();
+      return;
+    }
+    this.isLoading = true;
+    const saleData = {
+      ...this.saleForm.value,
+      overallTotalAmount: this.overallTotal
+    };
+    if (this.isEditMode && this.editingSaleId) {
+      this.saleService.updateSale(this.editingSaleId, saleData).subscribe({
+        next: res => {
+          console.log('Sale updated successfully:', res);
+          this.loadSales();
+          this.isLoading = false;
+          this.closeModal();
+        },
+        error: err => {
+          console.error('Error updating sale:', err);
+          this.errorMessage = err.error?.error || 'An error occurred';
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.saleService.createSale(saleData).subscribe({
+        next: res => {
+          console.log('Sale created successfully:', res);
+          this.loadSales();
+          this.isLoading = false;
+          this.closeModal();
+        },
+        error: err => {
+          console.error('Error creating sale:', err);
+          this.errorMessage = err.error?.error || 'An error occurred';
+          this.isLoading = false;
+        }
+      });
+    }
   }
 }

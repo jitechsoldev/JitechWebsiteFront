@@ -1,4 +1,3 @@
-<!-- sale.component.html -->
 <div class="container mx-auto p-4">
   <!-- Header & Add Button -->
   <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -28,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let sale of sales">
+        <tr *ngFor="let sale of sales" class="hover:bg-gray-50 transition-colors duration-200">
           <td class="px-4 py-3 border-b bg-white text-sm font-black">{{ sale.saleID }}</td>
           <td class="px-4 py-3 border-b bg-white text-sm">{{ sale.clientName }}</td>
           <td class="px-4 py-3 border-b bg-white text-sm">
@@ -53,7 +52,9 @@
             </span>
           </td>
           <td class="px-4 py-3 border-b bg-white text-sm text-center">
-            <button (click)="editSale(sale)" class="text-blue-600 hover:text-blue-900">Edit</button>
+            <button (click)="editSale(sale)" class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
+              Edit
+            </button>
           </td>
         </tr>
       </tbody>
@@ -62,6 +63,35 @@
       No sales records found.
     </div>
   </div>
+
+  <!-- Tailwind Paginator -->
+<div class="flex justify-center items-center space-x-2 mt-4">
+  <button
+    (click)="goToPage(currentPage - 1)"
+    [disabled]="currentPage === 1"
+    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+    Previous
+  </button>
+
+  <ng-container *ngFor="let page of pages">
+    <button
+      (click)="goToPage(page)"
+      [ngClass]="{
+        'bg-blue-500 text-white': page === currentPage,
+        'bg-gray-200 text-gray-700 hover:bg-gray-300': page !== currentPage
+      }"
+      class="px-4 py-2 rounded transition">
+      {{ page }}
+    </button>
+  </ng-container>
+
+  <button
+    (click)="goToPage(currentPage + 1)"
+    [disabled]="currentPage === totalPages"
+    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+    Next
+  </button>
+</div>
 
   <!-- Modal for Adding/Editing Sale -->
   <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto">
