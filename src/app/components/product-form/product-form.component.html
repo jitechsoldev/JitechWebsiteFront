@@ -1,0 +1,107 @@
+<!-- ✅ Modal Background (Hidden by Default) -->
+<div
+  *ngIf="isModalOpen"
+  class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
+>
+  <!-- ✅ Modal Content -->
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative">
+    <h2 class="text-2xl font-extrabold text-blue-900 mb-4">
+      {{ isEditing ? "Edit Product" : "Add Product" }}
+    </h2>
+
+    <form
+      [formGroup]="productForm"
+      (ngSubmit)="saveProduct()"
+      class="space-y-5"
+    >
+      <!-- ✅ Product Name -->
+      <div>
+        <label class="block font-semibold text-gray-700 mb-1"
+          >Product Name</label
+        >
+        <input
+          type="text"
+          formControlName="productName"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+        />
+      </div>
+
+      <!-- ✅ SKU -->
+      <div>
+        <label class="block font-semibold text-gray-700 mb-1">SKU</label>
+        <input
+          type="text"
+          formControlName="sku"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+        />
+      </div>
+
+      <!-- ✅ Category -->
+      <div>
+        <label class="block font-semibold text-gray-700 mb-1">Category</label>
+        <input
+          type="text"
+          formControlName="category"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+        />
+      </div>
+
+      <!-- ✅ Price -->
+      <div>
+        <label class="block font-semibold text-gray-700 mb-1">Price</label>
+        <input
+          type="number"
+          formControlName="price"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+        />
+      </div>
+
+      <!-- ✅ Active Toggle -->
+      <div class="flex items-center space-x-2">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="active"
+            class="sr-only peer"
+          />
+          <div
+            class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition-all duration-300 relative after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:top-0.5 after:left-1 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:bg-white"
+          ></div>
+        </label>
+        <span class="font-semibold text-gray-700">Active</span>
+      </div>
+
+      <!-- ✅ Requires Serial Number Toggle -->
+      <div class="flex items-center space-x-2 mt-2">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="requiresSerialNumber"
+            class="sr-only peer"
+          />
+          <div
+            class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition-all duration-300 relative after:content-[''] after:absolute after:w-5 after:h-5 after:bg-white after:rounded-full after:top-0.5 after:left-1 after:transition-all peer-checked:after:translate-x-4 peer-checked:after:bg-white"
+          ></div>
+        </label>
+        <span class="font-semibold text-gray-700">Requires Serial Number</span>
+      </div>
+
+      <!-- ✅ Submit Button -->
+      <div class="flex justify-end space-x-4">
+        <button
+          (click)="closeModal()"
+          type="button"
+          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        >
+          {{ isEditing ? "Update Product" : "Add Product" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

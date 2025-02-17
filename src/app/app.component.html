@@ -1,0 +1,124 @@
+<!-- Navbar Section -->
+<header
+  *ngIf="ShowLayout"
+  class="fixed top-0 left-0 w-full bg-gradient-to-r from-blue-700 to-blue-800 text-white shadow-lg p-4 flex items-center justify-between z-50"
+>
+  <!-- Sidebar Toggle Button -->
+  <button
+    (click)="toggleSidebar()"
+    class="transition-transform transform hover:scale-110 p-2 rounded"
+  >
+    <img
+      src="./MenuWhite.png"
+      class="w-6 h-6 transition-transform duration-300"
+    />
+  </button>
+
+  <!-- Center Logo -->
+  <div class="absolute left-1/2 transform -translate-x-1/2">
+    <img src="./JitechWhite.png" class="h-10" />
+  </div>
+
+  <!-- Logout Button -->
+  <div>
+    <button
+      class="transition-transform transform hover:scale-110 p-2 flex items-center px-3 py-1 rounded-lg"
+      [routerLink]="['/login']"
+    >
+      <img src="./LogoutWhite.svg" class="w-5 h-5" />
+    </button>
+  </div>
+</header>
+
+<!-- Sidebar and Main Content Wrapper -->
+<div *ngIf="ShowLayout" class="flex min-h-screen pt-16">
+  <!-- Sidebar (Always below Navbar) -->
+  <aside
+    [ngClass]="{ 'w-64': isSidebarOpen, 'w-0': !isSidebarOpen }"
+    class="bg-gradient-to-b from-blue-800 to-blue-700 text-white shadow-2xl transition-all duration-300 ease-in-out h-full fixed top-18 left-0 flex flex-col z-40 overflow-hidden"
+  >
+    <!-- Profile Section -->
+    <div
+      class="flex flex-col items-center justify-center py-4 border-b border-blue-600 text-center transition-all duration-300"
+      [ngClass]="{ 'opacity-100': isSidebarOpen, 'opacity-0': !isSidebarOpen }"
+    >
+      <div
+        class="w-18 h-18 flex items-center justify-center bg-blue-900 rounded-full"
+      >
+        <img src="./User.png" class="w-12 h-12" />
+      </div>
+      <h2
+        class="text-lg font-semibold mt-2 whitespace-nowrap"
+        *ngIf="isSidebarOpen"
+      >
+        John
+      </h2>
+      <p class="text-sm text-white" *ngIf="isSidebarOpen">Administrator</p>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="px-2 mt-2">
+      <ul>
+        <li
+          *ngFor="let item of menuItems"
+          class="py-3 px-6 cursor-pointer rounded-lg transition-all duration-300 flex flex-col whitespace-nowrap"
+        >
+          <div
+            class="flex items-center w-full justify-between"
+            (click)="toggleDropdown(item)"
+            [routerLink]="item.routes ? item.routes : null"
+            routerLinkActive="bg-blue-600"
+          >
+            <div class="flex items-center">
+              <img [src]="item.icon" class="w-6 h-6 mr-2" />
+              <span *ngIf="isSidebarOpen">{{ item.name }}</span>
+            </div>
+            <span
+              *ngIf="item.children && isSidebarOpen"
+              class="transform transition-transform duration-300"
+              [ngClass]="{ 'rotate-180': item.expanded }"
+              >&#9662;</span
+            >
+          </div>
+          <ul
+            *ngIf="item.expanded && isSidebarOpen"
+            class="mt-2 ml-2 w-full transition-all duration-300 ease-in-out overflow-hidden transform scale-y-0 opacity-0"
+            [ngClass]="{ 'scale-y-100 opacity-100': item.expanded }"
+            style="transform-origin: top"
+          >
+            <li
+              *ngFor="let subItem of item.children"
+              class="py-2 px-4 cursor-pointer hover:bg-blue-900 rounded-lg transition-all duration-300"
+              [routerLink]="subItem.routes"
+            >
+              {{ subItem.name }}
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Logout Button in Sidebar -->
+    <div class="p-4 mt-auto">
+      <ul>
+        <li
+          class="py-3 px-6 hover:bg-red-700 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
+        >
+          <img src="./LogoutWhite.svg" class="w-5 h-5 mr-2" />
+          <span *ngIf="isSidebarOpen">Logout</span>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content (Pushes when sidebar opens) -->
+  <main
+    class="flex-1 p-6 bg-white min-h-screen transition-all duration-300 ml-0"
+    [ngClass]="{ 'ml-64': isSidebarOpen, 'ml-0': !isSidebarOpen }"
+  >
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<!-- Only the router-outlet remains on Login & Landing -->
+<router-outlet *ngIf="!ShowLayout"></router-outlet>

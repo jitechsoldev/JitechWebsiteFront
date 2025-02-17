@@ -1,0 +1,86 @@
+<div
+  class="flex min-h-screen bg-blue-100 items-center justify-center backdrop-blur-md"
+>
+  <div
+    class="w-full max-w-3xl bg-white shadow-lg rounded-3xl flex overflow-hidden"
+  >
+    <!-- Left Side (Illustration Carousel) -->
+    <div
+      class="hidden md:flex flex-1 flex-col items-center justify-center bg-blue-900 p-10 relative"
+    >
+      <div
+        class="carousel w-full relative flex items-center justify-center"
+        id="carousel"
+        style="height: 250px"
+      >
+        <div
+          *ngFor="let slide of slides; let i = index"
+          class="carousel-item w-full text-center absolute inset-0 transition-opacity duration-1000 ease-in-out"
+          [ngClass]="{
+            'opacity-100': i === currentSlide,
+            'opacity-0': i !== currentSlide
+          }"
+        >
+          <img [src]="slide.image" class="max-w-sm h-67 w-67 mx-auto" />
+        </div>
+      </div>
+
+      <h2
+        class="mt-6 text-2xl font-bold text-center text-white uppercase tracking-wide drop-shadow-lg"
+      >
+        {{ slides[currentSlide].title }}
+      </h2>
+
+      <div class="absolute bottom-4 flex space-x-2 justify-center w-full">
+        <span
+          *ngFor="let slide of slides; let i = index"
+          class="h-3 w-3 rounded-full border border-white cursor-pointer transition-all duration-300"
+          [ngClass]="{
+            'bg-white scale-125': i === currentSlide,
+            'bg-transparent': i !== currentSlide
+          }"
+          (click)="setSlide(i)"
+        ></span>
+      </div>
+    </div>
+
+    <!-- Right Side (Login Form) -->
+    <div class="flex-1 flex items-center justify-center p-8 bg-white">
+      <div class="w-full max-w-md">
+        <div class="flex justify-center mb-6">
+          <img src="./JitechBlue.png" class="h-18" />
+        </div>
+        <form class="mt-6" (submit)="onSubmit()">
+          <div class="mb-6 relative">
+            <label for="username" class="block text-blue-900 mb-1"
+              >Password:</label
+            >
+            <div
+              class="flex items-center border border-blue-300 rounded-3xl px-4 py-2"
+            >
+              <img src="./lock-solid.svg" class="h-5 w-5 opacity-50" />
+              <input
+                type="text"
+                id="username"
+                class="w-full outline-none pl-3"
+                [(ngModel)]="username"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2 rounded-lg hover:scale-105 hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            [routerLink]="['/inventory-dashboard']"
+          >
+            <img src="./LoginWhite.svg" class="h-5 w-5" />
+            Log-in
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
