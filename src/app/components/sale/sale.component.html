@@ -1,150 +1,116 @@
+<!-- sale.component.html -->
 <div class="container mx-auto p-4">
   <!-- Header & Add Button -->
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-3xl font-bold">Sales Records</h2>
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+    <h2 class="text-3xl font-bold mb-2 sm:mb-0">Sales Records</h2>
     <button
       (click)="openModal()"
-      class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-    >
+      class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
       Add New Sale
     </button>
   </div>
 
   <!-- Sales Table -->
-  <div class="bg-white shadow-md rounded overflow-x-auto">
+  <div class="bg-white shadow-md rounded overflow-x-auto mb-6">
     <table class="min-w-full leading-normal">
       <thead>
         <tr>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Sale ID</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Client</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Product</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Quantity</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total Amount</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Warranty</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Term</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Payment</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Sale ID</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Client</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Products</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-right text-xs font-semibold text-gray-700 uppercase">Overall Total</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Date</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Warranty</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Term</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Payment</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase">Action</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let sale of sales">
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.saleID }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.clientName }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-            {{ sale.product?.productName || 'N/A' }}
+          <td class="px-4 py-3 border-b bg-white text-sm font-black">{{ sale.saleID }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ sale.clientName }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">
+            <ul class="list-disc pl-5">
+              <li *ngFor="let item of sale.saleItems">
+                {{ item.product?.productName || 'N/A' }} (Qty: {{ item.quantity }})
+              </li>
+            </ul>
           </td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.quantity }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-            {{ sale.totalAmount | currency:'PHP':'symbol':'1.2-2' }}
+          <td class="px-4 py-3 border-b bg-white text-sm text-right font-black">
+            {{ sale.overallTotalAmount | currency:'PHP':'symbol':'1.2-2' }}
           </td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.dateOfPurchase | date:'mediumDate' }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.warranty }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.termPayable }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.modeOfPayment }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ sale.status }}</td>
-          <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
-            <!-- Placeholders for actions -->
+          <td class="px-4 py-3 border-b bg-white text-sm">
+            {{ sale.dateOfPurchase | date:'mediumDate' }}
+          </td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ sale.warranty }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ sale.termPayable }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ sale.modeOfPayment }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">
+            <span [ngClass]="getBadgeClasses(sale.status)">
+              {{ sale.status }}
+            </span>
+          </td>
+          <td class="px-4 py-3 border-b bg-white text-sm text-center">
             <button (click)="editSale(sale)" class="text-blue-600 hover:text-blue-900">Edit</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <div *ngIf="sales.length === 0" class="p-4 text-center text-gray-500">No sales records found.</div>
+    <div *ngIf="sales.length === 0" class="p-4 text-center text-gray-500">
+      No sales records found.
+    </div>
   </div>
 
-  <!-- Modal for Adding New Sale -->
-  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Modal for Adding/Editing Sale -->
+  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto">
     <!-- Modal Backdrop -->
     <div class="absolute inset-0 bg-black opacity-50"></div>
-
     <!-- Modal Content -->
-    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-4">
-      <!-- Modal Header -->
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 p-4 max-h-full">
       <div class="flex justify-between items-center mb-3 border-b pb-2">
-        <h3 class="text-xl font-semibold text-gray-800">Add New Sale</h3>
+        <h3 class="text-xl font-semibold text-gray-800">
+          {{ isEditMode ? 'Edit Sale' : 'Add New Sale' }}
+        </h3>
         <button (click)="closeModal()" class="text-gray-600 hover:text-gray-800 text-2xl leading-none">&times;</button>
       </div>
-
-      <!-- Modal Form -->
+      <!-- Main Sale Form -->
       <form (ngSubmit)="onSubmit()" [formGroup]="saleForm" class="space-y-3">
-        <!-- Row 1: Client Name & Product -->
-        <div class="flex flex-wrap -mx-2">
-          <!-- Client Name -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
-            <label for="clientName" class="block text-gray-700 text-sm">Client Name</label>
-            <input
-              id="clientName"
-              formControlName="clientName"
-              type="text"
-              placeholder="Enter client name"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            />
-            <div *ngIf="saleForm.get('clientName')?.invalid && saleForm.get('clientName')?.touched" class="text-red-500 text-xs mt-1">
-              Client Name is required.
-            </div>
-          </div>
-          <!-- Product -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
-            <label for="product" class="block text-gray-700 text-sm">Product</label>
-            <select
-              id="product"
-              formControlName="product"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            >
-              <option value="">Select Product</option>
-              <option *ngFor="let product of products" [value]="product._id">
-                {{ product.productName }}
-              </option>
-            </select>
-            <div *ngIf="saleForm.get('product')?.invalid && saleForm.get('product')?.touched" class="text-red-500 text-xs mt-1">
-              Product is required.
-            </div>
+        <!-- Client Name -->
+        <div>
+          <label for="clientName" class="block text-gray-700 text-sm">Client Name</label>
+          <input
+            id="clientName"
+            formControlName="clientName"
+            type="text"
+            placeholder="Enter client name"
+            class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
+          <div *ngIf="saleForm.get('clientName')?.invalid && saleForm.get('clientName')?.touched" class="text-red-500 text-xs mt-1">
+            Client Name is required.
           </div>
         </div>
 
-        <!-- Row 2: Quantity & Date of Purchase -->
-        <div class="flex flex-wrap -mx-2">
-          <!-- Quantity -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
-            <label for="quantity" class="block text-gray-700 text-sm">Quantity</label>
-            <input
-              id="quantity"
-              formControlName="quantity"
-              type="number"
-              min="1"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            />
-            <div *ngIf="saleForm.get('quantity')?.invalid && saleForm.get('quantity')?.touched" class="text-red-500 text-xs mt-1">
-              Please enter a valid quantity.
-            </div>
-          </div>
-          <!-- Date of Purchase -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
+        <!-- Date, Warranty, Term, Payment, Status -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
             <label for="dateOfPurchase" class="block text-gray-700 text-sm">Date of Purchase</label>
             <input
               id="dateOfPurchase"
               formControlName="dateOfPurchase"
               type="date"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            />
+              class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
             <div *ngIf="saleForm.get('dateOfPurchase')?.invalid && saleForm.get('dateOfPurchase')?.touched" class="text-red-500 text-xs mt-1">
               Date of Purchase is required.
             </div>
           </div>
-        </div>
-
-        <!-- Row 3: Warranty & Term Payable -->
-        <div class="flex flex-wrap -mx-2">
-          <!-- Warranty -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
+          <div>
             <label for="warranty" class="block text-gray-700 text-sm">Warranty</label>
             <select
               id="warranty"
               formControlName="warranty"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            >
+              class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option value="">Select Warranty</option>
               <option value="3 Months">3 Months</option>
               <option value="6 Months">6 Months</option>
               <option value="1 Year">1 Year</option>
@@ -153,14 +119,13 @@
               Warranty is required.
             </div>
           </div>
-          <!-- Term Payable -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
+          <div>
             <label for="termPayable" class="block text-gray-700 text-sm">Term Payable</label>
             <select
               id="termPayable"
               formControlName="termPayable"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            >
+              class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option value="">Select Term</option>
               <option value="15 Days">15 Days</option>
               <option value="1 Month">1 Month</option>
               <option value="3 Months">3 Months</option>
@@ -169,18 +134,13 @@
               Term Payable is required.
             </div>
           </div>
-        </div>
-
-        <!-- Row 4: Mode of Payment & Status -->
-        <div class="flex flex-wrap -mx-2">
-          <!-- Mode of Payment -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
+          <div>
             <label for="modeOfPayment" class="block text-gray-700 text-sm">Mode of Payment</label>
             <select
               id="modeOfPayment"
               formControlName="modeOfPayment"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            >
+              class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option value="">Select Payment Mode</option>
               <option value="Cash">Cash</option>
               <option value="Cheque">Cheque</option>
               <option value="Bank Transfer">Bank Transfer</option>
@@ -189,16 +149,16 @@
               Mode of Payment is required.
             </div>
           </div>
-          <!-- Status -->
-          <div class="w-full sm:w-1/2 px-2 mb-3">
+          <div>
             <label for="status" class="block text-gray-700 text-sm">Status</label>
             <select
               id="status"
               formControlName="status"
-              class="mt-1 block w-full p-2 h-8 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
-            >
+              class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+              <option value="">Select Status</option>
               <option value="Pending">Pending</option>
               <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
             </select>
             <div *ngIf="saleForm.get('status')?.invalid && saleForm.get('status')?.touched" class="text-red-500 text-xs mt-1">
               Status is required.
@@ -206,14 +166,83 @@
           </div>
         </div>
 
+        <!-- Sale Items: Scrollable Container -->
+        <div class="border rounded p-2" style="max-height: 300px; overflow-y: auto;">
+          <div formArrayName="saleItems" class="space-y-4">
+            <div *ngFor="let item of saleItems.controls; let i = index" [formGroupName]="i" class="border p-3 rounded">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold">Product {{ i + 1 }}</h4>
+                <button *ngIf="saleItems.length > 1" type="button" (click)="removeSaleItem(i)" class="text-red-600 hover:text-red-800">
+                  Remove
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <!-- Product Dropdown -->
+                <div>
+                  <label class="block text-gray-700 text-sm">Product</label>
+                  <select
+                    formControlName="product"
+                    (change)="updateItemTotal(i)"
+                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                    <option value="">Select Product</option>
+                    <option *ngFor="let product of products" [value]="product._id">
+                      {{ product.productName }} - {{ product.price | currency:'PHP':'symbol':'1.2-2' }}
+                    </option>
+                  </select>
+                  <div *ngIf="item.get('product')?.invalid && item.get('product')?.touched" class="text-red-500 text-xs mt-1">
+                    Product is required.
+                  </div>
+                </div>
+                <!-- Quantity input in the sale item section -->
+                <div>
+                  <label class="block text-gray-700 text-sm">Quantity</label>
+                  <input
+                    type="number"
+                    formControlName="quantity"
+                    min="1"
+                    [attr.max]="getAvailableStock(item.get('product')?.value)"
+                    (input)="updateItemTotal(i)"
+                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
+                  <div *ngIf="item.get('quantity')?.invalid && item.get('quantity')?.touched" class="text-red-500 text-xs mt-1">
+                    <!-- If our custom error is set, show a specific message -->
+                    <span *ngIf="item.get('quantity')?.hasError('exceedsAvailable')">
+                      Maximum available stock is {{ getAvailableStock(item.get('product')?.value) }}.
+                    </span>
+                    <span *ngIf="!item.get('quantity')?.hasError('exceedsAvailable')">
+                      Quantity is required.
+                    </span>
+                  </div>
+                </div>
+                <!-- Item Total (Read-only) -->
+                <div class="col-span-2">
+                  <label class="block text-gray-700 text-sm">Item Total</label>
+                  <input
+                    type="text"
+                    formControlName="itemTotal"
+                    readonly
+                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 bg-gray-100" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" (click)="addSaleItem()" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded">
+            Add Another Product
+          </button>
+        </div>
+
+        <!-- Overall Total Display -->
+        <div class="text-right">
+          <strong>Overall Total: </strong>
+          <span>{{ overallTotal | currency:'PHP':'symbol':'1.2-2' }}</span>
+        </div>
+
         <!-- Submit Button -->
         <div class="flex justify-end">
           <button
             type="submit"
             [disabled]="saleForm.invalid || isLoading"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded focus:outline-none focus:ring focus:ring-blue-200"
-          >
-            Submit Sale
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-green-200">
+            {{ isEditMode ? 'Update Sale' : 'Submit Sale' }}
           </button>
         </div>
         <div *ngIf="errorMessage" class="mt-2 text-red-600 text-xs">
