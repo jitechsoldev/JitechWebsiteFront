@@ -123,7 +123,7 @@ export class SaleComponent implements OnInit {
   }
 
   loadProducts(): void {
-    this.productService.getProducts().subscribe({
+    this.productService.getProducts(1, 10).subscribe({
       next: (res) => {
         this.products = res.data || res;
       },
