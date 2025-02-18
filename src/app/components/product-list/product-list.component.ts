@@ -66,19 +66,15 @@ export class ProductListComponent implements OnInit {
       );
   }
 
-  // ✅ Pagination Functions
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.loadProducts();
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.loadProducts();
-    }
+  loadInventory() {
+    this.inventoryService.getInventory(1, 1000, 'updatedAt', 'desc').subscribe(
+      (response) => {
+        console.log('✅ Inventory updated after product toggle:', response);
+      },
+      (error) => {
+        console.error('❌ Error loading inventory:', error);
+      }
+    );
   }
 
   toggleProductStatus(product: any) {
@@ -96,14 +92,18 @@ export class ProductListComponent implements OnInit {
       );
   }
 
-  loadInventory() {
-    this.inventoryService.getInventory(1, 1000, 'updatedAt', 'desc').subscribe(
-      (response) => {
-        console.log('✅ Inventory updated after product toggle:', response);
-      },
-      (error) => {
-        console.error('❌ Error loading inventory:', error);
-      }
-    );
+  // ✅ Pagination Functions
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.loadProducts();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadProducts();
+    }
   }
 }
