@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -15,9 +15,24 @@ export class SaleService {
     return this.http.post(this.apiUrl, sale);
   }
 
-  // Get all sales
-  getSales(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  // Get all sales with optional search & pagination parameters
+  getSales(params?: { page?: number; search?: string; sortBy?: string; order?: string }): Observable<any> {
+    let httpParams = new HttpParams();
+
+    if (params?.page) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params?.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+    if (params?.sortBy) {
+      httpParams = httpParams.set('sortBy', params.sortBy);
+    }
+    if (params?.order) {
+      httpParams = httpParams.set('order', params.order);
+    }
+
+    return this.http.get(this.apiUrl, { params: httpParams });
   }
 
   // Get a sale by ID

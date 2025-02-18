@@ -1,7 +1,7 @@
 // sale.component.ts
 import { ProductService } from './../../services/product.service';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, FormsModule } from '@angular/forms';
 import { SaleService } from '../../services/sale.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-sale',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,],
+  imports: [CommonModule, ReactiveFormsModule,FormsModule],
   templateUrl: './sale.component.html',
   styleUrls: ['./sale.component.css']
 })
@@ -23,6 +23,10 @@ export class SaleComponent implements OnInit {
   isModalOpen: boolean = false;
   isEditMode: boolean = false;
   editingSaleId: string | null = null;
+  searchQuery: string = '';
+  sortColumn: string = 'dateOfPurchase'; // Default sorting column
+  sortDirection: 'asc' | 'desc' = 'desc'; // Default sorting direction
+
 
   // Pagination properties
   currentPage: number = 1;
@@ -51,6 +55,11 @@ export class SaleComponent implements OnInit {
     if (this.saleItems.length === 0) {
       this.addSaleItem();
     }
+  }
+
+  applyFilter(): void {
+    this.currentPage = 1; // Reset to first page when searching
+    this.loadSales();
   }
 
   // Getter for the saleItems FormArray
@@ -142,18 +151,39 @@ export class SaleComponent implements OnInit {
 
   // Load sales from the SaleService with pagination
   loadSales(): void {
-    // Assume your saleService.getSales() accepts pagination parameters (e.g., { page: this.currentPage })
-    this.saleService.getSales().subscribe({
-      next: res => {
+    const queryParams: any = {
+      page: this.currentPage,
+      sortBy: this.sortColumn,
+      order: this.sortDirection
+     };
+
+    if (this.searchQuery) {
+      queryParams.search = this.searchQuery;
+    }
+
+    this.saleService.getSales(queryParams).subscribe({
+      next: (res) => {
         this.sales = res.data || res;
         this.totalPages = res.totalPages || 1;
         this.currentPage = res.currentPage || 1;
         this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
       },
-      error: err => {
+      error: (err) => {
         console.error('Error fetching sales:', err);
       }
     });
+  }
+
+  sortTable(column: string): void {
+    if (this.sortColumn === column) {
+      // Toggle sorting order if clicking the same column
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Set new column and reset sorting to ascending
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.loadSales(); // Refresh sales with new sorting
   }
 
   // Paginator: Navigate to a specific page
