@@ -15,7 +15,7 @@ export class SaleService {
     return this.http.post(this.apiUrl, sale);
   }
 
-  // Get all sales with optional search & pagination parameters
+  // Get all sales with optional search, pagination & sorting
   getSales(params?: { page?: number; search?: string; sortBy?: string; order?: string }): Observable<any> {
     let httpParams = new HttpParams();
 

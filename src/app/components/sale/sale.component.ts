@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, FormArray, Validators, FormsModule } from '@ang
 import { SaleService } from '../../services/sale.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, Subject } from 'rxjs';
+
 
 @Component({
   selector: 'app-sale',
@@ -18,19 +20,20 @@ export class SaleComponent implements OnInit {
   saleForm: FormGroup;
   products: any[] = [];
   sales: any[] = [];
-  isLoading: boolean = false;
-  errorMessage: string = '';
-  isModalOpen: boolean = false;
-  isEditMode: boolean = false;
+  isLoading = false;
+  errorMessage = '';
+  isModalOpen = false;
+  isEditMode = false;
   editingSaleId: string | null = null;
-  searchQuery: string = '';
-  sortColumn: string = 'dateOfPurchase'; // Default sorting column
-  sortDirection: 'asc' | 'desc' = 'desc'; // Default sorting direction
 
+  searchQuery = '';
+  searchUpdated = new Subject<string>();
 
-  // Pagination properties
-  currentPage: number = 1;
-  totalPages: number = 1;
+  // Sorting & Pagination
+  sortColumn = 'dateOfPurchase';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  currentPage = 1;
+  totalPages = 1;
   pages: number[] = [];
 
   constructor(
@@ -45,69 +48,59 @@ export class SaleComponent implements OnInit {
       termPayable: ['', Validators.required],
       modeOfPayment: ['', Validators.required],
       status: ['', Validators.required],
-      saleItems: this.fb.array([])
+      saleItems: this.fb.array([]),
+    });
+
+    // Debounce search input to prevent excessive API calls
+    this.searchUpdated.pipe(debounceTime(300)).subscribe(() => {
+      this.currentPage = 1;
+      this.loadSales();
     });
   }
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadSales();
-    if (this.saleItems.length === 0) {
-      this.addSaleItem();
-    }
+    if (this.saleItems.length === 0) this.addSaleItem();
   }
 
-  applyFilter(): void {
-    this.currentPage = 1; // Reset to first page when searching
-    this.loadSales();
-  }
-
-  // Getter for the saleItems FormArray
   get saleItems(): FormArray {
     return this.saleForm.get('saleItems') as FormArray;
   }
 
-  // Create a new sale item FormGroup
   createSaleItem(): FormGroup {
     return this.fb.group({
       product: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]],
-      itemTotal: [{ value: 0, disabled: true }]
+      itemTotal: [{ value: 0, disabled: true }],
     });
   }
 
-  // Add a new sale item to the FormArray
   addSaleItem(): void {
     this.saleItems.push(this.createSaleItem());
   }
 
-  // Remove a sale item from the FormArray by index
   removeSaleItem(index: number): void {
     this.saleItems.removeAt(index);
   }
 
-  // Update the total for a sale item and validate quantity against available stock.
   updateItemTotal(index: number): void {
     const itemGroup = this.saleItems.at(index);
     const productId = itemGroup.get('product')?.value;
     const quantity = itemGroup.get('quantity')?.value;
-    const product = this.products.find(p => p._id === productId);
+    const product = this.products.find((p) => p._id === productId);
+
     if (product) {
-      const available = product.stockLevel;
-      if (quantity > available) {
+      const availableStock = product.stockLevel;
+      if (quantity > availableStock) {
         itemGroup.get('quantity')?.setErrors({ exceedsAvailable: true });
         itemGroup.get('itemTotal')?.setValue(0);
       } else {
-        if (itemGroup.get('quantity')?.hasError('exceedsAvailable')) {
-          itemGroup.get('quantity')?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
-        }
-        const itemTotal = product.price * quantity;
-        itemGroup.get('itemTotal')?.setValue(itemTotal);
+        itemGroup.get('itemTotal')?.setValue(product.price * quantity);
       }
     }
   }
 
-  // Compute the overall total from all sale items
   get overallTotal(): number {
     return this.saleItems.controls.reduce((sum, control) => {
       const total = control.get('itemTotal')?.value;
@@ -115,51 +108,36 @@ export class SaleComponent implements OnInit {
     }, 0);
   }
 
-  // Helper: Return available stock for a given product ID
   getAvailableStock(productId: string): number {
-    const product = this.products.find(p => p._id === productId);
+    const product = this.products.find((p) => p._id === productId);
     return product ? product.stockLevel : 0;
   }
 
-  // Helper: Return badge classes based on status (ensuring case-insensitive match)
   getBadgeClasses(status: string): string {
-    if (!status) {
-      return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800';
-    }
-    const s = status.trim().toLowerCase();
-    if (s === 'completed') {
-      return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800';
-    } else if (s === 'pending') {
-      return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800';
-    } else if (s === 'cancelled' || s === 'canceled') {
-      return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800';
-    }
-    return 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800';
+    const lowerStatus = status?.toLowerCase();
+    return lowerStatus === 'completed'
+      ? 'bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs'
+      : lowerStatus === 'pending'
+      ? 'bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs'
+      : 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
   }
 
-  // Load products from the ProductService
   loadProducts(): void {
     this.productService.getProducts().subscribe({
-      next: res => {
+      next: (res) => {
         this.products = res.data || res;
       },
-      error: err => {
-        console.error('Error fetching products:', err);
-      }
+      error: (err) => console.error('Error fetching products:', err),
     });
   }
 
-  // Load sales from the SaleService with pagination
   loadSales(): void {
     const queryParams: any = {
       page: this.currentPage,
       sortBy: this.sortColumn,
-      order: this.sortDirection
-     };
-
-    if (this.searchQuery) {
-      queryParams.search = this.searchQuery;
-    }
+      order: this.sortDirection,
+    };
+    if (this.searchQuery) queryParams.search = this.searchQuery;
 
     this.saleService.getSales(queryParams).subscribe({
       next: (res) => {
@@ -168,39 +146,26 @@ export class SaleComponent implements OnInit {
         this.currentPage = res.currentPage || 1;
         this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
       },
-      error: (err) => {
-        console.error('Error fetching sales:', err);
-      }
+      error: (err) => console.error('Error fetching sales:', err),
     });
   }
 
   sortTable(column: string): void {
-    if (this.sortColumn === column) {
-      // Toggle sorting order if clicking the same column
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      // Set new column and reset sorting to ascending
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
-    }
-    this.loadSales(); // Refresh sales with new sorting
+    this.sortColumn = column;
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    this.loadSales();
   }
 
-  // Paginator: Navigate to a specific page
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages) {
-      return;
-    }
+    if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.loadSales();
   }
 
-  // Open the modal for adding/editing a sale
   openModal(): void {
     this.isModalOpen = true;
   }
 
-  // Close the modal and reset the form
   closeModal(): void {
     this.isModalOpen = false;
     this.saleForm.reset();
@@ -213,7 +178,6 @@ export class SaleComponent implements OnInit {
     this.editingSaleId = null;
   }
 
-  // Populate the form for editing an existing sale
   editSale(sale: any): void {
     this.isEditMode = true;
     this.editingSaleId = sale._id;
@@ -223,44 +187,48 @@ export class SaleComponent implements OnInit {
       warranty: sale.warranty,
       termPayable: sale.termPayable,
       modeOfPayment: sale.modeOfPayment,
-      status: sale.status
+      status: sale.status,
     });
-    while (this.saleItems.length !== 0) {
-      this.saleItems.removeAt(0);
-    }
+
+    while (this.saleItems.length !== 0) this.saleItems.removeAt(0);
+
     sale.saleItems.forEach((item: any) => {
       const saleItemGroup = this.createSaleItem();
       saleItemGroup.patchValue({
         product: item.product?._id || item.product,
         quantity: item.quantity,
-        itemTotal: item.totalAmount
+        itemTotal: item.totalAmount,
       });
       this.saleItems.push(saleItemGroup);
     });
+
     this.openModal();
   }
 
-  // Handle form submission for creating or updating a sale
   onSubmit(): void {
     if (this.saleForm.invalid) {
       this.saleForm.markAllAsTouched();
       return;
     }
+
     this.isLoading = true;
     const saleData = {
       ...this.saleForm.value,
       overallTotalAmount: this.overallTotal
     };
+
+    console.log("🛒 Sale Data Sent to API:", saleData); // 🔍 Log request payload
+
     if (this.isEditMode && this.editingSaleId) {
       this.saleService.updateSale(this.editingSaleId, saleData).subscribe({
         next: res => {
-          console.log('Sale updated successfully:', res);
+          console.log('✅ Sale updated successfully:', res);
           this.loadSales();
           this.isLoading = false;
           this.closeModal();
         },
         error: err => {
-          console.error('Error updating sale:', err);
+          console.error('❌ Error updating sale:', err);
           this.errorMessage = err.error?.error || 'An error occurred';
           this.isLoading = false;
         }
@@ -268,13 +236,13 @@ export class SaleComponent implements OnInit {
     } else {
       this.saleService.createSale(saleData).subscribe({
         next: res => {
-          console.log('Sale created successfully:', res);
+          console.log('✅ Sale created successfully:', res);
           this.loadSales();
           this.isLoading = false;
           this.closeModal();
         },
         error: err => {
-          console.error('Error creating sale:', err);
+          console.error('❌ Error creating sale:', err); // 🔥 Check full error response
           this.errorMessage = err.error?.error || 'An error occurred';
           this.isLoading = false;
         }
