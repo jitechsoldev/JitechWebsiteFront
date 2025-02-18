@@ -1,6 +1,13 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray,
+} from '@angular/forms';
 import { InventoryService } from '../../services/inventory.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 
@@ -11,22 +18,32 @@ import { StockMovementService } from '../../services/stock-movement.service';
   styleUrl: './stock-movement.component.css',
 })
 export class StockMovementComponent implements OnInit {
-  @Output() stockUpdated = new EventEmitter<void>(); // ✅ Emit event when stock is updated
+  @Output() stockUpdated = new EventEmitter<void>();
+
+  stockMovementForm: FormGroup;
   inventory: any[] = [];
   selectedInventoryId: string = '';
   type: string = 'INCREASE';
   quantity: number = 0;
-  reason: string = '';
   serialNumbers: { id: number; value: string }[] = [];
   availableSerialNumbers: string[] = [];
   selectedSerialNumbers: string[] = [];
   message: string = '';
-  isModalOpen: boolean = false; // ✅ Controls modal visibility
+  errors: string[] = [];
+  isModalOpen: boolean = false;
 
   constructor(
+    private fb: FormBuilder,
     private inventoryService: InventoryService,
     private stockMovementService: StockMovementService
-  ) {}
+  ) {
+    this.stockMovementForm = this.fb.group({
+      inventoryId: ['', Validators.required],
+      type: ['INCREASE', Validators.required],
+      quantity: [0, [Validators.required, Validators.min(1)]],
+      serialNumbers: this.fb.array([]),
+    });
+  }
 
   ngOnInit() {
     this.loadInventory();
@@ -41,6 +58,8 @@ export class StockMovementComponent implements OnInit {
   }
 
   generateSerialFields() {
+    this.errors = [];
+
     if (this.type === 'INCREASE') {
       this.serialNumbers = Array.from({ length: this.quantity }, (_, i) => ({
         id: i,
@@ -52,6 +71,8 @@ export class StockMovementComponent implements OnInit {
   }
 
   fetchAvailableSerialNumbers() {
+    this.errors = [];
+
     if (this.type === 'DECREASE' && this.selectedInventoryId) {
       const selectedInventory = this.inventory.find(
         (inv) => inv._id === this.selectedInventoryId
@@ -67,6 +88,8 @@ export class StockMovementComponent implements OnInit {
   }
 
   toggleSerialSelection(serial: string) {
+    this.errors = [];
+
     if (this.selectedSerialNumbers.includes(serial)) {
       this.selectedSerialNumbers = this.selectedSerialNumbers.filter(
         (sn) => sn !== serial
@@ -75,7 +98,9 @@ export class StockMovementComponent implements OnInit {
       if (this.selectedSerialNumbers.length < this.quantity) {
         this.selectedSerialNumbers.push(serial);
       } else {
-        this.message = `⚠️ You can only select ${this.quantity} serial numbers.`;
+        this.errors.push(
+          `⚠️ You can only select ${this.quantity} serial numbers.`
+        );
       }
     }
   }
@@ -85,30 +110,53 @@ export class StockMovementComponent implements OnInit {
     this.serialNumbers[index].value = inputElement.value;
   }
 
-  updateStock() {
-    if (!this.selectedInventoryId || this.quantity <= 0) {
-      this.message = '⚠️ Please select a product and enter a valid quantity.';
-      return;
+  validateStockMovement(): boolean {
+    this.errors = [];
+
+    if (!this.selectedInventoryId) {
+      this.errors.push('⚠️ Please select a product.');
     }
 
-    // ✅ Check for duplicate serial numbers in INCREASE
+    if (this.quantity <= 0 || isNaN(this.quantity)) {
+      this.errors.push('⚠️ Quantity must be greater than zero.');
+    }
+
     if (this.type === 'INCREASE') {
       const enteredSerials = this.serialNumbers.map((sn) => sn.value.trim());
       const uniqueSerials = new Set(enteredSerials);
 
+      if (enteredSerials.includes('')) {
+        this.errors.push('⚠️ Please enter all serial numbers.');
+      }
+
       if (enteredSerials.length !== uniqueSerials.size) {
-        this.message =
-          '⚠️ Duplicate serial numbers detected. Please enter unique serials.';
-        return;
+        this.errors.push(
+          '⚠️ Duplicate serial numbers detected. Please enter unique serials.'
+        );
       }
     }
 
-    // ✅ Check for exact number of selected serial numbers in DECREASE
-    if (
-      this.type === 'DECREASE' &&
-      this.selectedSerialNumbers.length !== this.quantity
-    ) {
-      this.message = `⚠️ Please select exactly ${this.quantity} serial numbers.`;
+    if (this.type === 'DECREASE') {
+      if (this.selectedSerialNumbers.length !== this.quantity) {
+        this.errors.push(
+          `⚠️ Please select exactly ${this.quantity} serial numbers.`
+        );
+      }
+
+      for (let serial of this.selectedSerialNumbers) {
+        if (!this.availableSerialNumbers.includes(serial)) {
+          this.errors.push(
+            `⚠️ Serial number ${serial} does not exist in inventory.`
+          );
+        }
+      }
+    }
+
+    return this.errors.length === 0;
+  }
+
+  updateStock() {
+    if (!this.validateStockMovement()) {
       return;
     }
 
@@ -118,9 +166,8 @@ export class StockMovementComponent implements OnInit {
       quantity: this.quantity,
       serialNumbers:
         this.type === 'INCREASE'
-          ? this.serialNumbers.map((sn) => sn.value.trim()) // ✅ Ensure no leading/trailing spaces
+          ? this.serialNumbers.map((sn) => sn.value.trim())
           : this.selectedSerialNumbers,
-      reason: this.reason,
     };
 
     this.stockMovementService.addStockMovement(stockMovement).subscribe(
@@ -130,15 +177,22 @@ export class StockMovementComponent implements OnInit {
         this.serialNumbers = [];
         this.availableSerialNumbers = [];
         this.selectedSerialNumbers = [];
+        this.errors = [];
       },
       (error) => {
-        this.message = `❌ Error: ${error.error.message}`;
+        this.errors.push(`❌ Error: ${error.error.message}`);
       }
     );
   }
 
   trackByIndex(index: number, item: any): number {
     return index;
+  }
+
+  isFormValid(): boolean {
+    this.validateStockMovement();
+
+    return this.errors.length === 0;
   }
 
   showModal() {

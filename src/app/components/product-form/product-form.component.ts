@@ -18,8 +18,8 @@ export class ProductFormComponent implements OnInit {
   isEditing = false;
   productId: string | null = null;
   inventory: any[] = [];
-  errorMessage: string | null = null;
   isModalOpen: boolean = false;
+  errors: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -40,23 +40,40 @@ export class ProductFormComponent implements OnInit {
 
   ngOnInit() {
     this.productId = this.route.snapshot.paramMap.get('id');
-    console.log('🔹 Product ID from URL:', this.productId);
 
-    if (!this.productId) {
-      console.log('🆕 Adding a New Product...');
-      this.isEditing = false; // ✅ Correctly set to add mode
-      return;
+    if (this.productId) {
+      this.isEditing = true;
+      this.loadProduct(this.productId);
+    }
+  }
+
+  validateProductForm(): boolean {
+    this.errors = [];
+
+    if (this.productForm.invalid) {
+      if (this.productForm.get('productName')?.errors) {
+        this.errors.push('⚠️ Product Name is required.');
+      }
+      if (this.productForm.get('sku')?.errors) {
+        this.errors.push('⚠️ SKU must be at least 3 characters long.');
+      }
+      if (this.productForm.get('category')?.errors) {
+        this.errors.push('⚠️ Category is required.');
+      }
+      if (this.productForm.get('price')?.errors) {
+        this.errors.push('⚠️ Price must be greater than zero.');
+      }
     }
 
-    this.isEditing = true;
-    console.log('🖊 Editing Product...');
-    this.productService.getProductById(this.productId).subscribe(
+    return this.errors.length === 0;
+  }
+
+  loadProduct(id: string) {
+    this.productService.getProductById(id).subscribe(
       (product) => {
-        console.log('✅ Loaded Product:', product);
         if (product) {
           this.productForm.patchValue(product);
         } else {
-          console.error('❌ Product Not Found, Redirecting...');
           this.router.navigate(['/products-list']);
         }
       },
@@ -67,38 +84,33 @@ export class ProductFormComponent implements OnInit {
     );
   }
 
-  // ✅ Load product details when editing
-  loadProduct(product: any) {
-    this.isEditing = true;
-    this.productId = product._id;
-    this.productForm.patchValue(product);
-  }
-
   saveProduct() {
-    if (this.productForm.invalid) return;
+    if (!this.validateProductForm()) {
+      return; // Stop if form is invalid
+    }
 
     if (this.isEditing) {
       this.productService
         .updateProduct(this.productId!, this.productForm.value)
         .subscribe(
-          (response) => {
-            console.log('✅ Product updated successfully!', response);
-            this.productUpdated.emit(); // Notify parent to reload products
+          () => {
+            this.productUpdated.emit();
             this.closeModal();
           },
           (error) => {
-            console.error('❌ Error updating product:', error);
+            this.errors.push(
+              `❌ Error updating product: ${error.error.message}`
+            );
           }
         );
     } else {
       this.productService.addProduct(this.productForm.value).subscribe(
-        (response) => {
-          console.log('✅ Product added successfully!', response);
-          this.productUpdated.emit(); // Notify parent to reload products
+        () => {
+          this.productUpdated.emit();
           this.closeModal();
         },
         (error) => {
-          console.error('❌ Error adding product:', error);
+          this.errors.push(`❌ Error adding product: ${error.error.message}`);
         }
       );
     }
@@ -108,7 +120,7 @@ export class ProductFormComponent implements OnInit {
     this.inventoryService.getInventory(1, 1000, 'updatedAt', 'desc').subscribe(
       (invData) => {
         console.log('✅ Updated Inventory Data:', invData);
-        this.inventory = invData.data; // ✅ Refresh inventory array
+        this.inventory = invData.data;
       },
       (error) => {
         console.error('❌ Error fetching updated inventory:', error);
@@ -122,5 +134,6 @@ export class ProductFormComponent implements OnInit {
 
   closeModal() {
     this.isModalOpen = false;
+    this.errors = [];
   }
 }

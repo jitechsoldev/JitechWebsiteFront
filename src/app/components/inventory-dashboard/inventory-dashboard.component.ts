@@ -15,13 +15,17 @@ export class InventoryDashboardComponent implements OnInit {
   @ViewChild('stockMovementModal') stockMovementModal!: StockMovementComponent;
   totalStock: number = 0;
   recentMovements: any[] = [];
+  filteredMovements: any[] = [];
+  startDate: string = '';
+  endDate: string = '';
+  selectedType: string = '';
   incomingStock: number = 0;
   outgoingStock: number = 0;
-
-  // ✅ Keep Pagination Variables
   currentPage: number = 1;
   totalPages: number = 1;
   itemsPerPage: number = 5;
+  sortColumn: string = '';
+  sortOrder: 'asc' | 'desc' = 'asc';
 
   constructor(
     private inventoryService: InventoryService,
@@ -29,13 +33,13 @@ export class InventoryDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.filterStockMovements();
     this.getTotalStock();
     this.getRecentStockMovements();
     this.calculateIncomingOutgoingStock();
   }
 
   reloadInventory() {
-    console.log('🔄 Reloading Inventory...');
     this.getTotalStock();
     this.getRecentStockMovements();
     this.calculateIncomingOutgoingStock();
@@ -59,12 +63,53 @@ export class InventoryDashboardComponent implements OnInit {
   }
 
   getRecentStockMovements() {
+    const filters = {
+      page: this.currentPage,
+      limit: this.itemsPerPage,
+    };
+
+    this.stockMovementService.getStockMovements(filters).subscribe(
+      (response) => {
+        this.recentMovements = response.data;
+        this.totalPages = response.totalPages;
+      },
+      (error) => {
+        console.error('❌ Error fetching stock movements:', error);
+      }
+    );
+  }
+
+  calculateIncomingOutgoingStock() {
+    const filters = {
+      startDate: this.startDate,
+      endDate: this.endDate,
+      type: this.selectedType,
+      page: this.currentPage,
+      limit: this.itemsPerPage,
+    };
     this.stockMovementService
-      .getStockMovements(this.currentPage, this.itemsPerPage)
+      .getStockMovements(filters)
+      .subscribe((response) => {
+        const movements = response.data;
+
+        this.incomingStock = movements
+          .filter((m: any) => m.type === 'INCREASE')
+          .reduce((acc: number, m: any) => acc + m.quantity, 0);
+
+        this.outgoingStock = movements
+          .filter((m: any) => m.type === 'DECREASE')
+          .reduce((acc: number, m: any) => acc + m.quantity, 0);
+      });
+  }
+
+  loadStockMovements() {
+    this.stockMovementService
+      .getStockMovements({ page: this.currentPage, limit: this.itemsPerPage })
       .subscribe(
         (response) => {
           this.recentMovements = response.data;
           this.totalPages = response.totalPages;
+          this.filterStockMovements(); // Apply filters
         },
         (error) => {
           console.error('❌ Error fetching stock movements:', error);
@@ -72,32 +117,62 @@ export class InventoryDashboardComponent implements OnInit {
       );
   }
 
-  calculateIncomingOutgoingStock() {
-    this.stockMovementService.getStockMovements().subscribe((response) => {
-      const movements = response.data;
+  filterStockMovements() {
+    this.filteredMovements = this.recentMovements.filter((movement) => {
+      const movementDate = new Date(movement.timestamp);
 
-      this.incomingStock = movements
-        .filter((m: any) => m.type === 'INCREASE')
-        .reduce((acc: number, m: any) => acc + m.quantity, 0);
+      // Check if movement is within the selected date range
+      const withinDateRange =
+        (!this.startDate || movementDate >= new Date(this.startDate)) &&
+        (!this.endDate || movementDate <= new Date(this.endDate));
 
-      this.outgoingStock = movements
-        .filter((m: any) => m.type === 'DECREASE')
-        .reduce((acc: number, m: any) => acc + m.quantity, 0);
+      // Check if movement matches selected type
+      const matchesType = this.selectedType
+        ? movement.type === this.selectedType
+        : true;
+
+      return withinDateRange && matchesType;
     });
   }
 
-  // ✅ Keep Pagination Functions
+  sortMovements() {
+    if (!this.sortColumn) return;
+
+    this.filteredMovements.sort((a, b) => {
+      const valueA = a[this.sortColumn];
+      const valueB = b[this.sortColumn];
+
+      if (typeof valueA === 'string') {
+        return this.sortOrder === 'asc'
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return this.sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+    });
+  }
+
+  setSort(column: string) {
+    if (this.sortColumn === column) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortOrder = 'asc';
+    }
+    this.sortMovements();
+  }
+
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.getRecentStockMovements();
+      this.loadStockMovements();
     }
   }
 
   prevPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.getRecentStockMovements();
+      this.loadStockMovements();
     }
   }
 }

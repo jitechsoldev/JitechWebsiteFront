@@ -1,4 +1,4 @@
-<!-- ✅ Modal Background (Hidden by Default) -->
+<!-- ✅ Modal Background -->
 <div
   *ngIf="isModalOpen"
   class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
@@ -8,6 +8,19 @@
     <h2 class="text-2xl font-extrabold text-blue-900 mb-4">
       {{ isEditing ? "Edit Product" : "Add Product" }}
     </h2>
+
+    <!-- ✅ Display Error Messages Clearly -->
+    <div
+      *ngIf="errors.length > 0"
+      class="bg-red-100 border-l-4 border-red-600 p-3 mb-4 rounded-lg"
+    >
+      <h4 class="text-red-700 font-semibold">
+        Please fix the following errors:
+      </h4>
+      <ul class="list-disc list-inside text-red-600">
+        <li *ngFor="let error of errors">{{ error }}</li>
+      </ul>
+    </div>
 
     <form
       [formGroup]="productForm"
@@ -22,7 +35,7 @@
         <input
           type="text"
           formControlName="productName"
-          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full"
         />
       </div>
 
@@ -32,7 +45,7 @@
         <input
           type="text"
           formControlName="sku"
-          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full"
         />
       </div>
 
@@ -42,7 +55,7 @@
         <input
           type="text"
           formControlName="category"
-          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full"
         />
       </div>
 
@@ -52,7 +65,7 @@
         <input
           type="number"
           formControlName="price"
-          class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-300"
+          class="border border-gray-300 rounded-lg px-4 py-2 w-full"
         />
       </div>
 
@@ -86,7 +99,7 @@
         <span class="font-semibold text-gray-700">Requires Serial Number</span>
       </div>
 
-      <!-- ✅ Submit Button -->
+      <!-- ✅ Buttons -->
       <div class="flex justify-end space-x-4">
         <button
           (click)="closeModal()"
@@ -95,9 +108,17 @@
         >
           Cancel
         </button>
+
+        <!-- ✅ Disable Button When Form is Invalid -->
         <button
           type="submit"
-          class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          [disabled]="!validateProductForm()"
+          class="px-4 py-2 rounded-lg transition duration-300 font-semibold"
+          [ngClass]="
+            validateProductForm()
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+          "
         >
           {{ isEditing ? "Update Product" : "Add Product" }}
         </button>

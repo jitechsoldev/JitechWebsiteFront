@@ -27,13 +27,52 @@
     </div>
   </div>
 
-  <!-- ✅ Open Modal Button -->
-  <button
-    (click)="openStockMovementModal()"
-    class="bg-blue-600 text-white mt-4 px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 font-semibold"
+  <!-- ✅ Filters and Product Movement Button -->
+  <div
+    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-4 rounded-lg shadow-md mt-6"
   >
-    Product Movement
-  </button>
+    <div class="flex flex-wrap gap-4 w-full sm:w-auto">
+      <!-- 📅 Date Range Filters -->
+      <div class="relative">
+        <input
+          type="date"
+          [(ngModel)]="startDate"
+          (change)="filterStockMovements()"
+          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 border rounded-lg px-3 py-2 w-full sm:w-44"
+        />
+      </div>
+
+      <div class="relative">
+        <input
+          type="date"
+          [(ngModel)]="endDate"
+          (change)="filterStockMovements()"
+          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 border rounded-lg px-3 py-2 w-full sm:w-44"
+        />
+      </div>
+
+      <!-- 📂 Type Filter -->
+      <div class="relative">
+        <select
+          [(ngModel)]="selectedType"
+          (change)="filterStockMovements()"
+          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 pr-8 border rounded-lg px-3 py-2 w-full sm:w-44"
+        >
+          <option value="">Types</option>
+          <option value="INCREASE">Incoming</option>
+          <option value="DECREASE">Outgoing</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ✅ Product Movement Button (Aligned to the Right) -->
+    <button
+      (click)="openStockMovementModal()"
+      class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold"
+    >
+      + Product Movement
+    </button>
+  </div>
 
   <!-- ✅ Recent Stock Movements Table -->
   <div class="mt-4 bg-white shadow-md rounded-lg overflow-hidden">
@@ -43,15 +82,38 @@
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="bg-blue-900 text-white">
-          <th class="px-4 py-3">Product</th>
-          <th class="px-4 py-3">Type</th>
-          <th class="px-4 py-3">Quantity</th>
-          <th class="px-4 py-3">Date</th>
+          <th
+            class="px-4 py-3 cursor-pointer"
+            (click)="setSort('inventoryId.productName')"
+          >
+            Product
+            <span *ngIf="sortColumn === 'inventoryId.productName'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('type')">
+            Type
+            <span *ngIf="sortColumn === 'type'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('quantity')">
+            Quantity
+            <span *ngIf="sortColumn === 'quantity'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('timestamp')">
+            Date
+            <span *ngIf="sortColumn === 'timestamp'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
         <tr
-          *ngFor="let movement of recentMovements"
+          *ngFor="let movement of filteredMovements"
           class="hover:bg-gray-100 transition"
         >
           <td class="px-4 py-3">{{ movement.inventoryId?.productName }}</td>
@@ -75,7 +137,7 @@
     <button
       (click)="prevPage()"
       [disabled]="currentPage === 1"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
     >
       Previous
     </button>
@@ -85,12 +147,18 @@
     <button
       (click)="nextPage()"
       [disabled]="currentPage === totalPages"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
     >
       Next
     </button>
   </div>
 </div>
+
+<!-- ✅ Stock Movement Modal -->
+<app-stock-movement
+  #stockMovementModal
+  (stockUpdated)="reloadInventory()"
+></app-stock-movement>
 
 <!-- ✅ Stock Movement Modal -->
 <app-stock-movement

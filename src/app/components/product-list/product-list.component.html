@@ -1,31 +1,121 @@
 <div class="container mx-auto p-6">
   <h2 class="text-3xl font-extrabold text-blue-900 mb-6">Product List</h2>
 
-  <!-- ✅ Open Modal Button -->
-  <button
-    (click)="openProductFormModal()"
-    class="bg-blue-600 text-white px-4 py-2 rounded-lg mb-3 hover:bg-blue-700 transition duration-300 font-semibold"
+  <!-- ✅ Search, Filters, and Add Product Button in One Line -->
+  <div
+    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-4 rounded-lg shadow-md"
   >
-    Add Product
-  </button>
+    <div class="flex flex-wrap gap-4 w-full sm:w-auto">
+      <!-- 🔍 Search Bar -->
+      <div class="relative">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="filterProducts()"
+          placeholder="Search by name or SKU..."
+          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-10 border rounded-lg px-3 py-2 w-full sm:w-64"
+        />
+        <svg
+          class="w-5 h-5 absolute left-3 top-3 text-gray-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 16l-4-4m0 0l4-4m-4 4h12"
+          ></path>
+        </svg>
+      </div>
 
+      <!-- 📂 Category Filter -->
+      <div class="relative">
+        <select
+          [(ngModel)]="selectedCategory"
+          (change)="filterProducts()"
+          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 pr-8 border rounded-lg px-3 py-2 w-full sm:w-40"
+        >
+          <option value="">Categories</option>
+          <option *ngFor="let cat of uniqueCategories" [value]="cat">
+            {{ cat }}
+          </option>
+        </select>
+      </div>
+
+      <!-- ✅ Status Filter -->
+      <div class="relative">
+        <select
+          [(ngModel)]="selectedStatus"
+          (change)="filterProducts()"
+          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 pr-8 border rounded-lg px-3 py-2 w-full sm:w-40"
+        >
+          <option value="">Status</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ✅ Add Product Button (Aligned to the Right) -->
+    <button
+      (click)="openProductFormModal()"
+      class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold"
+    >
+      + Add Product
+    </button>
+  </div>
+
+  <!-- ✅ Products Table -->
   <div class="overflow-x-auto bg-white shadow-md rounded-lg">
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="bg-blue-900 text-white">
-          <th class="px-4 py-3">Product</th>
-          <th class="px-4 py-3">SKU</th>
-          <th class="px-4 py-3">Category</th>
-          <th class="px-4 py-3">Quantity</th>
-          <th class="px-4 py-3">Price</th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('productName')">
+            Product
+            <span *ngIf="sortColumn === 'productName'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('sku')">
+            SKU
+            <span *ngIf="sortColumn === 'sku'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('category')">
+            Category
+            <span *ngIf="sortColumn === 'category'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('stockLevel')">
+            Quantity
+            <span *ngIf="sortColumn === 'stockLevel'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('price')">
+            Price
+            <span *ngIf="sortColumn === 'price'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
           <th class="px-4 py-3">Serial Numbers</th>
-          <th class="px-4 py-3">Status</th>
+          <th class="px-4 py-3 cursor-pointer" (click)="setSort('active')">
+            Status
+            <span *ngIf="sortColumn === 'active'">{{
+              sortOrder === "asc" ? "🔼" : "🔽"
+            }}</span>
+          </th>
           <th class="px-4 py-3 text-center">Actions</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
         <tr
-          *ngFor="let product of products"
+          *ngFor="let product of filteredProducts"
           class="hover:bg-gray-100 transition"
         >
           <td class="px-4 py-3">{{ product.productName }}</td>
@@ -51,7 +141,6 @@
               <span class="text-gray-500">No Serial Numbers</span>
             </ng-template>
           </td>
-
           <td class="px-4 py-3">
             <span
               [ngClass]="product.active ? 'text-green-600' : 'text-red-600'"
@@ -59,59 +148,23 @@
               {{ product.active ? "Active" : "Inactive" }}
             </span>
           </td>
-          <td
-            class="px-4 py-3 text-center flex justify-center items-center space-x-6"
-          >
-            <!-- Activate/Deactivate Button -->
+          <td class="px-4 py-3 text-center space-x-4">
+            <button
+              (click)="editProduct(product)"
+              class="text-blue-600 hover:underline"
+            >
+              Edit
+            </button>
             <button
               (click)="toggleProductStatus(product)"
-              class="transition duration-300 flex items-center"
-              title="{{ product.active ? 'Deactivate' : 'Activate' }}"
+              class="text-red-600 hover:underline"
             >
-              <img
-                *ngIf="product.active"
-                src="./Hidden.png"
-                class="w-7 h-7 hover:opacity-80 transition"
-              />
-              <img
-                *ngIf="!product.active"
-                src="./Reveal.png"
-                class="w-7 h-7 hover:opacity-80 transition"
-              />
-            </button>
-
-            <!-- Edit Button -->
-            <button (click)="editProduct(product)" title="Edit">
-              <img
-                src="./Edit.png"
-                class="w-5 h-5 hover:opacity-80 transition"
-              />
+              {{ product.active ? "Deactivate" : "Activate" }}
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <!-- ✅ Pagination Controls -->
-  <div class="flex justify-between items-center mt-4">
-    <button
-      (click)="prevPage()"
-      [disabled]="currentPage === 1"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
-    >
-      Previous
-    </button>
-    <span class="text-gray-600"
-      >Page {{ currentPage }} of {{ totalPages }}</span
-    >
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
-    >
-      Next
-    </button>
   </div>
 </div>
 

@@ -33,4 +33,8 @@ export class ProductService {
   updateInventoryAfterProductUpdate(productId: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/update-inventory/${productId}`, {});
   }
+
+  checkSkuExists(sku: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/check-sku/${sku}`);
+  }
 }

@@ -16,8 +16,13 @@ export class StockMovementService {
   }
 
   // Get stock movements for a specific inventory item
-  getStockMovements(page: number = 1, limit: number = 10): Observable<any> {
-    let url = `${this.apiUrl}?page=${page}&limit=${limit}`;
-    return this.http.get(url);
+  getStockMovements(filters: {
+    startDate?: string;
+    endDate?: string;
+    type?: string;
+    page: number;
+    limit: number;
+  }): Observable<any> {
+    return this.http.get(`${this.apiUrl}`, { params: filters });
   }
 }
