@@ -49,7 +49,11 @@
           <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Warranty</th>
           <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Term Payable</th>
           <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Mode of Payment</th>
-          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase"
+            (click)="sortTable('status')">
+              Status
+            <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
           <th class="px-4 py-3 border-b bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase">Action</th>
         </tr>
       </thead>
@@ -79,8 +83,10 @@
             </span>
           </td>
           <td class="px-4 py-3 border-b bg-white text-sm text-center">
-            <button (click)="editSale(sale)" class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
-              Edit
+            <button
+              (click)="editSale(sale)"
+              class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
+                Edit
             </button>
           </td>
         </tr>

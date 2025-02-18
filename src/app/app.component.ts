@@ -42,6 +42,7 @@ export class AppComponent {
     {
       name: 'Job Orders',
       icon: './JobOrderWhite.png',
+      expanded: false,
       routes: '/job-order',
     },
     {
