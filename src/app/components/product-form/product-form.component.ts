@@ -68,49 +68,37 @@ export class ProductFormComponent implements OnInit {
     return this.errors.length === 0;
   }
 
-  loadProduct(id: string) {
-    this.productService.getProductById(id).subscribe(
-      (product) => {
-        if (product) {
-          this.productForm.patchValue(product);
-        } else {
-          this.router.navigate(['/products-list']);
-        }
-      },
-      (error) => {
-        console.error('❌ Error fetching product:', error);
-        this.router.navigate(['/products-list']);
-      }
-    );
+  loadProduct(product: any) {
+    this.isEditing = true;
+    this.productId = product._id;
+    this.productForm.patchValue(product);
   }
 
   saveProduct() {
-    if (!this.validateProductForm()) {
-      return; // Stop if form is invalid
-    }
+    if (this.productForm.invalid) return;
 
     if (this.isEditing) {
       this.productService
         .updateProduct(this.productId!, this.productForm.value)
         .subscribe(
-          () => {
+          (response) => {
+            console.log('✅ Product updated successfully!', response);
             this.productUpdated.emit();
             this.closeModal();
           },
           (error) => {
-            this.errors.push(
-              `❌ Error updating product: ${error.error.message}`
-            );
+            console.error('❌ Error updating product:', error);
           }
         );
     } else {
       this.productService.addProduct(this.productForm.value).subscribe(
-        () => {
+        (response) => {
+          console.log('✅ Product added successfully!', response);
           this.productUpdated.emit();
           this.closeModal();
         },
         (error) => {
-          this.errors.push(`❌ Error adding product: ${error.error.message}`);
+          console.error('❌ Error adding product:', error);
         }
       );
     }
@@ -133,6 +121,9 @@ export class ProductFormComponent implements OnInit {
   }
 
   closeModal() {
+    this.isEditing = false;
+    this.productId = null;
+    this.productForm.reset({ active: true, requiresSerialNumber: false });
     this.isModalOpen = false;
     this.errors = [];
   }

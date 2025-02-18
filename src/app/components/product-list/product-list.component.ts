@@ -41,15 +41,15 @@ export class ProductListComponent implements OnInit {
 
   openProductFormModal() {
     if (this.productFormModal) {
-      this.selectedProduct = null;
+      this.selectedProduct = null; // Reset selected product when adding a new one
       this.productFormModal.showModal();
     }
   }
 
   editProduct(product: any) {
     if (this.productFormModal) {
-      this.selectedProduct = product;
-      this.productFormModal.loadProduct(product);
+      this.selectedProduct = product; // Set the selected product
+      this.productFormModal.loadProduct(product); // Load product data into the form
       this.productFormModal.showModal();
     }
   }

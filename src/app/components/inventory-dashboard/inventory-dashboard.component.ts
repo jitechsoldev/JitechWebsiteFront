@@ -33,6 +33,7 @@ export class InventoryDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadStockMovements();
     this.filterStockMovements();
     this.getTotalStock();
     this.getRecentStockMovements();
