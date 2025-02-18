@@ -135,11 +135,28 @@
       <form (ngSubmit)="onSubmit()" [formGroup]="jobOrderForm" class="space-y-3">
         <!-- Sale ID -->
         <div>
-          <label for="saleID" class="block text-gray-700 text-sm">Sale</label>
-          <select id="saleID" formControlName="saleID" class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
-            <option value="">Select Sale</option>
-            <option *ngFor="let sale of sales" [value]="sale._id">{{ sale.clientName }} ({{ sale.saleID }})</option>
-          </select>
+          <label for="saleSearch" class="block text-gray-700 text-sm">Sale</label>
+          <input
+            id="saleSearch"
+            type="text"
+            [(ngModel)]="saleSearchQuery"
+            [ngModelOptions]="{standalone: true}"
+            (input)="filterSales()"
+            (keydown)="onSaleSearchKeyDown($event)"
+            [disabled]="isEditMode"
+            placeholder="Search Sales by Client Name or Sale ID"
+            class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+          />
+          <!-- Dropdown list of filtered sales -->
+          <div *ngIf="showSalesDropdown && filteredSales.length > 0" class="border border-gray-300 bg-white mt-1 max-h-40 overflow-y-auto shadow-md">
+            <div
+              *ngFor="let sale of filteredSales; let i = index"
+              (click)="selectSale(sale)"
+              [class.bg-gray-200]="i === selectedSaleIndex"
+              class="cursor-pointer hover:bg-gray-100 px-2 py-1">
+              {{ sale.clientName }} ({{ sale.saleID }})
+            </div>
+          </div>
         </div>
 
         <!-- Address -->

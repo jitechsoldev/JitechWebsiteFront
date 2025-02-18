@@ -27,6 +27,12 @@ export class JobOrderComponent implements OnInit {
   totalPages = 1;
   pages: number[] = [];
 
+  // Add these properties at the top of your component class
+  saleSearchQuery: string = '';
+  filteredSales: any[] = [];
+  showSalesDropdown: boolean = false;
+  selectedSaleIndex: number = -1;
+
   sortColumn = 'installationDate'; // Default sorting column
   sortDirection: 'asc' | 'desc' = 'desc'; // Default sorting direction
 
@@ -80,16 +86,67 @@ export class JobOrderComponent implements OnInit {
     return this.jobOrderForm.get('status');
   }
 
-  // Load Sales Data
+  // Modify your loadSales() method to initialize the filtered list
   loadSales(): void {
     this.saleService.getSales().subscribe({
       next: (res) => {
         this.sales = res.data || [];
+        // Initialize filteredSales with all sales
+        this.filteredSales = this.sales;
       },
       error: (err) => {
         console.error('Error fetching sales:', err);
       }
     });
+  }
+
+  // Call this on every keypress to filter sales based on the search query
+  filterSales(): void {
+    this.showSalesDropdown = true;
+    const query = this.saleSearchQuery.trim().toLowerCase();
+    if (query === '') {
+      this.filteredSales = this.sales;
+    } else {
+      this.filteredSales = this.sales.filter(sale =>
+        sale.clientName.toLowerCase().includes(query) ||
+        sale.saleID.toLowerCase().includes(query)
+      );
+    }
+    // Reset the selected index whenever the filtered list changes.
+    this.selectedSaleIndex = -1;
+  }
+
+  // Handle key events for arrow keys and enter.
+  onSaleSearchKeyDown(event: KeyboardEvent): void {
+    if (!this.showSalesDropdown || !this.filteredSales.length) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      // Prevent the cursor from moving in the input field.
+      event.preventDefault();
+      // Move the highlight down. Loop to start if at end.
+      this.selectedSaleIndex = (this.selectedSaleIndex + 1) % this.filteredSales.length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      // Move the highlight up. Loop to bottom if at beginning.
+      this.selectedSaleIndex =
+        (this.selectedSaleIndex - 1 + this.filteredSales.length) % this.filteredSales.length;
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      // If an item is highlighted, select it.
+      if (this.selectedSaleIndex >= 0 && this.selectedSaleIndex < this.filteredSales.length) {
+        this.selectSale(this.filteredSales[this.selectedSaleIndex]);
+      }
+    }
+  }
+
+  // When a sale is selected, patch the form and hide the dropdown.
+  selectSale(sale: any): void {
+    this.jobOrderForm.patchValue({ saleID: sale._id });
+    this.saleSearchQuery = `${sale.clientName} (${sale.saleID})`;
+    this.showSalesDropdown = false;
+    this.selectedSaleIndex = -1;
   }
 
   // Load Job Orders
