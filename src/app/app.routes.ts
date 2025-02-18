@@ -7,6 +7,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductFormComponent } from './components/product-form/product-form.component';
 import { SaleComponent } from './components/sale/sale.component';
 import { JobOrderComponent } from './components/job-order/job-order.component';
+import { ScheduleComponent } from './components/schedule/schedule.component';
 
 export const routes: Routes = [
   {
@@ -44,6 +45,10 @@ export const routes: Routes = [
   {
     path: 'job-order',
     component: JobOrderComponent,
+  },
+  {
+    path: 'schedule',
+    component: ScheduleComponent,
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

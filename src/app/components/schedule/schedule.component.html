@@ -1,0 +1,54 @@
+<div class="p-4">
+  <!-- Calendar Header -->
+  <div class="flex justify-between items-center mb-6">
+    <button (click)="prevMonth()" class="px-4 py-2 bg-blue-200 rounded hover:bg-blue-300 text-blue-800">
+      Prev
+    </button>
+    <h2 class="text-2xl font-bold text-blue-900">
+      {{ currentMonthName }} {{ currentYear }}
+    </h2>
+    <button (click)="nextMonth()" class="px-4 py-2 bg-blue-200 rounded hover:bg-blue-300 text-blue-800">
+      Next
+    </button>
+  </div>
+
+  <!-- Weekday Columns -->
+  <div class="grid grid-cols-7 gap-4">
+    <!-- Loop over weekdays (0:Sun, 1:Mon, ..., 6:Sat) -->
+    <div *ngFor="let dayName of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; let i = index" class="flex flex-col">
+      <!-- Weekday header -->
+      <div class="text-center font-semibold text-blue-700 mb-2 border-b border-blue-300 pb-1">
+        {{ dayName }}
+      </div>
+
+      <!-- Stacked job orders for the weekday -->
+      <div class="flex flex-col space-y-2">
+        <div *ngFor="let order of getJobOrdersForWeekday(i)" class="bg-blue-50 shadow rounded-lg p-3">
+          <div class="font-bold text-lg text-blue-800">{{ order.clientName }}</div>
+          <div class="text-sm text-blue-700">
+            <div>
+              <span class="font-semibold"></span> {{ order.jobOrderID }}
+            </div>
+            <div>
+              <span class="font-semibold"></span> {{ order.address }}
+            </div>
+            <div>
+              <span class="font-semibold"></span> {{ order.contactInfo }}
+            </div>
+            <div>
+              <span class="font-semibold"></span> {{ order.description }}
+            </div>
+            <div>
+              <span class="font-semibold"></span> {{ order.installationDate | date:'shortDate' }}
+            </div>
+            <div>
+              <span [ngClass]="getBadgeClasses(order.status)">
+                {{ order.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

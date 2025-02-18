@@ -16,7 +16,11 @@ export class AppComponent {
   title: any;
 
   menuItems = [
-    { name: 'Home', icon: './HomeWhite.png', routes: '/home' },
+    { name: 'Schedule',
+      icon: './HomeWhite.png',
+      expanded:false,
+      routes: '/schedule'
+    },
     {
       name: 'Products',
       icon: './ProductsWhite.png',
