@@ -1,0 +1,206 @@
+<div class="container mx-auto p-4">
+  <!-- Header & Actions -->
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+    <h2 class="text-3xl font-bold mb-2 sm:mb-0">Job Orders</h2>
+
+    <!-- Search Input -->
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="searchUpdated.next(searchQuery)"
+      placeholder="Search Job Order ID or Client"
+      class="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 w-64"
+    />
+
+    <!-- Add Job Order Button -->
+    <button
+      (click)="openModal()"
+      class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      Add New Job Order
+    </button>
+  </div>
+
+  <!-- Job Orders Table -->
+  <div class="bg-white shadow-md rounded overflow-x-auto mb-6">
+    <table class="min-w-full leading-normal">
+      <thead>
+        <tr>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer select-none"
+              (click)="sortTable('jobOrderID')">
+            Job Order ID
+            <span *ngIf="sortColumn === 'jobOrderID'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer select-none"
+              (click)="sortTable('clientName')">
+            Client
+            <span *ngIf="sortColumn === 'clientName'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">
+            Address
+          </th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">
+            Description
+          </th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer select-none"
+              (click)="sortTable('installationDate')">
+            Installation Date
+            <span *ngIf="sortColumn === 'installationDate'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase"
+            (click)="sortTable('status')">
+            Status
+            <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+          </th>
+          <th class="px-4 py-3 border-b bg-gray-100 text-center text-xs font-semibold text-gray-700 uppercase">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let jobOrder of jobOrders" class="hover:bg-gray-50 transition-colors duration-200">
+          <td class="px-4 py-3 border-b bg-white text-sm font-black">{{ jobOrder.jobOrderID }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ jobOrder.clientName }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ jobOrder.address }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ jobOrder.description }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">{{ jobOrder.installationDate | date:'mediumDate' }}</td>
+          <td class="px-4 py-3 border-b bg-white text-sm">
+            <span [ngClass]="getBadgeClasses(jobOrder.status)">
+              {{ jobOrder.status }}
+            </span>
+          </td>
+          <td class="px-4 py-3 border-b bg-white text-sm text-center">
+            <button
+              (click)="editJobOrder(jobOrder)"
+              class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
+              Edit
+            </button>
+            <button
+              (click)="deleteJobOrder(jobOrder._id)"
+              class="bg-red-500 hover:bg-red-600 text-white font-light py-1 px-3 rounded transition duration-200 ml-2">
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="jobOrders.length === 0" class="p-4 text-center text-gray-500">
+      No job orders found.
+    </div>
+  </div>
+
+  <!-- Tailwind Paginator -->
+  <div class="flex justify-center items-center space-x-2 mt-4">
+    <button
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+      Previous
+    </button>
+
+    <ng-container *ngFor="let page of pages">
+      <button
+        (click)="goToPage(page)"
+        [ngClass]="{
+          'bg-blue-500 text-white': page === currentPage,
+          'bg-gray-200 text-gray-700 hover:bg-gray-300': page !== currentPage
+        }"
+        class="px-4 py-2 rounded transition">
+        {{ page }}
+      </button>
+    </ng-container>
+
+    <button
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+      Next
+    </button>
+  </div>
+
+  <!-- Job Order Modal -->
+  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto">
+    <!-- Modal Backdrop -->
+    <div class="absolute inset-0 bg-black opacity-50"></div>
+    <!-- Modal Content -->
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 p-4 max-h-full">
+      <div class="flex justify-between items-center mb-3 border-b pb-2">
+        <h3 class="text-xl font-semibold text-gray-800">
+          {{ isEditMode ? 'Edit Job Order' : 'Add New Job Order' }}
+        </h3>
+        <button (click)="closeModal()" class="text-gray-600 hover:text-gray-800 text-2xl leading-none">&times;</button>
+      </div>
+
+      <!-- Job Order Form -->
+      <form (ngSubmit)="onSubmit()" [formGroup]="jobOrderForm" class="space-y-3">
+        <!-- Sale ID -->
+        <div>
+          <label for="saleSearch" class="block text-gray-700 text-sm">Sale</label>
+          <input
+            id="saleSearch"
+            type="text"
+            [(ngModel)]="saleSearchQuery"
+            [ngModelOptions]="{standalone: true}"
+            (input)="filterSales()"
+            (keydown)="onSaleSearchKeyDown($event)"
+            [disabled]="isEditMode"
+            placeholder="Search Sales by Client Name or Sale ID"
+            class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+          />
+          <!-- Dropdown list of filtered sales -->
+          <div *ngIf="showSalesDropdown && filteredSales.length > 0" class="border border-gray-300 bg-white mt-1 max-h-40 overflow-y-auto shadow-md">
+            <div
+              *ngFor="let sale of filteredSales; let i = index"
+              (click)="selectSale(sale)"
+              [class.bg-gray-200]="i === selectedSaleIndex"
+              class="cursor-pointer hover:bg-gray-100 px-2 py-1">
+              {{ sale.clientName }} ({{ sale.saleID }})
+            </div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label for="address" class="block text-gray-700 text-sm">Address</label>
+          <input id="address" formControlName="address" type="text" class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <label for="contactInfo" class="block text-gray-700 text-sm">Contact Info</label>
+          <input id="contactInfo" formControlName="contactInfo" type="text" class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="description" class="block text-gray-700 text-sm">Description</label>
+          <textarea id="description" formControlName="description" class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200"></textarea>
+        </div>
+
+        <!-- Installation Date -->
+        <div>
+          <label for="installationDate" class="block text-gray-700 text-sm">Installation Date</label>
+          <input id="installationDate" formControlName="installationDate" type="date" class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label for="status" class="block text-gray-700 text-sm">Status</label>
+          <select id="status" formControlName="status" class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+            <option value="">Select Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button type="submit" [disabled]="jobOrderForm.invalid" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-green-200">
+            {{ isEditMode ? 'Update Job Order' : 'Submit Job Order' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

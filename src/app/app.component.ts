@@ -16,7 +16,11 @@ export class AppComponent {
   title: any;
 
   menuItems = [
-    { name: 'Home', icon: './HomeWhite.png', routes: '/home' },
+    { name: 'Schedule',
+      icon: './HomeWhite.png',
+      expanded:false,
+      routes: '/schedule'
+    },
     {
       name: 'Products',
       icon: './ProductsWhite.png',
@@ -29,10 +33,14 @@ export class AppComponent {
       expanded: false,
       children: [{ name: 'Dashboard', routes: '/inventory-dashboard' }],
     },
-    { name: 'Sales', icon: './SalesWhite.png', routes: '/sales' },
+    { name: 'Sales',
+      icon: './SalesWhite.png',
+      expanded: false,
+      routes: '/sale' },
     {
       name: 'Job Orders',
       icon: './JobOrderWhite.png',
+      expanded: false,
       routes: '/job-order',
     },
     {
