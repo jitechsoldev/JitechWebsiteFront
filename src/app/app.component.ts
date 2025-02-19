@@ -17,24 +17,14 @@ export class AppComponent {
 
   menuItems = [
     { name: 'Home', icon: './HomeWhite.png', routes: '/home' },
-    {
-      name: 'Products',
-      icon: './ProductsWhite.png',
-      expanded: false,
-      children: [{ name: 'Product List', routes: '/products-list' }],
-    },
+    { name: 'Products', icon: './ProductsWhite.png', routes: '/products-list' },
     {
       name: 'Inventory',
       icon: './InventoryWhite.png',
-      expanded: false,
-      children: [{ name: 'Dashboard', routes: '/inventory-dashboard' }],
+      routes: '/inventory-dashboard',
     },
     { name: 'Sales', icon: './SalesWhite.png', routes: '/sales' },
-    {
-      name: 'Job Orders',
-      icon: './JobOrderWhite.png',
-      routes: '/job-order',
-    },
+    { name: 'Job Orders', icon: './JobOrderWhite.png', routes: '/job-order' },
     {
       name: 'Quotations',
       icon: './QuotationsWhite.png',
@@ -51,11 +41,5 @@ export class AppComponent {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  toggleDropdown(menuItem: any) {
-    if (menuItem.children) {
-      menuItem.expanded = !menuItem.expanded;
-    }
   }
 }

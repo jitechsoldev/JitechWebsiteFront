@@ -21,99 +21,124 @@
     </div>
 
     <!-- ✅ Stock Movement Form -->
-    <div class="mt-4">
-      <label class="block mb-2 font-semibold">Product:</label>
-      <select
-        [(ngModel)]="selectedInventoryId"
-        (change)="fetchAvailableSerialNumbers()"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2"
-      >
-        <option *ngFor="let item of inventory" [value]="item._id">
-          {{ item.productId.productName }} ({{ item.stockLevel }} in stock)
-        </option>
-      </select>
-    </div>
+    <form [formGroup]="stockMovementForm" (ngSubmit)="updateStock()">
+      <!-- ✅ Product Selection -->
+      <div class="mt-4">
+        <label class="block mb-2 font-semibold">Product:</label>
+        <select
+          formControlName="inventoryId"
+          (change)="fetchAvailableSerialNumbers()"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+        >
+          <option *ngFor="let item of inventory" [value]="item._id">
+            {{ item.productId.productName }} ({{ item.stockLevel }} in stock)
+          </option>
+        </select>
+      </div>
 
-    <div class="mt-4">
-      <label class="block mb-2 font-semibold">Change Type:</label>
-      <select
-        [(ngModel)]="type"
-        (change)="generateSerialFields(); fetchAvailableSerialNumbers()"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2"
-      >
-        <option value="INCREASE">Incoming</option>
-        <option value="DECREASE">Outgoing</option>
-      </select>
-    </div>
+      <!-- ✅ Change Type Selection -->
+      <div class="mt-4">
+        <label class="block mb-2 font-semibold">Change Type:</label>
+        <select
+          formControlName="type"
+          (change)="generateSerialFields(); fetchAvailableSerialNumbers()"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+        >
+          <option value="INCREASE">Incoming</option>
+          <option value="DECREASE">Outgoing</option>
+        </select>
+      </div>
 
-    <div class="mt-4">
-      <label class="block mb-2 font-semibold">Stock Quantity:</label>
-      <input
-        type="number"
-        [(ngModel)]="quantity"
-        (input)="generateSerialFields(); fetchAvailableSerialNumbers()"
-        class="w-full border border-gray-300 rounded-lg px-4 py-2"
-      />
-    </div>
-
-    <!-- ✅ Serial Numbers Input for INCREASE -->
-    <div *ngIf="type === 'INCREASE' && quantity > 0" class="mt-4">
-      <h4 class="font-semibold">Enter Serial Numbers:</h4>
-      <div *ngFor="let sn of serialNumbers; let i = index">
+      <!-- ✅ Stock Quantity Input -->
+      <div class="mt-4">
+        <label class="block mb-2 font-semibold">Stock Quantity:</label>
         <input
-          [value]="sn.value"
-          (input)="updateSerialNumber(i, $event)"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2 my-1"
-          placeholder="Serial Number {{ i + 1 }}"
+          type="number"
+          formControlName="quantity"
+          (input)="generateSerialFields(); fetchAvailableSerialNumbers()"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2"
         />
       </div>
-    </div>
 
-    <!-- ✅ Serial Numbers Selection for DECREASE -->
-    <div
-      *ngIf="type === 'DECREASE' && availableSerialNumbers.length > 0"
-      class="mt-4"
-    >
-      <h4 class="font-semibold">Select Serial Numbers to Remove:</h4>
+      <!-- ✅ Serial Numbers Input for INCREASE -->
       <div
-        class="max-h-40 overflow-y-auto border border-gray-300 p-2 rounded-lg"
+        *ngIf="
+          stockMovementForm.value.type === 'INCREASE' &&
+          stockMovementForm.value.quantity > 0
+        "
+        class="mt-4"
       >
-        <div *ngFor="let serial of availableSerialNumbers">
-          <label class="flex items-center">
+        <h4 class="font-semibold">Enter Serial Numbers:</h4>
+
+        <!-- ✅ FormArray Wrapper -->
+        <div formArrayName="serialNumbers">
+          <div
+            *ngFor="let sn of serialNumbersArray.controls; let i = index"
+            class="mb-2"
+          >
             <input
-              type="checkbox"
-              [checked]="selectedSerialNumbers.includes(serial)"
-              (change)="toggleSerialSelection(serial)"
-              class="mr-2"
+              [formControlName]="i"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2"
+              placeholder="Serial Number {{ i + 1 }}"
+              (input)="updateFormValidation()"
             />
-            {{ serial }}
-          </label>
+            <p *ngIf="sn.invalid && sn.touched" class="text-red-600 text-sm">
+              ⚠️ Please enter a serial number.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ✅ Buttons -->
-    <div class="mt-6 flex justify-end space-x-4">
-      <button
-        (click)="closeModal()"
-        class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-      >
-        Cancel
-      </button>
-
-      <!-- ✅ Disable Update Stock Button When Errors Exist -->
-      <button
-        (click)="updateStock(); closeModal()"
-        [disabled]="!isFormValid()"
-        class="px-4 py-2 rounded-lg transition duration-300 font-semibold"
-        [ngClass]="
-          isFormValid()
-            ? 'bg-green-600 text-white hover:bg-green-700'
-            : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+      <!-- ✅ Serial Numbers Selection for DECREASE -->
+      <div
+        *ngIf="
+          stockMovementForm.value.type === 'DECREASE' &&
+          availableSerialNumbers.length > 0
         "
+        class="mt-4"
       >
-        Update Stock
-      </button>
-    </div>
+        <h4 class="font-semibold">Select Serial Numbers to Remove:</h4>
+        <div
+          class="max-h-40 overflow-y-auto border border-gray-300 p-2 rounded-lg"
+        >
+          <div *ngFor="let serial of availableSerialNumbers">
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                [checked]="selectedSerialNumbers.includes(serial)"
+                (change)="toggleSerialSelection(serial)"
+                class="mr-2"
+              />
+              {{ serial }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ Buttons -->
+      <div class="mt-6 flex justify-end space-x-4">
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+        >
+          Cancel
+        </button>
+
+        <!-- ✅ Disable Update Stock Button When Errors Exist -->
+        <button
+          type="submit"
+          [disabled]="!isFormValid() || stockMovementForm.invalid"
+          class="px-4 py-2 rounded-lg transition duration-300 font-semibold"
+          [ngClass]="
+            isFormValid() && stockMovementForm.valid
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+          "
+        >
+          Update Stock
+        </button>
+      </div>
+    </form>
   </div>
 </div>

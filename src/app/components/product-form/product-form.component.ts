@@ -28,14 +28,17 @@ export class ProductFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    this.productForm = this.fb.group({
-      productName: ['', Validators.required],
-      sku: ['', Validators.required],
-      category: ['', Validators.required],
-      price: [0, [Validators.required, Validators.min(0)]],
-      active: [true],
-      requiresSerialNumber: [false],
-    });
+    this.productForm = this.fb.group(
+      {
+        productName: ['', Validators.required],
+        sku: ['', Validators.required],
+        category: ['', Validators.required],
+        price: [0, [Validators.required, Validators.min(0)]],
+        active: [true],
+        requiresSerialNumber: [false],
+      },
+      { updateOn: 'blur' }
+    );
   }
 
   ngOnInit() {

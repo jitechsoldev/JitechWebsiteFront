@@ -61,54 +61,15 @@
       <ul>
         <li
           *ngFor="let item of menuItems"
-          class="py-3 px-6 cursor-pointer rounded-lg transition-all duration-300 flex flex-col whitespace-nowrap"
+          class="py-3 px-6 cursor-pointer rounded-lg transition-all duration-300 flex items-center whitespace-nowrap"
+          [routerLink]="item.routes"
+          routerLinkActive="bg-blue-600"
         >
-          <div
-            class="flex items-center w-full justify-between"
-            (click)="toggleDropdown(item)"
-            [routerLink]="item.routes ? item.routes : null"
-            routerLinkActive="bg-blue-600"
-          >
-            <div class="flex items-center">
-              <img [src]="item.icon" class="w-5 h-5 mr-2" />
-              <span *ngIf="isSidebarOpen">{{ item.name }}</span>
-            </div>
-            <span
-              *ngIf="item.children && isSidebarOpen"
-              class="transform transition-transform duration-300 text-xl"
-              [ngClass]="{ 'rotate-180': item.expanded }"
-              >&#9662;</span
-            >
-          </div>
-          <ul
-            *ngIf="item.expanded && isSidebarOpen"
-            class="mt-2 ml-2 w-full transition-all duration-300 ease-in-out overflow-hidden transform scale-y-0 opacity-0"
-            [ngClass]="{ 'scale-y-100 opacity-100': item.expanded }"
-            style="transform-origin: top"
-          >
-            <li
-              *ngFor="let subItem of item.children"
-              class="py-2 px-4 cursor-pointer hover:bg-blue-900 rounded-lg transition-all duration-300"
-              [routerLink]="subItem.routes"
-            >
-              {{ subItem.name }}
-            </li>
-          </ul>
+          <img [src]="item.icon" class="w-5 h-5 mr-2" />
+          <span *ngIf="isSidebarOpen">{{ item.name }}</span>
         </li>
       </ul>
     </nav>
-
-    <!-- Logout Button in Sidebar -->
-    <div class="p-4 mt-auto">
-      <ul>
-        <li
-          class="py-3 px-6 hover:bg-red-700 cursor-pointer rounded-lg transition-all duration-300 flex items-center"
-        >
-          <img src="./LogoutWhite.svg" class="w-5 h-5 mr-2" />
-          <span *ngIf="isSidebarOpen">Olok</span>
-        </li>
-      </ul>
-    </div>
   </aside>
 
   <!-- Main Content (Pushes when sidebar opens) -->
