@@ -27,19 +27,19 @@
           <div class="font-bold text-lg text-blue-800 text-center">{{ order.clientName }}</div>
           <div class="text-sm text-blue-700 text-center">
             <div>
-              <span class="font-semibold"></span> {{ order.jobOrderID }}
+              <span class="font-semibold">[{{ order.jobOrderID }}]</span>
             </div>
             <div>
-              <span class="font-semibold"></span> {{ order.address }}
+              <span class="font-normal">{{ order.address }}</span>
             </div>
             <div>
-              <span class="font-semibold"></span> {{ order.contactInfo }}
+              <span class="font-semibold">#{{ order.contactInfo }}</span>
             </div>
             <div>
-              <span class="font-semibold"></span> {{ order.description }}
+              <span class="font-light italic">"{{ order.description }}"</span>
             </div>
             <div>
-              <span class="font-semibold"></span> {{ order.installationDate | date:'shortDate' }}
+              <span class="font-semibold">{{ order.installationDate | date:'shortDate' }}</span>
             </div>
             <div>
               <span [ngClass]="getBadgeClasses(order.status)">
