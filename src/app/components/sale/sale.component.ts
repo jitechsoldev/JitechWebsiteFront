@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
 
+// Import XLSX and file-saver libraries
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-sale',
@@ -248,5 +251,36 @@ export class SaleComponent implements OnInit {
         }
       });
     }
+  }
+
+  // ----- Export to Excel Feature for Sales -----
+  exportToExcel(): void {
+    // Map sales to include custom columns (customized Sale ID and other details)
+    const exportData = this.sales.map(sale => ({
+      'Sale ID': sale.saleID,
+      'Client Name': sale.clientName,
+      'Products': sale.saleItems.map((item: any) =>
+        `${item.product?.productName || 'N/A'} (Qty: ${item.quantity})`
+      ).join('; '),
+      'Overall Total': sale.overallTotalAmount,
+      'Date of Purchase': new Date(sale.dateOfPurchase).toLocaleDateString(),
+      'Warranty': sale.warranty,
+      'Term Payable': sale.termPayable,
+      'Mode of Payment': sale.modeOfPayment,
+      'Status': sale.status
+    }));
+
+    // Create worksheet and workbook from the transformed data
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'Sales': worksheet }, SheetNames: ['Sales'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, 'Sales Report');
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const EXCEL_EXTENSION = '.xlsx';
+    const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
+    saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   }
 }

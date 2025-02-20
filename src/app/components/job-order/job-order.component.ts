@@ -5,6 +5,10 @@ import { SaleService } from '../../services/sale.service'; // Assuming you use t
 import { debounceTime, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
+// Import XLSX and file-saver libraries
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 @Component({
   selector: 'app-job-order',
   imports: [ReactiveFormsModule, FormsModule, CommonModule],
@@ -287,5 +291,33 @@ export class JobOrderComponent implements OnInit {
       return 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
     }
     return 'bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs'; // Default for unknown status
+  }
+
+  // ----- Export to Excel Feature -----
+
+  exportToExcel(): void {
+    // Map jobOrders to include custom columns (customized Job Order ID and Sale ID)
+    const exportData = this.jobOrders.map(order => ({
+      'Job Order ID': order.jobOrderID,  // Customize as needed (for example, prepend a prefix)
+      'Client': order.clientName,
+      'Address': order.address,
+      'Contact Info': order.contactInfo,
+      'Description': order.description,
+      'Installation Date': new Date(order.installationDate).toLocaleDateString(), // You can also format the date here if needed
+      'Status': order.status
+    }));
+
+    // Create worksheet and workbook from the transformed data
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = { Sheets: { 'JobOrders': worksheet }, SheetNames: ['JobOrders'] };
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, 'Job Orders Report');
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string): void {
+    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const EXCEL_EXTENSION = '.xlsx';
+    const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
+    saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
   }
 }
