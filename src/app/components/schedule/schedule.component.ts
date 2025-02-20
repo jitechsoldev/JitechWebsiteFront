@@ -46,7 +46,8 @@ export class ScheduleComponent implements OnInit {
       const d = new Date(order.installationDate);
       return d.getFullYear() === this.currentYear &&
              d.getMonth() === this.currentMonth &&
-             d.getDay() === weekday;
+             d.getDay() === weekday &&
+             order.status.toLowerCase() === 'pending';
     });
   }
 

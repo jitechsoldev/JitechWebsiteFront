@@ -82,11 +82,13 @@
             </span>
           </td>
           <td class="px-4 py-3 border-b border-gray-200 bg-white text-sm text-center">
-            <button
-              (click)="editJobOrder(jobOrder)"
-              class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
-              Edit
-            </button>
+            <ng-container *ngIf="!(jobOrder.status === 'Completed' || jobOrder.status === 'Cancelled')">
+              <button
+                (click)="editJobOrder(jobOrder)"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
+                Edit
+              </button>
+            </ng-container>
             <button
               (click)="deleteJobOrder(jobOrder._id)"
               class="bg-red-500 hover:bg-red-600 text-white font-light py-1 px-3 rounded transition duration-200 ml-2">

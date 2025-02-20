@@ -33,7 +33,7 @@ export class JobOrderComponent implements OnInit {
   showSalesDropdown: boolean = false;
   selectedSaleIndex: number = -1;
 
-  sortColumn = 'installationDate'; // Default sorting column
+  sortColumn = 'jobOrderID'; // Default sorting column
   sortDirection: 'asc' | 'desc' = 'desc'; // Default sorting direction
 
   constructor(

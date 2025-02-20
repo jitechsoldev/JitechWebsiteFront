@@ -30,7 +30,7 @@ export class SaleComponent implements OnInit {
   searchUpdated = new Subject<string>();
 
   // Sorting & Pagination
-  sortColumn = 'dateOfPurchase';
+  sortColumn = 'saleID';
   sortDirection: 'asc' | 'desc' = 'desc';
   currentPage = 1;
   totalPages = 1;
