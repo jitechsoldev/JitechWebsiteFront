@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { JobOrderService } from '../../services/job-order.service'; // Assuming you have this service
-import { SaleService } from '../../services/sale.service'; // Assuming you use this service to get sale details
+import { JobOrderService } from '../../services/job-order.service';
+import { SaleService } from '../../services/sale.service';
 import { debounceTime, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
-
-// Import XLSX and file-saver libraries
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -13,13 +11,12 @@ import { saveAs } from 'file-saver';
   selector: 'app-job-order',
   imports: [ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './job-order.component.html',
-  styleUrl: './job-order.component.css'
+  styleUrls: ['./job-order.component.css']
 })
-
 export class JobOrderComponent implements OnInit {
   jobOrderForm: FormGroup;
-  sales: any[] = []; // Store sales info
-  jobOrders: any[] = []; // Store fetched job orders
+  sales: any[] = [];
+  jobOrders: any[] = [];
   isModalOpen = false;
   isEditMode = false;
   editingJobOrderId: string | null = null;
@@ -31,25 +28,34 @@ export class JobOrderComponent implements OnInit {
   totalPages = 1;
   pages: number[] = [];
 
-  // Add these properties at the top of your component class
   saleSearchQuery: string = '';
   filteredSales: any[] = [];
   showSalesDropdown: boolean = false;
   selectedSaleIndex: number = -1;
 
-  sortColumn = 'jobOrderID'; // Default sorting column
-  sortDirection: 'asc' | 'desc' = 'desc'; // Default sorting direction
+  sortColumn = 'jobOrderID';
+  sortDirection: 'asc' | 'desc' = 'desc';
+
+  // New properties for confirmation modals:
+  showDeleteModal: boolean = false;
+  jobOrderIdToDelete: string | null = null;
+  showSubmitModal: boolean = false;
+
+  // Custom validation error modal already exists:
+  validationError: string = '';
+  showValidationModal: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private jobOrderService: JobOrderService,
     private saleService: SaleService
   ) {
+    // Updated validators for stricter checks
     this.jobOrderForm = this.fb.group({
       saleID: ['', Validators.required],
-      address: ['', Validators.required],
-      contactInfo: ['', Validators.required],
-      description: ['', Validators.required],
+      address: ['', [Validators.required, Validators.minLength(5)]],
+      contactInfo: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      description: ['', [Validators.required, Validators.minLength(10)]],
       installationDate: ['', Validators.required],
       status: ['', Validators.required],
     });
@@ -65,87 +71,52 @@ export class JobOrderComponent implements OnInit {
     this.loadJobOrders();
   }
 
-  // Get form control methods
-  get saleID() {
-    return this.jobOrderForm.get('saleID');
-  }
+  // Getters for form controls
+  get saleID() { return this.jobOrderForm.get('saleID'); }
+  get address() { return this.jobOrderForm.get('address'); }
+  get contactInfo() { return this.jobOrderForm.get('contactInfo'); }
+  get description() { return this.jobOrderForm.get('description'); }
+  get installationDate() { return this.jobOrderForm.get('installationDate'); }
+  get status() { return this.jobOrderForm.get('status'); }
 
-  get address() {
-    return this.jobOrderForm.get('address');
-  }
-
-  get contactInfo() {
-    return this.jobOrderForm.get('contactInfo');
-  }
-
-  get description() {
-    return this.jobOrderForm.get('description');
-  }
-
-  get installationDate() {
-    return this.jobOrderForm.get('installationDate');
-  }
-
-  get status() {
-    return this.jobOrderForm.get('status');
-  }
-
-  // Modify your loadSales() method to initialize the filtered list
   loadSales(): void {
     this.saleService.getSales().subscribe({
       next: (res) => {
         this.sales = res.data || [];
-        // Initialize filteredSales with all sales
         this.filteredSales = this.sales;
       },
-      error: (err) => {
-        console.error('Error fetching sales:', err);
-      }
+      error: (err) => console.error('Error fetching sales:', err)
     });
   }
 
-  // Call this on every keypress to filter sales based on the search query
   filterSales(): void {
     this.showSalesDropdown = true;
     const query = this.saleSearchQuery.trim().toLowerCase();
-    if (query === '') {
-      this.filteredSales = this.sales;
-    } else {
-      this.filteredSales = this.sales.filter(sale =>
-        sale.clientName.toLowerCase().includes(query) ||
-        sale.saleID.toLowerCase().includes(query)
-      );
-    }
-    // Reset the selected index whenever the filtered list changes.
+    this.filteredSales = query
+      ? this.sales.filter(sale =>
+          sale.clientName.toLowerCase().includes(query) ||
+          sale.saleID.toLowerCase().includes(query)
+        )
+      : this.sales;
     this.selectedSaleIndex = -1;
   }
 
-  // Handle key events for arrow keys and enter.
   onSaleSearchKeyDown(event: KeyboardEvent): void {
-    if (!this.showSalesDropdown || !this.filteredSales.length) {
-      return;
-    }
-
+    if (!this.showSalesDropdown || !this.filteredSales.length) return;
     if (event.key === 'ArrowDown') {
-      // Prevent the cursor from moving in the input field.
       event.preventDefault();
-      // Move the highlight down. Loop to start if at end.
       this.selectedSaleIndex = (this.selectedSaleIndex + 1) % this.filteredSales.length;
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      // Move the highlight up. Loop to bottom if at beginning.
-      this.selectedSaleIndex =
-        (this.selectedSaleIndex - 1 + this.filteredSales.length) % this.filteredSales.length;
+      this.selectedSaleIndex = (this.selectedSaleIndex - 1 + this.filteredSales.length) % this.filteredSales.length;
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      // If an item is highlighted, select it.
       if (this.selectedSaleIndex >= 0 && this.selectedSaleIndex < this.filteredSales.length) {
         this.selectSale(this.filteredSales[this.selectedSaleIndex]);
       }
     }
   }
 
-  // When a sale is selected, patch the form and hide the dropdown.
   selectSale(sale: any): void {
     this.jobOrderForm.patchValue({ saleID: sale._id });
     this.saleSearchQuery = `${sale.clientName} (${sale.saleID})`;
@@ -153,15 +124,13 @@ export class JobOrderComponent implements OnInit {
     this.selectedSaleIndex = -1;
   }
 
-  // Load Job Orders
   loadJobOrders(): void {
     const queryParams: any = {
       page: this.currentPage,
-     sortBy: this.sortColumn,
-     order: this.sortDirection
+      sortBy: this.sortColumn,
+      order: this.sortDirection
     };
     if (this.searchQuery) queryParams.search = this.searchQuery;
-
     this.jobOrderService.getJobOrders(queryParams).subscribe({
       next: (res) => {
         this.jobOrders = res.data || [];
@@ -169,35 +138,60 @@ export class JobOrderComponent implements OnInit {
         this.currentPage = res.currentPage || 1;
         this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
       },
-      error: (err) => {
-        console.error('Error fetching job orders:', err);
-      }
+      error: (err) => console.error('Error fetching job orders:', err)
     });
   }
 
-  // Open the modal to add a new job order
   openModal(): void {
     this.isModalOpen = true;
   }
 
-  // Close the modal and reset form
   closeModal(): void {
     this.isModalOpen = false;
     this.jobOrderForm.reset();
     this.jobOrderForm.get('saleID')?.enable();
-    this.isEditMode = false; this.editingJobOrderId = null;
+    this.isEditMode = false;
+    this.editingJobOrderId = null;
   }
 
-  // Add or Edit Job Order
-  onSubmit(): void {
+  // Custom validation error modal
+  showValidationError(message: string): void {
+    this.validationError = message;
+    this.showValidationModal = true;
+  }
+
+  closeValidationModal(): void {
+    this.validationError = '';
+    this.showValidationModal = false;
+  }
+
+  // Instead of directly submitting, handle submission via confirmation modal.
+  handleSubmit(): void {
     if (this.jobOrderForm.invalid) {
       this.jobOrderForm.markAllAsTouched();
+      this.showValidationError('Please ensure all fields are filled correctly.');
       return;
     }
+    // Optionally close/hide the main modal:
+    this.isModalOpen = false;
+    this.openSubmitModal();
+  }
 
-    // If in edit mode, use getRawValue() to include disabled fields
+  openSubmitModal(): void {
+    this.showSubmitModal = true;
+  }
+
+  confirmSubmit(): void {
+    this.showSubmitModal = false;
+    this.doSubmit();
+  }
+
+  cancelSubmit(): void {
+    this.showSubmitModal = false;
+  }
+
+  doSubmit(): void {
     const jobOrderData = this.isEditMode ? this.jobOrderForm.getRawValue() : this.jobOrderForm.value;
-
     if (this.isEditMode && this.editingJobOrderId) {
       this.jobOrderService.updateJobOrder(this.editingJobOrderId, jobOrderData).subscribe({
         next: (res) => {
@@ -207,6 +201,7 @@ export class JobOrderComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error updating job order:', err);
+          this.showValidationError('Error updating job order. Please try again.');
         }
       });
     } else {
@@ -218,12 +213,12 @@ export class JobOrderComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error creating job order:', err);
+          this.showValidationError('Error creating job order. Please try again.');
         }
       });
     }
   }
 
-  // Edit a Job Order
   editJobOrder(jobOrder: any): void {
     this.isEditMode = true;
     this.editingJobOrderId = jobOrder._id;
@@ -239,48 +234,49 @@ export class JobOrderComponent implements OnInit {
     this.openModal();
   }
 
-  // Delete a Job Order
-  deleteJobOrder(jobOrderId: string): void {
-    const confirmDeletion = window.confirm(
-      'Are you sure you want to delete this Job Order? This action cannot be undone.'
-    );
-
-    if (!confirmDeletion) {
-      return; // If user cancels, do nothing.
-    }
-
-    this.jobOrderService.deleteJobOrder(jobOrderId).subscribe({
-      next: (res) => {
-        console.log('Job Order deleted successfully:', res);
-        this.loadJobOrders();
-      },
-      error: (err) => {
-        console.error('Error deleting job order:', err);
-      }
-    });
+  // Instead of using window.confirm for deletion, open our custom delete modal.
+  openDeleteModal(jobOrderId: string): void {
+    this.jobOrderIdToDelete = jobOrderId;
+    this.showDeleteModal = true;
   }
 
-  // Handle pagination
+  confirmDelete(): void {
+    if (this.jobOrderIdToDelete) {
+      this.jobOrderService.deleteJobOrder(this.jobOrderIdToDelete).subscribe({
+        next: (res) => {
+          console.log('Job Order deleted successfully:', res);
+          this.loadJobOrders();
+          this.cancelDelete();
+        },
+        error: (err) => {
+          console.error('Error deleting job order:', err);
+          this.cancelDelete();
+        }
+      });
+    }
+  }
+
+  cancelDelete(): void {
+    this.jobOrderIdToDelete = null;
+    this.showDeleteModal = false;
+  }
+
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.loadJobOrders();
   }
 
-  // Sorting function for the table
   sortTable(column: string): void {
     if (this.sortColumn === column) {
-      // Toggle sorting order if clicking the same column
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
-      // Set new column and reset sorting to ascending
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-    this.loadJobOrders(); // Refresh job orders with new sorting
+    this.loadJobOrders();
   }
 
-  // This method returns the appropriate CSS classes based on the job order status.
   getBadgeClasses(status: string): string {
     const lowerStatus = status?.toLowerCase();
     if (lowerStatus === 'completed') {
@@ -290,24 +286,20 @@ export class JobOrderComponent implements OnInit {
     } else if (lowerStatus === 'cancelled') {
       return 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
     }
-    return 'bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs'; // Default for unknown status
+    return 'bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs';
   }
 
   // ----- Export to Excel Feature -----
-
   exportToExcel(): void {
-    // Map jobOrders to include custom columns (customized Job Order ID and Sale ID)
     const exportData = this.jobOrders.map(order => ({
-      'Job Order ID': order.jobOrderID,  // Customize as needed (for example, prepend a prefix)
+      'Job Order ID': order.jobOrderID,
       'Client': order.clientName,
       'Address': order.address,
       'Contact Info': order.contactInfo,
       'Description': order.description,
-      'Installation Date': new Date(order.installationDate).toLocaleDateString(), // You can also format the date here if needed
+      'Installation Date': new Date(order.installationDate).toLocaleDateString(),
       'Status': order.status
     }));
-
-    // Create worksheet and workbook from the transformed data
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
     const workbook: XLSX.WorkBook = { Sheets: { 'JobOrders': worksheet }, SheetNames: ['JobOrders'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });

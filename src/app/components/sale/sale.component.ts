@@ -1,4 +1,3 @@
-// sale.component.ts
 import { ProductService } from './../../services/product.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, FormsModule } from '@angular/forms';
@@ -14,11 +13,10 @@ import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-sale',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './sale.component.html',
   styleUrls: ['./sale.component.css']
 })
-
 export class SaleComponent implements OnInit {
   saleForm: FormGroup;
   products: any[] = [];
@@ -39,13 +37,20 @@ export class SaleComponent implements OnInit {
   totalPages = 1;
   pages: number[] = [];
 
+  // New property for submission confirmation modal
+  showSubmitModal: boolean = false;
+  // New property for custom validation error modal (if needed)
+  validationError: string = '';
+  showValidationModal: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private saleService: SaleService,
     private productService: ProductService
   ) {
+    // Add validators for saleForm fields
     this.saleForm = this.fb.group({
-      clientName: ['', Validators.required],
+      clientName: ['', [Validators.required, Validators.minLength(3)]],
       dateOfPurchase: ['', Validators.required],
       warranty: ['', Validators.required],
       termPayable: ['', Validators.required],
@@ -64,7 +69,9 @@ export class SaleComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.loadSales();
-    if (this.saleItems.length === 0) this.addSaleItem();
+    if (this.saleItems.length === 0) {
+      this.addSaleItem();
+    }
   }
 
   get saleItems(): FormArray {
@@ -118,11 +125,14 @@ export class SaleComponent implements OnInit {
 
   getBadgeClasses(status: string): string {
     const lowerStatus = status?.toLowerCase();
-    return lowerStatus === 'completed'
-      ? 'bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs'
-      : lowerStatus === 'pending'
-      ? 'bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs'
-      : 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
+    if (lowerStatus === 'completed') {
+      return 'bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs';
+    } else if (lowerStatus === 'pending') {
+      return 'bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs';
+    } else if (lowerStatus === 'cancelled') {
+      return 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
+    }
+    return 'bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs';
   }
 
   loadProducts(): void {
@@ -141,7 +151,6 @@ export class SaleComponent implements OnInit {
       order: this.sortDirection,
     };
     if (this.searchQuery) queryParams.search = this.searchQuery;
-
     this.saleService.getSales(queryParams).subscribe({
       next: (res) => {
         this.sales = res.data || res;
@@ -181,6 +190,7 @@ export class SaleComponent implements OnInit {
     this.editingSaleId = null;
   }
 
+  // For editing sale (only Edit button exists)
   editSale(sale: any): void {
     this.isEditMode = true;
     this.editingSaleId = sale._id;
@@ -192,9 +202,9 @@ export class SaleComponent implements OnInit {
       modeOfPayment: sale.modeOfPayment,
       status: sale.status,
     });
-
-    while (this.saleItems.length !== 0) this.saleItems.removeAt(0);
-
+    while (this.saleItems.length !== 0) {
+      this.saleItems.removeAt(0);
+    }
     sale.saleItems.forEach((item: any) => {
       const saleItemGroup = this.createSaleItem();
       saleItemGroup.patchValue({
@@ -204,24 +214,39 @@ export class SaleComponent implements OnInit {
       });
       this.saleItems.push(saleItemGroup);
     });
-
     this.openModal();
   }
 
-  onSubmit(): void {
+  // Instead of immediate submission, show confirmation modal
+  handleSubmit(): void {
     if (this.saleForm.invalid) {
       this.saleForm.markAllAsTouched();
+      this.showValidationError('Please ensure all fields are filled correctly.');
       return;
     }
+    this.openSubmitModal();
+  }
 
+  openSubmitModal(): void {
+    this.showSubmitModal = true;
+  }
+
+  confirmSubmit(): void {
+    this.showSubmitModal = false;
+    this.doSubmit();
+  }
+
+  cancelSubmit(): void {
+    this.showSubmitModal = false;
+  }
+
+  doSubmit(): void {
     this.isLoading = true;
     const saleData = {
       ...this.saleForm.value,
       overallTotalAmount: this.overallTotal
     };
-
-    console.log("🛒 Sale Data Sent to API:", saleData); // 🔍 Log request payload
-
+    console.log("🛒 Sale Data Sent to API:", saleData);
     if (this.isEditMode && this.editingSaleId) {
       this.saleService.updateSale(this.editingSaleId, saleData).subscribe({
         next: res => {
@@ -245,7 +270,7 @@ export class SaleComponent implements OnInit {
           this.closeModal();
         },
         error: err => {
-          console.error('❌ Error creating sale:', err); // 🔥 Check full error response
+          console.error('❌ Error creating sale:', err);
           this.errorMessage = err.error?.error || 'An error occurred';
           this.isLoading = false;
         }
@@ -253,9 +278,18 @@ export class SaleComponent implements OnInit {
     }
   }
 
+  showValidationError(message: string): void {
+    this.validationError = message;
+    this.showValidationModal = true;
+  }
+
+  closeValidationModal(): void {
+    this.validationError = '';
+    this.showValidationModal = false;
+  }
+
   // ----- Export to Excel Feature for Sales -----
   exportToExcel(): void {
-    // Map sales to include custom columns (customized Sale ID and other details)
     const exportData = this.sales.map(sale => ({
       'Sale ID': sale.saleID,
       'Client Name': sale.clientName,
@@ -269,8 +303,6 @@ export class SaleComponent implements OnInit {
       'Mode of Payment': sale.modeOfPayment,
       'Status': sale.status
     }));
-
-    // Create worksheet and workbook from the transformed data
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
     const workbook: XLSX.WorkBook = { Sheets: { 'Sales': worksheet }, SheetNames: ['Sales'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
