@@ -2,17 +2,48 @@
   font-family: "Roboto", sans-serif;
 }
 
-@keyframes floating {
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes gradientShift {
   0% {
-    transform: translateY(0);
+    background-position: 0% 50%;
   }
   50% {
-    transform: translateY(-10px);
+    background-position: 100% 50%;
   }
   100% {
-    transform: translateY(0);
+    background-position: 0% 50%;
   }
 }
-.animate-floating {
+
+.hero-bg {
+  background: linear-gradient(-45deg, #1e40af, #1e3a8a, #2563eb, #172554);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating-animation {
   animation: floating 3s ease-in-out infinite;
+}
+
+.product-card {
+  transition: all 0.3s ease-in-out;
+}
+
+.product-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }

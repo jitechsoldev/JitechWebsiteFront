@@ -1,190 +1,189 @@
-<nav class="bg-white text-blue-900 text-1xl p-4 shadow-md">
-  <div class="container mx-auto flex justify-between items-center">
-    <div class="flex items-center">
-      <img
-        src="./JitechBlue.png"
-        class="h-10 animate-fade-in"
-        [routerLink]="['/login']"
-      />
-    </div>
+<nav
+  id="navbar"
+  class="sticky-nav fixed top-0 left-0 w-full z-50 bg-white shadow-md text-blue-900 px-20 py-3 flex justify-between items-center"
+>
+  <div class="flex items-center">
+    <a [routerLink]="['/login']">
+      <img src="./JitechBlue.png" class="h-12" />
+    </a>
+  </div>
+
+  <div class="hidden md:flex space-x-6">
+    <a href="#home" class="hover:text-blue-600 transition font-bold">Home</a>
+    <a href="#products" class="hover:text-blue-600 transition font-bold"
+      >Products</a
+    >
+    <a href="#contact" class="hover:text-blue-600 transition font-bold"
+      >Contact</a
+    >
   </div>
 </nav>
 
 <!-- Hero Section -->
-<header
-  id="home"
-  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-15"
->
-  <div
-    class="container mx-auto flex flex-col-reverse lg:flex-row items-center px-5 lg:px-12"
-  >
-    <!-- Left Side: Hero Text -->
-    <div class="lg:w-1/2 text-center lg:text-left animate-fade-in-up">
-      <h1 class="text-5xl font-extrabold leading-tight">
-        Innovate. Integrate. Succeed.
+<header id="home" class="hero-bg text-white py-24">
+  <div class="container mx-auto flex flex-col lg:flex-row items-center px-8">
+    <div class="lg:w-1/2 text-center lg:text-left animate-fade-in">
+      <h1 class="text-6xl font-extrabold leading-tight">
+        Innovate. Integrate. <span class="text-blue-300">Succeed.</span>
       </h1>
       <p class="text-lg text-gray-200 mt-4">
         Empowering businesses with cutting-edge digital solutions.
       </p>
+      <div class="mt-6 space-x-4">
+        <a
+          href="#products"
+          class="bg-blue-500 hover:bg-blue-400 px-6 py-3 text-lg font-semibold rounded-lg shadow-lg transition"
+        >
+          Explore Products
+        </a>
+        <a
+          href="#contact"
+          class="border border-white px-6 py-3 text-lg font-semibold rounded-lg hover:bg-white hover:text-blue-900 transition"
+        >
+          Contact Us
+        </a>
+      </div>
     </div>
-
-    <!-- Right Side: Hero Image -->
-    <div class="lg:w-1/2 flex justify-center animate-floating">
-      <img src="./JitechLogoOnly2.png" class="w-4/5 lg:w-full max-w-lg" />
+    <div class="lg:w-1/2 flex justify-center">
+      <img
+        src="./JitechLogoOnly2.png"
+        class="w-4/5 lg:w-full max-w-lg drop-shadow-lg floating-animation"
+      />
     </div>
   </div>
 </header>
 
-<!-- Carousel Section -->
-<section id="products" class="py-16 bg-gray-100">
-  <h2 class="text-center text-3xl font-bold text-blue-900 mb-8">
-    Our Products
-  </h2>
+<!-- Product Section -->
+<section id="products" class="py-20 bg-gray-100">
+  <div class="container mx-auto px-8">
+    <!-- Section Title -->
+    <h2 class="text-center text-4xl font-bold text-blue-900 mb-12">
+      Our Products
+    </h2>
 
-  <div class="relative max-w-4xl mx-auto flex items-center justify-between">
-    <!-- Left Navigation Button (New Design) -->
-    <button
-      class="absolute left-[-70px] top-1/2 transform -translate-y-1/2 bg-white border border-blue-900 text-blue-900 p-4 rounded-full shadow-lg hover:bg-blue-900 hover:text-white transition-all duration-300 ease-in-out z-10 flex items-center justify-center w-12 h-12"
-      (click)="scrollLeft()"
-      [disabled]="currentIndex === 0"
-      [ngClass]="{ 'opacity-50 cursor-not-allowed': currentIndex === 0 }"
-    >
-      ❮
-    </button>
-
-    <!-- Carousel Container -->
-    <div class="overflow-hidden px-8 py-6 relative w-full">
-      <div #carousel class="flex transition-transform duration-500 ease-in-out">
+    <!-- Product Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div
+        *ngFor="let product of products"
+        class="relative group bg-white rounded-xl shadow-lg overflow-hidden transition transform"
+      >
+        <!-- Image Container -->
         <div
-          *ngFor="let product of products; let i = index"
-          class="bg-white shadow-xl rounded-xl p-6 w-72 h-96 flex-shrink-0 mx-4 transition-transform duration-500 transform"
-          [ngClass]="{
-            'scale-110 shadow-lg': i === currentIndex,
-            'scale-95 opacity-75': i !== currentIndex
-          }"
+          class="relative w-full h-64 bg-gray-200 flex items-center justify-center overflow-hidden"
         >
-          <img [src]="product.image" class="h-48 mx-auto object-cover" />
-          <h3 class="text-xl font-semibold text-blue-900 mt-4 text-center">
+          <img
+            [src]="product.image"
+            alt="{{ product.name }}"
+            class="w-70 h-60 object-cover transition"
+          />
+          <div
+            class="absolute inset-0 bg-opacity-20 opacity-0 group-hover:opacity-100 transition"
+          ></div>
+        </div>
+
+        <!-- Card Content -->
+        <div class="p-6 text-center">
+          <h3 class="text-2xl font-semibold text-blue-900">
             {{ product.name }}
           </h3>
-          <p class="text-gray-600 text-sm text-center mt-2">
+          <p class="text-gray-600 mt-2">
             {{ product.description }}
           </p>
+
+          <!-- Price Display -->
+          <p class="mt-3 text-xl font-semibold text-green-600">
+            {{ product.price | currency : "PHP" }}
+          </p>
+
+          <!-- Rating Display -->
+          <div class="flex justify-center items-center mt-2">
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+              <svg
+                class="w-6 h-6"
+                [class.text-yellow-400]="i < product.rating"
+                [class.text-gray-300]="i >= product.rating"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.184c.969 0 1.372 1.24.588 1.81l-3.39 2.463a1 1 0 00-.364 1.118l1.286 3.97c.3.921-.755 1.688-1.54 1.118l-3.39-2.463a1 1 0 00-1.176 0l-3.39 2.463c-.784.57-1.838-.197-1.54-1.118l1.286-3.97a1 1 0 00-.364-1.118L2.041 9.397c-.784-.57-.381-1.81.588-1.81h4.184a1 1 0 00.95-.69l1.286-3.97z"
+                />
+              </svg>
+            </ng-container>
+          </div>
+
+          <!-- Gradient Button with Glow Effect -->
+          <a
+            href="#"
+            class="mt-4 inline-block px-6 py-3 text-white text-lg font-semibold rounded-lg shadow-md transition transform hover:scale-105"
+            style="
+              background: linear-gradient(90deg, #2563eb, #1e3a8a);
+              box-shadow: 0 4px 5px rgba(37, 99, 235, 0.4);
+            "
+          >
+            Learn More
+          </a>
         </div>
       </div>
     </div>
-
-    <!-- Right Navigation Button (New Design) -->
-    <button
-      class="absolute right-[-70px] top-1/2 transform -translate-y-1/2 bg-white border border-blue-900 text-blue-900 p-4 rounded-full shadow-lg hover:bg-blue-900 hover:text-white transition-all duration-300 ease-in-out z-10 flex items-center justify-center w-12 h-12"
-      (click)="scrollRight()"
-      [disabled]="currentIndex === products.length - 1"
-      [ngClass]="{
-        'opacity-50 cursor-not-allowed': currentIndex === products.length - 1
-      }"
-    >
-      ❯
-    </button>
-  </div>
-
-  <!-- Dot Indicators -->
-  <div class="flex justify-center mt-6 space-x-3">
-    <div
-      *ngFor="let product of products; let i = index"
-      class="w-3 h-3 rounded-full bg-gray-400 transition-all duration-300 cursor-pointer transform"
-      [ngClass]="{
-        'bg-blue-900 scale-150': currentIndex === i,
-        'bg-gray-400 scale-100': currentIndex !== i
-      }"
-      (click)="goToSlide(i)"
-    ></div>
   </div>
 </section>
 
 <!-- Footer -->
 <footer
   id="contact"
-  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-10"
+  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-16"
 >
   <div
-    class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left"
+    class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left"
   >
-    <!-- Contact & Address (Left) -->
-    <div class="flex flex-col space-y-4 items-center md:items-start">
-      <h2 class="text-xl font-semibold">Contact Us</h2>
-      <div class="flex items-center space-x-2">
-        <img src="./Telephone.png" class="w-5 h-5" />
-        <a href="tel:+0324272822" class="hover:text-white transition-all">
-          (032) 427 2822
-        </a>
+    <!-- Contact Section -->
+    <div>
+      <h2 class="text-xl font-semibold mb-4">Contact Us</h2>
+      <div class="flex items-center space-x-3 mb-3">
+        <img src="./Telephone.png" class="h-6 w-6" />
+        <p class="text-lg">(032) 427 2822</p>
       </div>
-      <div class="flex items-start space-x-2">
-        <img src="./PinWhite.png" class="w-5 h-5" />
-        <p class="text-white text-sm">
-          Unit 204, Sonrisa Suites, Juana Osmeña Street, Capitol Site, Cebu
-          City, Philippines
+      <div class="flex items-start space-x-3">
+        <img src="./PinWhite.png" class="h-6 w-6 mt-1" />
+        <p class="text-lg">
+          Unit 204, Sonrisa Suites, Juana Osmeña Street, <br />
+          Cebu City, Philippines
         </p>
       </div>
     </div>
 
-    <!-- Branding (Center) -->
-    <div class="flex flex-col items-center space-y-2">
-      <img src="./Jitech.png" class="h-16 filter invert" alt="Jitech Logo" />
-      <p class="text-white text-sm">Innovate. Integrate. Succeed.</p>
+    <!-- Logo & Motto -->
+    <div class="flex flex-col items-center">
+      <img src="./JitechWhite.png" class="h-20 mb-4" />
+      <p class="text-lg font-light italic">"Innovate. Integrate. Succeed."</p>
     </div>
 
-    <!-- Socials & Emails (Right) -->
-    <div class="flex flex-col space-y-4 items-center md:items-end">
-      <h2 class="text-lg font-semibold">Follow Us</h2>
-      <a
-        href="https://www.facebook.com/jitech.site"
-        target="_blank"
-        class="hover:text-blue-400 transition-all flex items-center space-x-2"
-        aria-label="Follow us on Facebook"
-      >
-        <img src="./Facebook.png" class="w-5 h-5" />
-        <span>Facebook</span>
-      </a>
-
-      <details class="mt-4">
-        <summary
-          class="cursor-pointer text-white font-semibold hover:text-gray-300"
+    <!-- Follow Us -->
+    <div class="flex flex-col items-center md:items-start">
+      <h2 class="text-xl font-semibold mb-4">Follow Us</h2>
+      <div class="flex space-x-5">
+        <a
+          href="https://www.facebook.com/jitech.site"
+          class="hover:scale-110 transition transform"
         >
-          Our Emails
-        </summary>
-        <div class="mt-2 flex flex-col space-y-1 text-sm">
-          <a
-            href="mailto:jitechsolutions8&#64;gmail.com"
-            class="hover:text-gray-300"
-            >jitechsolutions8&#64;gmail.com</a
-          >
-          <a
-            href="mailto:jitechsalesm3&#64;gmail.com"
-            class="hover:text-gray-300"
-            >jitechsalesm3&#64;gmail.com</a
-          >
-          <a
-            href="mailto:jitechsalesm19&#64;gmail.com"
-            class="hover:text-gray-300"
-            >jitechsalesm19&#64;gmail.com</a
-          >
-          <a
-            href="mailto:jitechsalesm1&#64;gmail.com"
-            class="hover:text-gray-300"
-            >jitechsalesm1&#64;gmail.com</a
-          >
-          <a
-            href="mailto:jitechsalesm10&#64;gmail.com"
-            class="hover:text-gray-300"
-            >jitechsalesm10&#64;gmail.com</a
-          >
-        </div>
-      </details>
+          <img src="./Facebook.png" class="h-7 w-7" />
+        </a>
+      </div>
     </div>
   </div>
 
-  <!-- Bottom Bar -->
-  <div class="mt-10 pt-4 text-center text-white text-sm">
+  <!-- Quick Links (Optional) -->
+  <div class="mt-10 border-t border-blue-500 pt-6 text-center text-sm">
+    <div class="flex justify-center space-x-6">
+      <a href="#home" class="hover:text-white transition">Home</a>
+      <a href="#products" class="hover:text-white transition">Products</a>
+      <a href="#contact" class="hover:text-white transition">Contact</a>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="mt-6 text-center text-sm">
     © Jitech Solutions. All Rights Reserved.
   </div>
 </footer>

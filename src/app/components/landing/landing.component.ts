@@ -10,133 +10,77 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-landing',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.css',
 })
 export class LandingComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('carousel', { static: false }) carousel!: ElementRef;
   currentIndex: number = 0;
-  autoScrollInterval: any;
-  manualScrollTimeout: any;
-  transitioning = false;
+  visibleItems: number = 1;
 
   products = [
     {
-      image: './AP-15.PNG',
+      image: './AP-15.png',
       name: 'AP-15',
-      description: 'Brief description of AP-15.',
+      description: 'High-performance AP-15 device.',
+      price: 14900,
+      rating: 5,
     },
     {
       image: './OC-2120.png',
       name: 'OC-2120',
-      description: 'Brief description of OC-2120.',
+      description: 'Next-gen OC-2120 technology.',
+      price: 9800,
+      rating: 5,
     },
     {
       image: './FE-16.png',
       name: 'FE-16',
-      description: 'Brief description of FE-16.',
+      description: 'Reliable FE-16 system.',
+      price: 12900,
+      rating: 5,
     },
     {
       image: './SE-22.png',
       name: 'SE-22',
-      description: 'Brief description of SE-22.',
+      description: 'Secure and fast SE-22.',
+      price: 49000,
+      rating: 5,
     },
     {
       image: './AU-10.png',
       name: 'AU-10',
-      description: 'Brief description of AU-10.',
+      description: 'AU-10 advanced solution.',
+      price: 6500,
+      rating: 5,
     },
     {
       image: './FOODPOS.png',
       name: 'FoodPOS',
-      description: 'Brief description of FoodPOS.',
+      description: 'Smart POS system for restaurants.',
+      price: 80000,
+      rating: 5,
     },
   ];
 
   ngAfterViewInit() {
-    this.updateScrollPosition();
-    this.startAutoScroll();
+    this.updateVisibleItems();
+    window.addEventListener('resize', this.updateVisibleItems.bind(this));
   }
 
   ngOnDestroy() {
-    clearInterval(this.autoScrollInterval);
+    window.removeEventListener('resize', this.updateVisibleItems.bind(this));
   }
 
-  scrollLeft() {
-    if (this.transitioning || this.currentIndex === 0) return;
-    clearInterval(this.autoScrollInterval);
-    this.transitioning = true;
-
-    this.currentIndex--;
-    this.updateScroll(true);
-    this.resumeAutoScroll();
-  }
-
-  scrollRight() {
-    if (this.transitioning || this.currentIndex === this.products.length - 1)
-      return;
-    clearInterval(this.autoScrollInterval);
-    this.transitioning = true;
-
-    this.currentIndex++;
-    this.updateScroll(true);
-    this.resumeAutoScroll();
-  }
-
-  goToSlide(index: number) {
-    clearInterval(this.autoScrollInterval);
-    this.currentIndex = index;
-    this.updateScroll(true);
-    this.resumeAutoScroll();
-  }
-
-  updateScroll(animate: boolean) {
-    const carouselEl = this.carousel.nativeElement;
-    const cardWidth = carouselEl.children[this.currentIndex].offsetWidth + 32; // 32px for margin
-    const centerOffset = (carouselEl.offsetWidth - cardWidth) / 2; // Center card properly
-
-    if (animate) {
-      carouselEl.style.transition = 'transform 0.5s ease-in-out';
+  updateVisibleItems() {
+    const screenWidth = window.innerWidth;
+    if (screenWidth >= 1024) {
+      this.visibleItems = 3;
+    } else if (screenWidth >= 768) {
+      this.visibleItems = 2;
     } else {
-      carouselEl.style.transition = 'none';
+      this.visibleItems = 1;
     }
-
-    requestAnimationFrame(() => {
-      carouselEl.style.transform = `translateX(${
-        centerOffset - this.currentIndex * cardWidth
-      }px)`;
-      setTimeout(() => (this.transitioning = false), 500);
-    });
-  }
-
-  updateScrollPosition() {
-    setTimeout(() => {
-      const carouselEl = this.carousel.nativeElement;
-      const cardWidth = carouselEl.children[this.currentIndex].offsetWidth + 32;
-      const centerOffset = (carouselEl.offsetWidth - cardWidth) / 2;
-
-      carouselEl.style.transition = 'none';
-      carouselEl.style.transform = `translateX(${
-        centerOffset - this.currentIndex * cardWidth
-      }px)`;
-    });
-  }
-
-  startAutoScroll() {
-    this.autoScrollInterval = setInterval(() => {
-      if (this.currentIndex < this.products.length - 1) {
-        this.scrollRight();
-      } else {
-        clearInterval(this.autoScrollInterval);
-      }
-    }, 4000);
-  }
-
-  resumeAutoScroll() {
-    clearTimeout(this.manualScrollTimeout);
-    this.manualScrollTimeout = setTimeout(() => {
-      this.startAutoScroll();
-    }, 6000);
   }
 }
