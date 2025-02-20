@@ -12,7 +12,7 @@
           type="text"
           [(ngModel)]="searchQuery"
           (input)="filterProducts()"
-          placeholder="Search by name or SKU..."
+          placeholder="Search by product name or SKU..."
           class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-4 border rounded-lg px-3 py-2 w-full sm:w-80"
         />
       </div>
@@ -101,7 +101,7 @@
       </thead>
       <tbody class="divide-y divide-gray-200">
         <tr
-          *ngFor="let product of products"
+          *ngFor="let product of filteredProducts"
           class="hover:bg-gray-100 transition"
         >
           <td class="px-4 py-3">{{ product.productName }}</td>

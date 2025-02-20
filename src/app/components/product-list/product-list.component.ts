@@ -37,6 +37,7 @@ export class ProductListComponent implements OnInit {
 
   reloadProducts() {
     this.loadProducts();
+    this.loadInventory();
   }
 
   openProductFormModal() {
@@ -74,39 +75,50 @@ export class ProductListComponent implements OnInit {
 
   filterProducts() {
     this.filteredProducts = this.products.filter((product) => {
-      const matchesSearch =
-        product.productName
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase()) ||
-        product.sku.toLowerCase().includes(this.searchQuery.toLowerCase());
+      // ✅ Convert product name & SKU to lowercase for case-insensitive search
+      const searchLower = this.searchQuery?.toLowerCase() || '';
+      const productNameLower = product.productName.toLowerCase();
+      const skuLower = product.sku.toLowerCase();
 
-      const matchesCategory = this.selectedCategory
-        ? product.category === this.selectedCategory
-        : true;
-      const matchesStatus = this.selectedStatus
-        ? product.active.toString() === this.selectedStatus
-        : true;
+      // ✅ Check if product matches search query
+      const matchesSearch =
+        searchLower === '' ||
+        productNameLower.includes(searchLower) ||
+        skuLower.includes(searchLower);
+
+      // ✅ Check if product matches selected category
+      const matchesCategory =
+        this.selectedCategory === '' ||
+        product.category === this.selectedCategory;
+
+      // ✅ Check if product matches selected status (active/inactive)
+      const matchesStatus =
+        this.selectedStatus === '' ||
+        product.active.toString() === this.selectedStatus;
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
 
+    // ✅ Ensure sorting is applied after filtering
     this.sortProducts();
   }
 
   sortProducts() {
-    if (!this.sortColumn) return;
-
     this.filteredProducts.sort((a, b) => {
-      const valueA = a[this.sortColumn];
-      const valueB = b[this.sortColumn];
+      let valueA = a[this.sortColumn];
+      let valueB = b[this.sortColumn];
 
-      if (typeof valueA === 'string') {
-        return this.sortOrder === 'asc'
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      } else {
-        return this.sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
-      }
+      // ✅ Convert to lowercase for case-insensitive sorting
+      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+      return this.sortOrder === 'asc'
+        ? valueA > valueB
+          ? 1
+          : -1
+        : valueA < valueB
+        ? 1
+        : -1;
     });
   }
 

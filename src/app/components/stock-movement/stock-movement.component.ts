@@ -309,13 +309,7 @@ export class StockMovementComponent implements OnInit {
   }
 
   updateStock() {
-    console.log('🔍 Form Submitted - Checking Validity');
-    console.log('Form Valid:', this.stockMovementForm.valid);
-    console.log('Form Values:', this.stockMovementForm.value);
-    console.log('Serial Numbers Array:', this.serialNumbersArray.value);
-
     if (!this.isFormValid() || this.stockMovementForm.invalid) {
-      console.log('❌ Form is Invalid. Fix errors before submitting.');
       return; // Prevent submission if form is invalid
     }
 
@@ -331,14 +325,13 @@ export class StockMovementComponent implements OnInit {
 
     this.stockMovementService.addStockMovement(stockMovement).subscribe(
       (response) => {
-        console.log('✅ Stock Movement Successful:', response);
-        this.loadInventory();
+        this.stockUpdated.emit(); // ✅ Notify parent component to refresh UI
+        this.loadInventory(); // ✅ Reload inventory immediately after update
         this.stockMovementForm.reset();
         this.errors = [];
         this.closeModal();
       },
       (error) => {
-        console.log('❌ API Error:', error);
         this.errors.push(`❌ Error: ${error.error.message}`);
       }
     );
