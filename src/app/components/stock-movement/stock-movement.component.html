@@ -24,10 +24,10 @@
     <form [formGroup]="stockMovementForm" (ngSubmit)="updateStock()">
       <!-- ✅ Product Selection -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold">Product:</label>
+        <label class="block mb-2 font-semibold">Product Name:</label>
         <select
           formControlName="inventoryId"
-          (change)="fetchAvailableSerialNumbers()"
+          (change)="onProductChange($event)"
           class="w-full border border-gray-300 rounded-lg px-4 py-2"
         >
           <option *ngFor="let item of inventory" [value]="item._id">
@@ -38,7 +38,7 @@
 
       <!-- ✅ Change Type Selection -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold">Change Type:</label>
+        <label class="block mb-2 font-semibold">Movement Type:</label>
         <select
           formControlName="type"
           (change)="generateSerialFields(); fetchAvailableSerialNumbers()"
@@ -49,9 +49,22 @@
         </select>
       </div>
 
+      <!-- ✅ Upload File for Serial Numbers (Only for Incoming) -->
+      <div class="mt-4">
+        <label class="block mb-2 font-semibold"
+          >Upload Serial Numbers (Excel):</label
+        >
+        <input
+          type="file"
+          (change)="onFileUpload($event)"
+          accept=".xls,.xlsx"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+        />
+      </div>
+
       <!-- ✅ Stock Quantity Input -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold">Stock Quantity:</label>
+        <label class="block mb-2 font-semibold">Quantity:</label>
         <input
           type="number"
           formControlName="quantity"
@@ -68,7 +81,7 @@
         "
         class="mt-4"
       >
-        <h4 class="font-semibold">Enter Serial Numbers:</h4>
+        <h4 class="font-semibold">Serial Numbers:</h4>
 
         <!-- ✅ FormArray Wrapper -->
         <div formArrayName="serialNumbers">
