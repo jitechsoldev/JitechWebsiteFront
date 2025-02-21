@@ -27,7 +27,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   visibleItems: number = 1;
   selectedProduct: any = null;
   idleTimeout: any;
-  idleTime = 30 * 1000;
+  idleTime = 15 * 1000;
 
   products = [
     {
@@ -35,7 +35,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       name: 'AP-15',
       description: 'High-performance AP-15 device.',
       price: 14900,
-      rating: 5,
       features: [
         '300 Human Face Capacity',
         '1,000 Fingerprint Capacity',
@@ -50,7 +49,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       name: 'OC-2120',
       description: 'Next-gen OC-2120 technology.',
       price: 9800,
-      rating: 5,
       features: [
         '1,000 Fingerprint Capacity',
         '1,000 ID Card Capacity',
@@ -64,7 +62,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       name: 'FE-16',
       description: 'Reliable FE-16 system.',
       price: 12900,
-      rating: 5,
       features: [
         '3,000 Human Face Capacity',
         '1,000 ID Card Capacity',
@@ -78,7 +75,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       name: 'SE-22',
       description: 'Secure and fast SE-22.',
       price: 49000,
-      rating: 5,
       features: [
         '50,000 Human Face Capacity',
         '50,000 ID Card Capacity',
@@ -92,7 +88,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       name: 'AU-10',
       description: 'AU-10 advanced solution.',
       price: 6500,
-      rating: 5,
       features: [
         'Automatic Card Feed and Release',
         'Up To 150 Employees Capacity',
@@ -106,7 +101,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       name: 'FoodPOS',
       description: 'Smart POS system for restaurants.',
       price: 80000,
-      rating: 5,
       features: [
         'Optimized for industrial use',
         'Secure encryption technology',
@@ -119,9 +113,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     this.updateVisibleItems();
     window.addEventListener('resize', this.updateVisibleItems.bind(this));
 
-    setTimeout(() => {
-      this.openVideoModal();
-    }, 1500);
+    this.startIdleTimer();
+    this.openVideoModal(); // Show screen saver video on page load
   }
 
   ngOnDestroy() {
@@ -134,28 +127,23 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
 
   updateVisibleItems() {
     const screenWidth = window.innerWidth;
-    if (screenWidth >= 1024) {
-      this.visibleItems = 3;
-    } else if (screenWidth >= 768) {
-      this.visibleItems = 2;
-    } else {
-      this.visibleItems = 1;
-    }
+    this.visibleItems = screenWidth >= 1024 ? 3 : screenWidth >= 768 ? 2 : 1;
   }
 
-  /** Opens the video modal */
+  /** Opens the video modal (Screen Saver Mode) */
   openVideoModal() {
     if (this.videoModal && this.productVideo) {
       this.videoModal.nativeElement.classList.remove('hidden', 'opacity-0');
       this.videoModal.nativeElement.classList.add('opacity-100');
 
       setTimeout(() => {
+        this.productVideo.nativeElement.muted = true; // Ensure muted for autoplay
         this.productVideo.nativeElement.play();
       }, 300);
     }
   }
 
-  /** Closes the video modal */
+  /** Closes the video modal when user interacts */
   closeVideoModal() {
     if (this.videoModal && this.productVideo) {
       this.productVideo.nativeElement.pause();
@@ -183,45 +171,74 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     window.addEventListener('touchstart', this.resetIdleTimer);
   }
 
-  /** Resets the idle timer if user interacts with the page */
+  /** Resets the idle timer if user interacts */
   resetIdleTimer = () => {
     clearTimeout(this.idleTimeout);
     this.startIdleTimer();
   };
 
-  /** Closes modal if user clicks outside the video */
-  closeVideoModalOutside(event: Event) {
-    if (
-      this.videoModal &&
-      this.modalContent &&
-      !this.modalContent.nativeElement.contains(event.target)
-    ) {
+  /** Detects user activity and closes the video */
+  @HostListener('document:mousemove')
+  @HostListener('document:keydown')
+  @HostListener('document:touchstart')
+  closeModalOnInteraction() {
+    if (this.videoModal.nativeElement.classList.contains('opacity-100')) {
       this.closeVideoModal();
     }
   }
 
-  /** Opens the product details modal with fade-in animation */
+  /** Opens the product details modal */
   openProductModal(product: any) {
     this.selectedProduct = product;
 
-    setTimeout(() => {
-      if (this.productModal && this.productModalContent) {
-        this.productModal.nativeElement.classList.remove('hidden', 'opacity-0');
-        this.productModal.nativeElement.classList.add('opacity-100');
+    if (this.productModal && this.productModalContent) {
+      // Reset modal before applying fade-in
+      this.productModal.nativeElement.classList.add('hidden', 'opacity-0');
+      this.productModalContent.nativeElement.classList.add(
+        'scale-90',
+        'opacity-0'
+      );
 
-        this.productModalContent.nativeElement.classList.remove(
-          'scale-90',
-          'opacity-0'
-        );
-        this.productModalContent.nativeElement.classList.add(
-          'scale-100',
-          'opacity-100'
-        );
-      }
-    }, 50);
+      // Allow the reset to apply, then trigger the animation
+      requestAnimationFrame(() => {
+        this.productModal.nativeElement.classList.remove('hidden');
+        setTimeout(() => {
+          this.productModal.nativeElement.classList.add('opacity-100');
+          this.productModal.nativeElement.classList.remove('opacity-0');
+
+          this.productModalContent.nativeElement.classList.add(
+            'scale-100',
+            'opacity-100'
+          );
+          this.productModalContent.nativeElement.classList.remove(
+            'scale-90',
+            'opacity-0'
+          );
+        }, 50);
+      });
+    }
   }
 
-  /** Closes the product details modal with fade-out effect */
+  /** Moves to the next product */
+  nextProduct() {
+    const currentIndex = this.products.findIndex(
+      (p) => p.name === this.selectedProduct.name
+    );
+    const nextIndex = (currentIndex + 1) % this.products.length; // Loop back to first product
+    this.selectedProduct = this.products[nextIndex];
+  }
+
+  /** Moves to the previous product */
+  prevProduct() {
+    const currentIndex = this.products.findIndex(
+      (p) => p.name === this.selectedProduct.name
+    );
+    const prevIndex =
+      (currentIndex - 1 + this.products.length) % this.products.length; // Loop back to last product
+    this.selectedProduct = this.products[prevIndex];
+  }
+
+  /** Closes the product details modal */
   closeProductModal() {
     if (this.productModal && this.productModalContent) {
       this.productModal.nativeElement.classList.remove('opacity-100');
@@ -238,12 +255,12 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
 
       setTimeout(() => {
         this.productModal.nativeElement.classList.add('hidden');
-        this.selectedProduct = null; // Clear selected product
-      }, 500); // Matches fade-out duration
+        this.selectedProduct = null;
+      }, 500);
     }
   }
 
-  /** Closes modal when clicking outside the content */
+  /** Closes modal when clicking outside */
   closeProductModalOutside(event: Event) {
     if (
       this.productModal &&

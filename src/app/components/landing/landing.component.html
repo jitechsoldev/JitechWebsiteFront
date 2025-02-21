@@ -158,27 +158,23 @@
   </div>
 </footer>
 
-<!-- Video Modal -->
+<!-- Video Modal (Idle Screen / Screen Saver) -->
 <div
   #videoModal
-  (click)="closeVideoModalOutside($event)"
-  class="fixed inset-0 bg-black/50 flex justify-center items-center z-50 opacity-0 transition-opacity duration-500"
+  class="fixed inset-0 bg-black/75 flex justify-center items-center z-50 opacity-0 transition-opacity duration-500"
 >
   <div
-    #modalContent
-    class="relative bg-black rounded-lg overflow-hidden shadow-lg w-11/12 md:w-2/3 lg:w-1/2"
+    class="relative bg-white rounded-lg overflow-hidden shadow-lg w-11/12 md:w-2/3 lg:w-1/2"
   >
-    <!-- Close Button -->
-    <button
-      (click)="closeVideoModal()"
-      class="absolute top-3 right-3 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 transition z-50"
-    >
-      ✖
-    </button>
-
     <!-- Video Container -->
     <div class="w-full">
-      <video #productVideo class="w-full h-auto max-h-[80vh]" controls autoplay>
+      <video
+        #productVideo
+        class="w-full h-auto max-h-[80vh]"
+        autoplay
+        muted
+        playsinline
+      >
         <source src="./SampleVid.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -197,6 +193,13 @@
     #productModalContent
     class="relative bg-white rounded-lg overflow-hidden shadow-lg w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 p-6 transform scale-90 opacity-0 transition-all duration-500 ease-in-out flex flex-col md:flex-row"
   >
+    <!-- Previous Button -->
+    <button
+      (click)="prevProduct()"
+      class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-r-lg shadow-md hover:bg-gray-700 transition"
+    >
+      ◀
+    </button>
     <!-- Product Image Section -->
     <div
       class="md:w-1/2 flex justify-center items-center bg-gray-100 rounded-lg p-4"
@@ -226,25 +229,8 @@
         {{ selectedProduct?.price | currency : "PHP" }}
       </p>
 
-      <!-- Rating -->
-      <div class="flex items-center mt-2">
-        <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
-          <svg
-            class="w-6 h-6"
-            [class.text-yellow-400]="i < selectedProduct?.rating"
-            [class.text-gray-300]="i >= selectedProduct?.rating"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.184c.969 0 1.372 1.24.588 1.81l-3.39 2.463a1 1 0 00-.364 1.118l1.286 3.97c.3.921-.755 1.688-1.54 1.118l-3.39-2.463a1 1 0 00-1.176 0l-3.39 2.463c-.784.57-1.838-.197-1.54-1.118l1.286-3.97a1 1 0 00-.364-1.118L2.041 9.397c-.784-.57-.381-1.81.588-1.81h4.184a1 1 0 00.95-.69l1.286-3.97z"
-            />
-          </svg>
-        </ng-container>
-      </div>
-
       <!-- Bullet-Point Description -->
-      <ul class="mt-4 space-y-2 text-gray-700 text-lg">
+      <ul class="mt-4 space-y-2 text-lg">
         <li
           *ngFor="let point of selectedProduct?.features"
           class="flex items-start"
@@ -252,6 +238,14 @@
           <span class="text-blue-500 mr-2">✔</span> {{ point }}
         </li>
       </ul>
+
+      <!-- Next Button -->
+      <button
+        (click)="nextProduct()"
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-l-lg shadow-md hover:bg-gray-700 transition"
+      >
+        ▶
+      </button>
     </div>
   </div>
 </div>
