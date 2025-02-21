@@ -1,3 +1,4 @@
+<!-- Navbar Section -->
 <nav
   id="navbar"
   class="sticky-nav fixed top-0 left-0 w-full z-50 bg-white shadow-md text-blue-900 px-20 py-3 flex justify-between items-center"
@@ -27,7 +28,7 @@
         Innovate. Integrate. <span class="text-blue-300">Succeed.</span>
       </h1>
       <p class="text-lg text-gray-200 mt-4">
-        Empowering businesses with cutting-edge digital solutions.
+        Empowering businesses with cutting-edge solutions.
       </p>
       <div class="mt-6 space-x-4">
         <a
@@ -57,7 +58,7 @@
 <section id="products" class="py-20 bg-gray-100">
   <div class="container mx-auto px-8">
     <!-- Section Title -->
-    <h2 class="text-center text-4xl font-bold text-blue-900 mb-12">
+    <h2 class="text-center text-4xl font-extrabold text-blue-900 mb-12">
       Our Products
     </h2>
 
@@ -90,31 +91,9 @@
             {{ product.description }}
           </p>
 
-          <!-- Price Display -->
-          <p class="mt-3 text-xl font-semibold text-green-600">
-            {{ product.price | currency : "PHP" }}
-          </p>
-
-          <!-- Rating Display -->
-          <div class="flex justify-center items-center mt-2">
-            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
-              <svg
-                class="w-6 h-6"
-                [class.text-yellow-400]="i < product.rating"
-                [class.text-gray-300]="i >= product.rating"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.184c.969 0 1.372 1.24.588 1.81l-3.39 2.463a1 1 0 00-.364 1.118l1.286 3.97c.3.921-.755 1.688-1.54 1.118l-3.39-2.463a1 1 0 00-1.176 0l-3.39 2.463c-.784.57-1.838-.197-1.54-1.118l1.286-3.97a1 1 0 00-.364-1.118L2.041 9.397c-.784-.57-.381-1.81.588-1.81h4.184a1 1 0 00.95-.69l1.286-3.97z"
-                />
-              </svg>
-            </ng-container>
-          </div>
-
           <!-- Gradient Button with Glow Effect -->
-          <a
-            href="#"
+          <button
+            (click)="openProductModal(product)"
             class="mt-4 inline-block px-6 py-3 text-white text-lg font-semibold rounded-lg shadow-md transition transform hover:scale-105"
             style="
               background: linear-gradient(90deg, #2563eb, #1e3a8a);
@@ -122,7 +101,7 @@
             "
           >
             Learn More
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -132,7 +111,7 @@
 <!-- Footer -->
 <footer
   id="contact"
-  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-16"
+  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-10"
 >
   <div
     class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left"
@@ -141,12 +120,12 @@
     <div>
       <h2 class="text-xl font-semibold mb-4">Contact Us</h2>
       <div class="flex items-center space-x-3 mb-3">
-        <img src="./Telephone.png" class="h-6 w-6" />
-        <p class="text-lg">(032) 427 2822</p>
+        <img src="./Telephone.png" class="h-5 w-5" />
+        <p class="text-1xl">(032) 427 2822</p>
       </div>
       <div class="flex items-start space-x-3">
-        <img src="./PinWhite.png" class="h-6 w-6 mt-1" />
-        <p class="text-lg">
+        <img src="./PinWhite.png" class="h-5 w-5 mt-1" />
+        <p class="text-1xl">
           Unit 204, Sonrisa Suites, Juana Osmeña Street, <br />
           Cebu City, Philippines
         </p>
@@ -167,23 +146,112 @@
           href="https://www.facebook.com/jitech.site"
           class="hover:scale-110 transition transform"
         >
-          <img src="./Facebook.png" class="h-7 w-7" />
+          <img src="./Facebook.png" class="h-6 w-6" />
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Quick Links (Optional) -->
-  <div class="mt-10 border-t border-blue-500 pt-6 text-center text-sm">
-    <div class="flex justify-center space-x-6">
-      <a href="#home" class="hover:text-white transition">Home</a>
-      <a href="#products" class="hover:text-white transition">Products</a>
-      <a href="#contact" class="hover:text-white transition">Contact</a>
-    </div>
-  </div>
-
   <!-- Copyright -->
-  <div class="mt-6 text-center text-sm">
+  <div class="mt-6 border-t border-blue-500 pt-6 text-center text-1xl">
     © Jitech Solutions. All Rights Reserved.
   </div>
 </footer>
+
+<!-- Video Modal -->
+<div
+  #videoModal
+  (click)="closeVideoModalOutside($event)"
+  class="fixed inset-0 bg-black/50 flex justify-center items-center z-50 opacity-0 transition-opacity duration-500"
+>
+  <div
+    #modalContent
+    class="relative bg-black rounded-lg overflow-hidden shadow-lg w-11/12 md:w-2/3 lg:w-1/2"
+  >
+    <!-- Close Button -->
+    <button
+      (click)="closeVideoModal()"
+      class="absolute top-3 right-3 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 transition z-50"
+    >
+      ✖
+    </button>
+
+    <!-- Video Container -->
+    <div class="w-full">
+      <video #productVideo class="w-full h-auto max-h-[80vh]" controls autoplay>
+        <source src="./SampleVid.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</div>
+
+<!-- Product Details Modal (Redesigned) -->
+<div
+  #productModal
+  (click)="closeProductModalOutside($event)"
+  [hidden]="!selectedProduct"
+  class="fixed inset-0 bg-black/75 flex justify-center items-center z-50 opacity-0 transition-opacity duration-500 ease-in-out"
+>
+  <div
+    #productModalContent
+    class="relative bg-white rounded-lg overflow-hidden shadow-lg w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 p-6 transform scale-90 opacity-0 transition-all duration-500 ease-in-out flex flex-col md:flex-row"
+  >
+    <!-- Product Image Section -->
+    <div
+      class="md:w-1/2 flex justify-center items-center bg-gray-100 rounded-lg p-4"
+    >
+      <img
+        [src]="selectedProduct?.image"
+        class="w-full h-64 object-cover rounded-lg shadow-lg"
+      />
+    </div>
+
+    <!-- Product Details Section -->
+    <div class="md:w-1/2 p-6">
+      <!-- Close Button -->
+      <button
+        (click)="closeProductModal()"
+        class="absolute top-3 right-3 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 transition z-50"
+      >
+        ✖
+      </button>
+
+      <h2 class="text-3xl font-bold text-blue-900">
+        {{ selectedProduct?.name }}
+      </h2>
+
+      <!-- Price -->
+      <p class="mt-2 text-2xl font-semibold text-green-600">
+        {{ selectedProduct?.price | currency : "PHP" }}
+      </p>
+
+      <!-- Rating -->
+      <div class="flex items-center mt-2">
+        <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+          <svg
+            class="w-6 h-6"
+            [class.text-yellow-400]="i < selectedProduct?.rating"
+            [class.text-gray-300]="i >= selectedProduct?.rating"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.184c.969 0 1.372 1.24.588 1.81l-3.39 2.463a1 1 0 00-.364 1.118l1.286 3.97c.3.921-.755 1.688-1.54 1.118l-3.39-2.463a1 1 0 00-1.176 0l-3.39 2.463c-.784.57-1.838-.197-1.54-1.118l1.286-3.97a1 1 0 00-.364-1.118L2.041 9.397c-.784-.57-.381-1.81.588-1.81h4.184a1 1 0 00.95-.69l1.286-3.97z"
+            />
+          </svg>
+        </ng-container>
+      </div>
+
+      <!-- Bullet-Point Description -->
+      <ul class="mt-4 space-y-2 text-gray-700 text-lg">
+        <li
+          *ngFor="let point of selectedProduct?.features"
+          class="flex items-start"
+        >
+          <span class="text-blue-500 mr-2">✔</span> {{ point }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

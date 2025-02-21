@@ -21,7 +21,7 @@ export class LoginComponent {
       title: 'Innovate',
     },
     {
-      image: './Integrate2.png',
+      image: './Integrate.png',
       title: 'Integrate',
     },
     {
