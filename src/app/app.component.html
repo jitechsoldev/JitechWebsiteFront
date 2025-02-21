@@ -19,11 +19,11 @@
     <img src="./JitechWhite.png" class="h-10" />
   </div>
 
-  <!-- Logout Button -->
+  <!-- ✅ Logout Button (With Confirmation) -->
   <div>
     <button
       class="transition-transform transform hover:scale-110 p-2 flex items-center px-3 py-1 rounded-lg"
-      [routerLink]="['/']"
+      (click)="confirmLogout()"
     >
       <img src="./LogoutWhite.svg" class="w-5 h-5" />
     </button>

@@ -1,4 +1,4 @@
-<!-- Navbar Section -->
+<!-- ✅ Smooth Scrolling Instead of Router Links -->
 <nav
   id="navbar"
   class="sticky-nav fixed top-0 left-0 w-full z-50 bg-white shadow-md text-blue-900 px-20 py-3 flex justify-between items-center"
@@ -10,13 +10,24 @@
   </div>
 
   <div class="hidden md:flex space-x-6">
-    <a href="#home" class="hover:text-blue-600 transition font-bold">Home</a>
-    <a href="#products" class="hover:text-blue-600 transition font-bold"
-      >Products</a
+    <button
+      (click)="scrollToSection('home')"
+      class="hover:text-blue-600 transition font-bold"
     >
-    <a href="#contact" class="hover:text-blue-600 transition font-bold"
-      >Contact</a
+      Home
+    </button>
+    <button
+      (click)="scrollToSection('products')"
+      class="hover:text-blue-600 transition font-bold"
     >
+      Products
+    </button>
+    <button
+      (click)="scrollToSection('contact')"
+      class="hover:text-blue-600 transition font-bold"
+    >
+      Contact
+    </button>
   </div>
 </nav>
 
@@ -31,18 +42,18 @@
         Empowering businesses with cutting-edge solutions.
       </p>
       <div class="mt-6 space-x-4">
-        <a
-          href="#products"
+        <button
+          (click)="scrollToSection('products')"
           class="bg-blue-500 hover:bg-blue-400 px-6 py-3 text-lg font-semibold rounded-lg shadow-lg transition"
         >
           Explore Products
-        </a>
-        <a
-          href="#contact"
+        </button>
+        <button
+          (click)="scrollToSection('contact')"
           class="border border-white px-6 py-3 text-lg font-semibold rounded-lg hover:bg-white hover:text-blue-900 transition"
         >
           Contact Us
-        </a>
+        </button>
       </div>
     </div>
     <div class="lg:w-1/2 flex justify-center">
@@ -158,28 +169,22 @@
   </div>
 </footer>
 
-<!-- Video Modal (Idle Screen / Screen Saver) -->
+<!-- Fullscreen Video Modal (Screen Saver) -->
 <div
   #videoModal
-  class="fixed inset-0 bg-black/75 flex justify-center items-center z-50 opacity-0 transition-opacity duration-500"
+  class="fixed inset-0 bg-black flex justify-center items-center z-50 opacity-0 transition-opacity duration-700 ease-in-out"
 >
-  <div
-    class="relative bg-white rounded-lg overflow-hidden shadow-lg w-11/12 md:w-2/3 lg:w-1/2"
+  <!-- Video Container (Fullscreen) -->
+  <video
+    #productVideo
+    class="w-full h-full object-cover opacity-0 transition-opacity duration-1000 ease-in-out"
+    autoplay
+    muted
+    playsinline
   >
-    <!-- Video Container -->
-    <div class="w-full">
-      <video
-        #productVideo
-        class="w-full h-auto max-h-[80vh]"
-        autoplay
-        muted
-        playsinline
-      >
-        <source src="./SampleVid.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
-  </div>
+    <source src="./SampleVid.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
 </div>
 
 <!-- Product Details Modal (Redesigned) -->

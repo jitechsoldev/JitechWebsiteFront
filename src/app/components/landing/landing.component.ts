@@ -27,7 +27,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   visibleItems: number = 1;
   selectedProduct: any = null;
   idleTimeout: any;
-  idleTime = 15 * 1000;
+  idleTime = 40 * 1000;
 
   products = [
     {
@@ -130,32 +130,42 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     this.visibleItems = screenWidth >= 1024 ? 3 : screenWidth >= 768 ? 2 : 1;
   }
 
-  /** Opens the video modal (Screen Saver Mode) */
+  /** Opens the fullscreen video modal with fade-in effect */
   openVideoModal() {
     if (this.videoModal && this.productVideo) {
       this.videoModal.nativeElement.classList.remove('hidden', 'opacity-0');
       this.videoModal.nativeElement.classList.add('opacity-100');
 
+      // Fade in the video content
       setTimeout(() => {
+        this.productVideo.nativeElement.classList.add('opacity-100');
+        this.productVideo.nativeElement.classList.remove('opacity-0');
         this.productVideo.nativeElement.muted = true; // Ensure muted for autoplay
-        this.productVideo.nativeElement.play();
+        this.productVideo.nativeElement.play().catch(() => {
+          console.warn('Autoplay was blocked. Click to play.');
+        });
       }, 300);
     }
   }
 
-  /** Closes the video modal when user interacts */
+  /** Closes the video modal with fade-out effect */
   closeVideoModal() {
     if (this.videoModal && this.productVideo) {
       this.productVideo.nativeElement.pause();
       this.productVideo.nativeElement.currentTime = 0;
 
-      this.videoModal.nativeElement.classList.remove('opacity-100');
-      this.videoModal.nativeElement.classList.add('opacity-0');
+      // Fade out the video content first
+      this.productVideo.nativeElement.classList.remove('opacity-100');
+      this.productVideo.nativeElement.classList.add('opacity-0');
 
       setTimeout(() => {
-        this.videoModal.nativeElement.classList.add('hidden');
-        this.startIdleTimer(); // Restart idle timer after closing
-      }, 500);
+        this.videoModal.nativeElement.classList.remove('opacity-100');
+        this.videoModal.nativeElement.classList.add('opacity-0');
+
+        setTimeout(() => {
+          this.videoModal.nativeElement.classList.add('hidden');
+        }, 1000); // Matches fade-out duration
+      }, 300);
     }
   }
 
@@ -268,6 +278,17 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
       !this.productModalContent.nativeElement.contains(event.target)
     ) {
       this.closeProductModal();
+    }
+  }
+
+  scrollToSection(sectionId: string) {
+    const element = document.getElementById(sectionId);
+
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80, // Adjust for navbar height
+        behavior: 'smooth',
+      });
     }
   }
 }

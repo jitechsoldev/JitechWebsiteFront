@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -33,13 +33,27 @@ export class AppComponent {
   ];
 
   constructor(private router: Router) {
-    this.router.events.subscribe(() => {
-      const hiddenRoutes = ['/login', '/'];
-      this.ShowLayout = !hiddenRoutes.includes(this.router.url);
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        const hiddenRoutes = ['/login', '/'];
+
+        // ✅ Check if URL contains # (anchor link), don't show layout if so
+        if (this.router.url.includes('#')) {
+          return;
+        }
+
+        this.ShowLayout = !hiddenRoutes.includes(this.router.url);
+      }
     });
   }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  confirmLogout() {
+    if (confirm('Are you sure you want to log out?')) {
+      this.router.navigate(['/']);
+    }
   }
 }
