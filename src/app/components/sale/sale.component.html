@@ -25,39 +25,39 @@
     <table class="min-w-full w-full leading-normal">
       <thead>
         <tr>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase cursor-pointer select-none"
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
               (click)="sortTable('saleID')">
             Sale ID
             <span *ngIf="sortColumn === 'saleID'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase cursor-pointer select-none"
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
               (click)="sortTable('clientName')">
             Client
             <span *ngIf="sortColumn === 'clientName'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase">
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
             Products
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-right text-xs font-semibold text-white uppercase cursor-pointer select-none"
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
               (click)="sortTable('overallTotalAmount')">
             Overall Total
             <span *ngIf="sortColumn === 'overallTotalAmount'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase cursor-pointer select-none"
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
               (click)="sortTable('dateOfPurchase')">
             Date
             <span *ngIf="sortColumn === 'dateOfPurchase'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase">
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
             Warranty
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase">
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
             Term Payable
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase">
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
             Mode of Payment
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-left text-xs font-semibold text-white uppercase cursor-pointer select-none"
+          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
               (click)="sortTable('status')">
             Status
             <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
@@ -69,9 +69,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let sale of sales" class="hover:bg-blue-50 transition-colors duration-200">
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs font-black">{{ sale.saleID }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">{{ sale.clientName }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs font-black">{{ sale.saleID }}</td>
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.clientName }}</td>
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-left text-xs">
             <ul class="list-disc pl-5">
               <li *ngFor="let item of sale.saleItems">
                 {{ item.product?.productName || 'N/A' }} (Qty: {{ item.quantity }})
@@ -81,22 +81,24 @@
           <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs text-right font-black">
             {{ sale.overallTotalAmount | currency:'PHP':'symbol':'1.2-2' }}
           </td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">
             {{ sale.dateOfPurchase | date:'mediumDate' }}
           </td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">{{ sale.warranty }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">{{ sale.termPayable }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">{{ sale.modeOfPayment }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs">
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.warranty }}</td>
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.termPayable }}</td>
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.modeOfPayment }}</td>
+          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">
             <span [ngClass]="getBadgeClasses(sale.status)">
               {{ sale.status }}
             </span>
           </td>
           <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs text-center">
-            <button (click)="editSale(sale)"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
-              Edit
-            </button>
+            <ng-container *ngIf="sale.status !== 'Completed'">
+              <button (click)="editSale(sale)"
+                      class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
+                Edit
+              </button>
+            </ng-container>
           </td>
         </tr>
       </tbody>
