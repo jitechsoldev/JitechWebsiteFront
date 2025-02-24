@@ -13,7 +13,7 @@ import { RouterModule } from '@angular/router';
 })
 export class LoginComponent {
   currentSlide = 0;
-  username: string = ''; // Used here as a user identifier (in real apps, email or username)
+  // Removed username since login uses only a password.
   password: string = '';
   rememberMe: boolean = false;
 
@@ -38,12 +38,12 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    console.log('Logging in with', this.username, this.password, this.rememberMe);
-    this.authService.login(this.username, this.password)
+    console.log('Logging in with password', this.password, this.rememberMe);
+    this.authService.login(this.password)
       .subscribe({
         next: () => {
           // Redirect to the dashboard on successful login.
-          this.router.navigate(['/inventory-dashboard']);
+          this.router.navigate(['/schedule']);
         },
         error: (err) => {
           console.error('Login error', err);

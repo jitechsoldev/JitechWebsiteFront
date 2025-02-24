@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-
 import * as jwt_decode from 'jwt-decode';
 
 export interface LoginResponse {
@@ -16,9 +15,9 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // Login: using userId (or email/username) and password.
-  login(userId: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { userId, password }).pipe(
+  // Login using only a password.
+  login(password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { password }).pipe(
       tap(response => {
         localStorage.setItem('token', response.token);
       })
@@ -35,7 +34,7 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
-  // Check if the user is logged in.
+  // Check if the user is logged in by decoding and validating the token.
   isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -43,7 +42,6 @@ export class AuthService {
     }
     try {
       const decoded: any = (jwt_decode as any).default(token);
-
       // Check if token has expired. The 'exp' claim is in seconds.
       if (decoded.exp * 1000 < Date.now()) {
         this.logout(); // Clear token if expired
