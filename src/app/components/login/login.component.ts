@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -7,30 +9,21 @@ import { RouterModule } from '@angular/router';
   selector: 'app-login',
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   currentSlide = 0;
-  username: string = '';
+  username: string = ''; // Used here as a user identifier (in real apps, email or username)
   password: string = '';
   rememberMe: boolean = false;
 
   slides = [
-    {
-      image: './Innovate.png',
-      title: 'Innovate',
-    },
-    {
-      image: './Integrate.png',
-      title: 'Integrate',
-    },
-    {
-      image: './Succeed.png',
-      title: 'Succeed',
-    },
+    { image: './Innovate.png', title: 'Innovate' },
+    { image: './Integrate.png', title: 'Integrate' },
+    { image: './Succeed.png', title: 'Succeed' },
   ];
 
-  constructor() {
+  constructor(private authService: AuthService, private router: Router) {
     setInterval(() => {
       this.nextSlide();
     }, 4000);
@@ -45,11 +38,17 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    console.log(
-      'Logging in with',
-      this.username,
-      this.password,
-      this.rememberMe
-    );
+    console.log('Logging in with', this.username, this.password, this.rememberMe);
+    this.authService.login(this.username, this.password)
+      .subscribe({
+        next: () => {
+          // Redirect to the dashboard on successful login.
+          this.router.navigate(['/inventory-dashboard']);
+        },
+        error: (err) => {
+          console.error('Login error', err);
+          // Optionally, show an error message to the user.
+        }
+      });
   }
 }
