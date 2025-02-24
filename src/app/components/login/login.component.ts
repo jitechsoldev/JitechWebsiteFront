@@ -13,9 +13,10 @@ import { RouterModule } from '@angular/router';
 })
 export class LoginComponent {
   currentSlide = 0;
-  // Removed username since login uses only a password.
+  // The username is hard-coded so only the password field is visible.
+  username: string = 'adminUser';
   password: string = '';
-  rememberMe: boolean = false;
+  errorMessage: string = '';
 
   slides = [
     { image: './Innovate.png', title: 'Innovate' },
@@ -38,16 +39,19 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    console.log('Logging in with password', this.password, this.rememberMe);
-    this.authService.login(this.password)
+    // Prepare credentials using the hard-coded username and entered password.
+    const credentials = { username: this.username, password: this.password };
+    console.log('Logging in with credentials:', credentials);
+
+    this.authService.login(credentials)
       .subscribe({
-        next: () => {
-          // Redirect to the dashboard on successful login.
-          this.router.navigate(['/schedule']);
+        next: (res) => {
+          console.log('Login successful, token received:', res.token);
+          this.router.navigate(['/sale']);
         },
         error: (err) => {
           console.error('Login error', err);
-          // Optionally, show an error message to the user.
+          this.errorMessage = err.error.message || 'Login failed. Please check your password.';
         }
       });
   }

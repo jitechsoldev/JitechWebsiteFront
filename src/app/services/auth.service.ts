@@ -1,7 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import * as jwt_decode from 'jwt-decode';
+
+import {jwtDecode} from 'jwt-decode';
+interface DecodedToken {
+  id: string;
+  username: string;
+  role: string; // 'admin' or 'user'
+  exp: number;
+}
 
 export interface LoginResponse {
   token: string;
@@ -15,9 +22,10 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // Login using only a password.
-  login(password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { password }).pipe(
+  // Login now accepts both username and password.
+  // Your login component can hide the username input and automatically set it if needed.
+  login(credentials: { username: string; password: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         localStorage.setItem('token', response.token);
       })
@@ -38,18 +46,25 @@ export class AuthService {
   isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     if (!token) {
+      console.log('No token found.');
       return false;
     }
     try {
-      const decoded: any = (jwt_decode as any).default(token);
-      // Check if token has expired. The 'exp' claim is in seconds.
+      const decoded: DecodedToken =jwtDecode(token) as DecodedToken;
+      console.log('Decoded token in isLoggedIn():', decoded);
+      if (!decoded.exp) {
+        console.error('Token missing exp field.');
+        return false;
+      }
       if (decoded.exp * 1000 < Date.now()) {
-        this.logout(); // Clear token if expired
+        console.log('Token expired.');
+        this.logout();
         return false;
       }
       return true;
     } catch (error) {
-      return false; // Token is invalid
+      console.error('Error decoding token:', error);
+      return false;
     }
   }
 }

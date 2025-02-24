@@ -39,6 +39,7 @@
           <img src="./JitechBlue.png" class="h-18" />
         </div>
         <form class="mt-6" (submit)="onSubmit()">
+          <!-- Only the password field is displayed. The username is set in the TS logic -->
           <div class="mb-6 relative">
             <label for="password" class="block text-blue-900 mb-1">Password:</label>
             <div class="flex items-center border border-blue-300 rounded-3xl px-4 py-2">
@@ -62,6 +63,9 @@
             <img src="./LoginWhite.svg" class="h-5 w-5" />
             Log-in
           </button>
+          <div *ngIf="errorMessage" class="mt-4 text-red-600">
+            {{ errorMessage }}
+          </div>
         </form>
       </div>
     </div>
