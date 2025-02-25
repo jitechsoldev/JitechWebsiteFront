@@ -47,7 +47,7 @@ export class LoginComponent {
       .subscribe({
         next: (res) => {
           console.log('Login successful, token received:', res.token);
-          this.router.navigate(['/sale']);
+          this.router.navigate(['/schedule']);
         },
         error: (err) => {
           console.error('Login error', err);
