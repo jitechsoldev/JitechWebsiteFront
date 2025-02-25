@@ -1,6 +1,13 @@
 <div
   class="flex min-h-screen bg-blue-100 items-center justify-center backdrop-blur-md"
 >
+  <!-- Exit Button -->
+  <button
+    [routerLink]="['/landing']"
+    class="absolute top-5 right-5 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 transition z-50"
+  >
+    ✖
+  </button>
   <div
     class="w-full max-w-3xl bg-white shadow-lg rounded-3xl flex overflow-hidden"
   >
@@ -51,8 +58,9 @@
           <img src="./JitechBlue.png" class="h-18" />
         </div>
         <form class="mt-6" (submit)="onSubmit()">
+          <!-- Only the password field is displayed. The username is set in the TS logic -->
           <div class="mb-6 relative">
-            <label for="username" class="block text-blue-900 mb-1"
+            <label for="password" class="block text-blue-900 mb-1"
               >Password:</label
             >
             <div
@@ -60,10 +68,10 @@
             >
               <img src="./lock-solid.svg" class="h-5 w-5 opacity-50" />
               <input
-                type="text"
-                id="username"
+                type="password"
+                id="password"
                 class="w-full outline-none pl-3"
-                [(ngModel)]="username"
+                [(ngModel)]="password"
                 name="password"
                 placeholder="Enter your password"
                 required
@@ -74,11 +82,13 @@
           <button
             type="submit"
             class="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2 rounded-lg hover:scale-105 hover:shadow-lg transition-all flex items-center justify-center gap-2"
-            [routerLink]="['/inventory-dashboard']"
           >
             <img src="./LoginWhite.svg" class="h-5 w-5" />
             Log-in
           </button>
+          <div *ngIf="errorMessage" class="mt-4 text-red-600">
+            {{ errorMessage }}
+          </div>
         </form>
       </div>
     </div>
