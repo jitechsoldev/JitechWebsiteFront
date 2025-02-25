@@ -8,6 +8,7 @@ import { ProductFormComponent } from './components/product-form/product-form.com
 import { SaleComponent } from './components/sale/sale.component';
 import { JobOrderComponent } from './components/job-order/job-order.component';
 import { ScheduleComponent } from './components/schedule/schedule.component';
+import { QuotationComponent } from './components/quotation/quotation.component';
 
 export const routes: Routes = [
   {
@@ -50,5 +51,10 @@ export const routes: Routes = [
     path: 'schedule',
     component: ScheduleComponent,
   },
+  {
+    path: 'quotation',
+    component: QuotationComponent,
+  },
+
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
