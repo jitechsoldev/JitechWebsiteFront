@@ -25,6 +25,7 @@ export class ProductListComponent implements OnInit {
   itemsPerPage: number = 10;
   sortColumn: string = '';
   sortOrder: 'asc' | 'desc' = 'asc';
+  categories = ['Biometrics', 'Software', 'Printer', 'Accessories'];
 
   constructor(
     private productService: ProductService,
@@ -88,8 +89,7 @@ export class ProductListComponent implements OnInit {
 
       // ✅ Check if product matches selected category
       const matchesCategory =
-        this.selectedCategory === '' ||
-        product.category === this.selectedCategory;
+        !this.selectedCategory || product.category === this.selectedCategory;
 
       // ✅ Check if product matches selected status (active/inactive)
       const matchesStatus =

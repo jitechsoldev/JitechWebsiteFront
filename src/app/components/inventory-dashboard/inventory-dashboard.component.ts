@@ -71,8 +71,12 @@ export class InventoryDashboardComponent implements OnInit {
 
     this.stockMovementService.getStockMovements(filters).subscribe(
       (response) => {
-        this.recentMovements = response.data;
+        this.recentMovements = response.data.map((movement: any) => ({
+          ...movement,
+          serialNumbers: movement.serialNumbers || [], // Ensure serialNumbers is always an array
+        }));
         this.totalPages = response.totalPages;
+        this.filterStockMovements(); // Apply filters
       },
       (error) => {
         console.error('❌ Error fetching stock movements:', error);

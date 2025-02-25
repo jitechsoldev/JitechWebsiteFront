@@ -81,12 +81,12 @@
       >
         <!-- Image Container -->
         <div
-          class="relative w-full h-64 bg-gray-200 flex items-center justify-center overflow-hidden"
+          class="relative w-full h-80 bg-gray-200 flex items-center justify-center overflow-hidden"
         >
           <img
             [src]="product.image"
             alt="{{ product.name }}"
-            class="w-70 h-60 object-cover transition"
+            class="w-80 h-73 object-cover transition"
           />
           <div
             class="absolute inset-0 bg-opacity-20 opacity-0 group-hover:opacity-100 transition"
@@ -122,49 +122,93 @@
 <!-- Footer -->
 <footer
   id="contact"
-  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-10"
+  class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-12"
 >
   <div
     class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left"
   >
     <!-- Contact Section -->
     <div>
-      <h2 class="text-xl font-semibold mb-4">Contact Us</h2>
-      <div class="flex items-center space-x-3 mb-3">
+      <h2 class="text-xl font-semibold mb-3">Contact Us</h2>
+      <div class="flex items-center space-x-2 mb-5">
         <img src="./Telephone.png" class="h-5 w-5" />
-        <p class="text-1xl">(032) 427 2822</p>
+        <p>(032) 427 2822</p>
       </div>
-      <div class="flex items-start space-x-3">
-        <img src="./PinWhite.png" class="h-5 w-5 mt-1" />
-        <p class="text-1xl">
-          Unit 204, Sonrisa Suites, Juana Osmeña Street, <br />
-          Cebu City, Philippines
+      <div class="flex items-start space-x-2 mt-2">
+        <img src="./PinWhite.png" class="h-5 w-5" />
+        <p>
+          Unit 204, Sonrisa Suites, Juana Osmeña <br />
+          Street, Cebu City, Philippines
         </p>
       </div>
     </div>
 
-    <!-- Logo & Motto -->
+    <!-- Logo & Tagline Section -->
     <div class="flex flex-col items-center">
-      <img src="./JitechWhite.png" class="h-20 mb-4" />
-      <p class="text-lg font-light italic">"Innovate. Integrate. Succeed."</p>
+      <img
+        src="./Jitech.png"
+        class="h-16 filter invert mb-3"
+        alt="Jitech Logo"
+      />
+      <p class="text-white">Innovate. Integrate. Succeed.</p>
     </div>
 
-    <!-- Follow Us -->
+    <!-- Follow Us Section -->
     <div class="flex flex-col items-center md:items-start">
-      <h2 class="text-xl font-semibold mb-4">Follow Us</h2>
-      <div class="flex space-x-5">
+      <h2 class="text-lg font-semibold mb-2">Follow Us</h2>
+      <div class="flex space-x-4">
         <a
           href="https://www.facebook.com/jitech.site"
-          class="hover:scale-110 transition transform"
+          class="hover:text-blue-300 transition"
         >
-          <img src="./Facebook.png" class="h-6 w-6" />
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M22 12a10 10 0 1 0-11 9.95v-7.03h-2.38V12h2.38V9.82c0-2.35 1.4-3.64 3.54-3.64.99 0 2.02.18 2.02.18v2.22h-1.14c-1.13 0-1.48.7-1.48 1.42V12h2.52l-.4 2.92h-2.12v7.03A10 10 0 0 0 22 12Z"
+            />
+          </svg>
         </a>
       </div>
+
+      <!-- Our Emails Section (Dropdown) -->
+      <details class="mt-4">
+        <summary
+          class="cursor-pointer text-white font-semibold hover:text-gray-300"
+        >
+          Our Emails
+        </summary>
+        <div class="mt-2 flex flex-col space-y-1 text-sm">
+          <a
+            href="mailto:jitechsolutions8&#64;gmail.com"
+            class="hover:text-gray-300"
+            >jitechsolutions8&#64;gmail.com</a
+          >
+          <a
+            href="mailto:jitechsalesm3&#64;gmail.com"
+            class="hover:text-gray-300"
+            >jitechsalesm1&#64;gmail.com</a
+          >
+          <a
+            href="mailto:jitechsalesm19&#64;gmail.com"
+            class="hover:text-gray-300"
+            >jitechsalesm3&#64;gmail.com</a
+          >
+          <a
+            href="mailto:jitechsalesm1&#64;gmail.com"
+            class="hover:text-gray-300"
+            >jitechsalesm10&#64;gmail.com</a
+          >
+          <a
+            href="mailto:jitechsalesm10&#64;gmail.com"
+            class="hover:text-gray-300"
+            >jitechsalesm19&#64;gmail.com</a
+          >
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- Copyright -->
-  <div class="mt-6 border-t border-blue-500 pt-6 text-center text-1xl">
+  <!-- Footer Bottom -->
+  <div class="mt-10 border-t border-blue-500 pt-4 text-center text-sm">
     © Jitech Solutions. All Rights Reserved.
   </div>
 </footer>
@@ -211,7 +255,7 @@
     >
       <img
         [src]="selectedProduct?.image"
-        class="w-full h-64 object-cover rounded-lg shadow-lg"
+        class="w-full h-75 object-cover rounded-lg shadow-lg"
       />
     </div>
 
