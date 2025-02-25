@@ -298,11 +298,26 @@ export class StockMovementComponent implements OnInit {
   generateSerialFields() {
     this.errors = [];
 
-    if (this.type === 'INCREASE') {
-      this.serialNumbers = Array.from({ length: this.quantity }, (_, i) => ({
-        id: i,
-        value: this.serialNumbers[i]?.value || '', // Keep previously uploaded serials if available
-      }));
+    if (this.stockMovementForm.value.type === 'INCREASE') {
+      this.serialNumbers = []; // ✅ Clear previous serial numbers
+
+      if (this.stockMovementForm.value.quantity > 0) {
+        for (let i = 0; i < this.stockMovementForm.value.quantity; i++) {
+          this.serialNumbers.push({ id: i, value: '' });
+        }
+
+        // ✅ Ensure FormArray is populated with new serials
+        const serialNumberFormArray = this.stockMovementForm.get(
+          'serialNumbers'
+        ) as FormArray;
+        serialNumberFormArray.clear();
+
+        this.serialNumbers.forEach((serial) =>
+          serialNumberFormArray.push(
+            new FormControl(serial.value, Validators.required)
+          )
+        );
+      }
     } else {
       this.serialNumbers = [];
     }

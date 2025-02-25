@@ -20,6 +20,7 @@ export class ProductFormComponent implements OnInit {
   inventory: any[] = [];
   isModalOpen: boolean = false;
   errors: string[] = [];
+  categories = ['Biometrics', 'Software', 'Printer', 'Accessories'];
 
   constructor(
     private fb: FormBuilder,
@@ -35,7 +36,7 @@ export class ProductFormComponent implements OnInit {
         category: ['', Validators.required],
         price: [0, [Validators.required, Validators.min(0)]],
         active: [true],
-        requiresSerialNumber: [false],
+        requiresSerialNumber: [true],
       },
       { updateOn: 'blur' }
     );

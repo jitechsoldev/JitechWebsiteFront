@@ -105,6 +105,7 @@
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
+          <th class="px-4 py-3">Serial Numbers</th>
           <th class="px-4 py-3 cursor-pointer" (click)="setSort('timestamp')">
             Date
             <span *ngIf="sortColumn === 'timestamp'">{{
@@ -128,6 +129,19 @@
             {{ movement.type }}
           </td>
           <td class="px-4 py-3">{{ movement.quantity }}</td>
+          <td class="px-4 py-3">
+            <div *ngIf="movement.serialNumbers?.length > 0; else noSerials">
+              <span
+                *ngFor="let serial of movement.serialNumbers"
+                class="inline-block font-semibold bg-gray-200 text-gray-700 text-sm px-2 py-1 rounded-full mr-1"
+              >
+                {{ serial }}
+              </span>
+            </div>
+            <ng-template #noSerials>
+              <span class="text-gray-500">No Serial Numbers</span>
+            </ng-template>
+          </td>
           <td class="px-4 py-3">{{ movement.timestamp | date : "short" }}</td>
         </tr>
       </tbody>
