@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
     { name: 'Sales Invoice', icon: './SalesWhite.png', routes: '/sale', roles: ['Admin', 'Super Admin', 'User'] },
     { name: 'Job Orders', icon: './JobOrderWhite.png', routes: '/job-order', roles: ['User', 'Admin', 'Super Admin'] },
     { name: 'Quotations', icon: './QuotationsWhite.png', routes: '/quotations', roles: ['User', 'Admin', 'Super Admin'] },
-    { name: 'User Management', icon: './UsersWhite.png', routes: '/user-management', roles: ['Super Admin'] }, // Only Super Admin can access
+    { name: 'User Management', icon: './User.png', routes: '/user-management', roles: ['Super Admin'] }, // Only Super Admin can access
   ];
 
   constructor(private router: Router, private authService: AuthService) {
