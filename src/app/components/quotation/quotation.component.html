@@ -246,10 +246,16 @@
 
 
     <div class="mt-3">
-      <label for="paymentTerm" class="block text-xs font-medium text-gray-700">Payment Term</label>
-      <input id="paymentTerm" type="text" [(ngModel)]="formData.paymentTerm"
-        class="w-full px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500" />
+      <label for="paymentTerm" class="block text-xs font-medium text-gray-500 mb-1">
+        Payment Term
+      </label>
+      <select id="paymentTerm" [(ngModel)]="formData.paymentTerm"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+        <option value="" disabled selected>Select Payment Term</option>
+        <option *ngFor="let term of paymentTerms" [value]="term">{{ term }}</option>
+      </select>
     </div>
+
 
     <!-- Search Input -->
     <div class="py-3">

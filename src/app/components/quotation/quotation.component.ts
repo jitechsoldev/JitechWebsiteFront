@@ -15,6 +15,8 @@ import { InventoryService } from '../../services/inventory.service';
 })
 export class QuotationComponent implements OnInit {
 
+  paymentTerms: string[] = ['Cash', 'Installment', 'Cheque'];
+
   // Array to hold multiple quotations, each with its own toggle (isOpen)
   quotations: any[] = [];
 
