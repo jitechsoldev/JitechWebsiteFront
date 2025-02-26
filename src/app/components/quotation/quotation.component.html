@@ -1,16 +1,20 @@
 <!-- Open Modal Button -->
-<button
-  (click)="open()"
-  class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
->
-  +
-</button>
+<div class="w-full flex justify-end mb-5">
+  <button
+    (click)="open()"
+    class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+  >
+    Create New Quotation
+  </button>
+</div>
+
+
 
 <!-- Loop over each quotation. Each quotation has a top row with a company name input and a toggle button,
      then a dropdown block showing the full details. -->
-<div *ngFor="let quotation of quotations; let i = index" class="mb-6">
+<div *ngFor="let quotation of quotations; let i = index">
   <!-- Top row: Company name and Toggle Button -->
-  <div class="flex items-center border rounded px-3 py-2 max-w-xl mx-auto mb-4">
+  <div class="flex flex-wrap items-center border rounded px-3 py-2 w-full mx-0">
     <input
       class="flex-1 border-none focus:outline-none bg-transparent"
       [value]="quotation.companyName"
