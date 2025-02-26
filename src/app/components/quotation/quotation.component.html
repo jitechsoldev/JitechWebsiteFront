@@ -41,7 +41,7 @@
         <!-- Update the logo path as needed -->
         <img src="./JitechBlue.png" alt="Company Logo" class="h-14 mb-2" />
         <p class="text-gray-600 text-sm">
-          {{ quotation.companyName }}
+          Competitive Card Solutions phils. Inc.
         </p>
       </div>
       <div class="text-right">
@@ -246,9 +246,16 @@
           class="w-full px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500" />
       </div>
       <div>
-        <label for="quotationDate" class="block text-xs font-medium text-gray-700">Quotation Date</label>
-        <input id="quotationDate" type="date" [(ngModel)]="formData.quotationDate"
-          class="w-full px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500" />
+        <label for="quotationDate" class="block text-xs font-medium text-gray-700">
+          Quotation Date
+        </label>
+        <input
+          id="quotationDate"
+          type="date"
+          [(ngModel)]="formData.quotationDate"
+          readonly
+          class="w-full px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500"
+        />
       </div>
       <div>
         <label for="expiryDate" class="block text-xs font-medium text-gray-700">Expiry Date</label>
