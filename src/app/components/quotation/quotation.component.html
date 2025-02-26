@@ -17,10 +17,9 @@
       readonly
     />
     <button
-      class="flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded ml-2"
+      class="flex items-center justify-center text-gray-500 px-3 py-1 rounded ml-2"
       (click)="toggleQuotationDropdown(i)"
     >
-      <span class="mr-1">Toggle</span>
       <svg
         class="w-4 h-4 fill-current transform"
         [ngClass]="{ 'rotate-180': quotation.isOpen }"
@@ -245,7 +244,7 @@
       </div>
     </div>
 
-    
+
     <div class="mt-3">
       <label for="paymentTerm" class="block text-xs font-medium text-gray-700">Payment Term</label>
       <input id="paymentTerm" type="text" [(ngModel)]="formData.paymentTerm"
