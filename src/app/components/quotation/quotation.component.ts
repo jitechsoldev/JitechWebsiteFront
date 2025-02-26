@@ -15,7 +15,12 @@ import { InventoryService } from '../../services/inventory.service';
 })
 export class QuotationComponent implements OnInit {
 
+  // Array to hold multiple quotations, each with its own toggle (isOpen)
+  quotations: any[] = [];
+
+  // Toggle for new quotation details (if needed)
   isOpen = false;
+
   showModal = false;
   products: any[] = [];
   selectedProducts: any[] = [];
@@ -23,36 +28,54 @@ export class QuotationComponent implements OnInit {
   searchTerm: string = ''; // search term for filtering inventory
   selectedProduct: any = null; // selected product from dropdown
 
+  // Form data for creating a new quotation
   formData: Quotation = this.getEmptyQuotation();
 
-  constructor(private quotationService: QuotationService,  private productService: ProductService,
-    private inventoryService: InventoryService) {}
+  constructor(
+    private quotationService: QuotationService,
+    private productService: ProductService,
+    private inventoryService: InventoryService
+  ) {}
 
   ngOnInit() {
-     // Clear any stored products from previous selections
-  this.selectedProducts = [];
-  this.selectedProduct = null;
-  localStorage.removeItem('selectedProducts');
-  sessionStorage.removeItem('selectedProducts');
-  this.loadProducts();
+    // Clear any stored products from previous selections
+    this.selectedProducts = [];
+    this.selectedProduct = null;
+    localStorage.removeItem('selectedProducts');
+    sessionStorage.removeItem('selectedProducts');
 
-  // Fetch the latest quotation, ensuring old data doesn't persist
-  this.loadLatestQuotation();
+    // Load products and all quotations
+    this.loadProducts();
+    this.loadAllQuotations();
 
+    // Quick patch for default qty/discount on already selected products
     setTimeout(() => {
       console.log('🛍️ Selected Products:', this.selectedProducts);
       this.selectedProducts = this.selectedProducts.map(product => ({
         ...product,
-        qty: product.qty || 1,  // Default qty to 1
-        discount: product.discount || 0  // Default discount to 0
+        qty: product.qty || 1,
+        discount: product.discount || 0
       }));
     }, 2000);
+  }
+
+  /** Toggle the dropdown for a new quotation block (if used) */
+  toggleDropdown() {
+    this.isOpen = !this.isOpen;
+  }
+
+  /**
+   * Toggle the dropdown for a specific quotation in the list.
+   * @param index Index of the quotation in the `quotations` array.
+   */
+  toggleQuotationDropdown(index: number) {
+    this.quotations[index].isOpen = !this.quotations[index].isOpen;
   }
 
   loadProducts() {
     this.productService.getProducts(1, 100).subscribe(
       (response) => {
-        console.log('✅ Product List Response:', response); // Debugging log
+        console.log('✅ Product List Response:', response);
         this.products = response.data ? response.data : response;
         this.products.forEach(product => {
           console.log(`🛍️ Product: ${product.productName}, Price: ${product.price}`);
@@ -67,17 +90,26 @@ export class QuotationComponent implements OnInit {
     );
   }
 
-  loadLatestQuotation() {
-    this.quotationService.getLatestQuotation().subscribe(latestQuotation => {
-      this.formData = latestQuotation;
-    this.selectedProducts = latestQuotation.items && latestQuotation.items.length ? latestQuotation.items : [];
-
-    console.log('✅ Selected Products After Load:', this.selectedProducts);
-    });
+  /**
+   * Load all quotations from the service.
+   * Each quotation is enhanced with an `isOpen` property to toggle details.
+   */
+  loadAllQuotations() {
+    // Assumes your service has a method getAllQuotations() that returns an array
+    this.quotationService.getAllQuotations().subscribe(
+      (response: Quotation[]) => {
+        this.quotations = response.map(q => ({ ...q, isOpen: false }));
+        console.log('✅ Loaded Quotations:', this.quotations);
+      },
+      error => {
+        console.error('🚨 Error loading quotations:', error);
+      }
+    );
   }
 
   open() {
-    this.formData = this.getEmptyQuotation(); // Reset form for new quotation
+    // Reset form for new quotation creation
+    this.formData = this.getEmptyQuotation();
     this.showModal = true;
   }
 
@@ -88,6 +120,7 @@ export class QuotationComponent implements OnInit {
   }
 
   submit() {
+    // Prepare the quotation data with selected products
     this.formData.items = this.selectedProducts.map(product => ({
       sku: product.sku,
       productName: product.productName,
@@ -101,15 +134,14 @@ export class QuotationComponent implements OnInit {
       response => {
         console.log('✅ Quotation saved:', response);
 
-        // Force clear selectedProducts before closing
+        // Clear selected products and reset selection
         this.selectedProducts = [];
         this.selectedProduct = null;
-
-        // Also clear any stored data
         localStorage.removeItem('selectedProducts');
         sessionStorage.removeItem('selectedProducts');
 
-        this.loadLatestQuotation(); // Reload latest quotation
+        // Reload all quotations so the new one appears
+        this.loadAllQuotations();
         this.close();
       },
       error => {
@@ -117,7 +149,6 @@ export class QuotationComponent implements OnInit {
       }
     );
   }
-
 
   logDebugInfo(product: any) {
     console.log(`Product: ${product.productName}`);
@@ -147,7 +178,7 @@ export class QuotationComponent implements OnInit {
     };
   }
 
-  // Returns inventory filtered by search term
+  // Filter inventory by search term
   get filteredInventory() {
     if (!this.searchTerm) {
       return this.products;
@@ -166,21 +197,16 @@ export class QuotationComponent implements OnInit {
 
   closeModal() {
     console.log('❌ Closing Modal and Resetting Selection');
-
     this.showModal = false;
     this.selectedProducts = [];
     this.selectedProduct = null;
-
-    // Remove stored data to prevent persistence
     localStorage.removeItem('selectedProducts');
     sessionStorage.removeItem('selectedProducts');
   }
 
-  // Toggle individual product selection.
-  // Also, the product.desiredQty should already be entered in the modal.
+  // Toggle individual product selection from the inventory modal
   toggleSelection(product: any, event: any) {
     if (event.target.checked) {
-      // Set default quantity if not provided
       if (!product.desiredQty || product.desiredQty < 1) {
         product.desiredQty = 1;
       }
@@ -194,7 +220,6 @@ export class QuotationComponent implements OnInit {
   toggleAllSelection(event: any) {
     if (event.target.checked) {
       this.selectedProducts = [...this.filteredInventory];
-      // Set default quantity for each product if not provided
       this.selectedProducts.forEach(product => {
         if (!product.desiredQty || product.desiredQty < 1) {
           product.desiredQty = 1;
@@ -205,8 +230,7 @@ export class QuotationComponent implements OnInit {
     }
   }
 
-  // Adds selected products from the modal to the quotation.
-  // Copies the desired quantity into product.qty.
+  // Add selected products from modal into the quotation
   addSelectedProducts() {
     this.selectedProducts.forEach(product => {
       product.qty = product.desiredQty ? product.desiredQty : 1;
@@ -215,12 +239,12 @@ export class QuotationComponent implements OnInit {
     this.closeModal();
   }
 
-  // Final submission of the quotation
+  // Final submission of the quotation from the modal
   submitQuotation() {
     console.log('Quotation Submitted:', this.selectedProducts);
   }
 
-  // Compute individual product amount using percentage discount
+  // Compute individual product amount using discount
   calculateAmount(product: any): number {
     const price = product.price || 0;
     const qty = product.qty || 1;
@@ -259,66 +283,48 @@ export class QuotationComponent implements OnInit {
     return this.subTotal;
   }
 
-  // Adds the selected product and removes it from the available list
   addProduct() {
     if (this.selectedProduct) {
       console.log('🛒 Adding Product:', this.selectedProduct);
 
-      // Prevent duplicate entries
       const exists = this.selectedProducts.some(p => p.sku === this.selectedProduct.sku);
       if (exists) {
         console.warn('⚠️ Product already exists in the selected list!');
         return;
       }
-
-      // Ensure price exists
       if (!this.selectedProduct.price) {
         this.selectedProduct.price = this.selectedProduct.defaultPrice || 0;
       }
 
-      // Add product to the selected list
       this.selectedProducts.push({ ...this.selectedProduct });
-
-      // Remove from available product list
       this.products = this.products.filter(item => item.sku !== this.selectedProduct.sku);
-
-      // Clear selection
       this.selectedProduct = null;
     }
   }
 
-
-  // Removes the product from the selected list and adds it back to available options
   removeProduct(productToRemove: any) {
     console.log('🗑 Removing Product:', productToRemove);
-
-    // Remove from selectedProducts
     this.selectedProducts = this.selectedProducts.filter(product => product.sku !== productToRemove.sku);
-
-    // Ensure the product is added back to the dropdown options if it's not already there
     if (!this.products.some(product => product.sku === productToRemove.sku)) {
       this.products.push(productToRemove);
     }
   }
 
   updateAmount(product: any) {
-    // Ensure discount is within valid range (0-100%)
     if (product.discount < 0) {
       product.discount = 0;
     } else if (product.discount > 100) {
       product.discount = 100;
     }
-    // Force Angular to detect changes and update UI
+    // Force Angular change detection update
     this.selectedProducts = [...this.selectedProducts];
   }
 
   get totalDiscount(): number {
     return this.selectedProducts.reduce((sum, product) => {
-      // If you have quantity:
       const qty = product.qty || 1;
       const rate = product.price || 0;
-      const discountPercent = product.discount || 0; // e.g., 10 => 10%
-      // Convert discount% to decimal, then multiply by (rate * qty)
+      const discountPercent = product.discount || 0;
       const lineDiscountPesos = (rate * qty) * (discountPercent / 100);
       return sum + lineDiscountPesos;
     }, 0);
@@ -332,15 +338,10 @@ export class QuotationComponent implements OnInit {
     }
   }
 
-  // Validate quantity (example)
   validateDesiredQty(product: any) {
     if (!product.qty || product.qty < 1) {
       product.qty = 1;
     }
-    // ...any stock checks, etc.
-    // Then clamp discount if needed
     this.clampDiscount(product);
   }
-
-
 }

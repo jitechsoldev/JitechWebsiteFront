@@ -3,189 +3,207 @@
   (click)="open()"
   class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
 >
-+
+  +
 </button>
 
-
-<div class="border rounded-lg p-6 w-[700px] mx-auto shadow-md">
-  <div class="flex justify-between items-center border-b pb-4 mb-4">
-    <!-- Logo and Company Name -->
-    <div class="flex flex-col items-center mb-6">
-      <img src="./JitechBlue.png" alt="Company Logo" class="h-14 mb-2" />
-      <!-- Ensure the logo path is correct -->
-      <p class="text-gray-600 text-sm">
-        Competitive Card Solutions Phils. Inc.
-      </p>
-    </div>
-
-    <!-- Official Quotation -->
-    <div class="text-right">
-      <h2 class="text-xl font-bold text-gray-900">Official Quotation</h2>
-      <p class="text-sm text-gray-500">
-        # {{ formData.quotationNumber || "Generating..." }}
-      </p>
-    </div>
+<!-- Loop over each quotation. Each quotation has a top row with a company name input and a toggle button,
+     then a dropdown block showing the full details. -->
+<div *ngFor="let quotation of quotations; let i = index" class="mb-6">
+  <!-- Top row: Company name and Toggle Button -->
+  <div class="flex items-center border rounded px-3 py-2 max-w-xl mx-auto mb-4">
+    <input
+      class="flex-1 border-none focus:outline-none bg-transparent"
+      [value]="quotation.companyName"
+      readonly
+    />
+    <button
+      class="flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded ml-2"
+      (click)="toggleQuotationDropdown(i)"
+    >
+      <span class="mr-1">Toggle</span>
+      <svg
+        class="w-4 h-4 fill-current transform"
+        [ngClass]="{ 'rotate-180': quotation.isOpen }"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="M5.516 7.548L10 12.032l4.484-4.484 1.414 1.414-5.898 5.898a1 1 0 01-1.414 0l-5.898-5.898 1.414-1.414z"
+        />
+      </svg>
+    </button>
   </div>
-  <div class="grid grid-cols-2 gap-50">
-    <div class="space-y-1 ">
-      <p class="font-bold"><strong></strong> {{ formData.companyName }}</p>
-      <p><strong></strong> {{ formData.address }}</p>
-      <p><strong></strong> {{ formData.contactNo }}</p>
-      <p><strong></strong>TIN-{{ formData.tin }}</p>
-      <p><strong></strong> {{ formData.clientName }}</p>
+
+  <!-- Official Quotation Block (dropdown) -->
+  <div *ngIf="quotation.isOpen" class="border rounded-lg p-6 w-[700px] mx-auto shadow-md">
+    <!-- Header: Logo & Company Name, Quotation Number -->
+    <div class="flex justify-between items-center border-b pb-4 mb-4">
+      <div class="flex flex-col items-center">
+        <!-- Update the logo path as needed -->
+        <img src="./JitechBlue.png" alt="Company Logo" class="h-14 mb-2" />
+        <p class="text-gray-600 text-sm">
+          {{ quotation.companyName }}
+        </p>
+      </div>
+      <div class="text-right">
+        <h2 class="text-xl font-bold text-gray-900">Official Quotation</h2>
+        <p class="text-sm text-gray-500">
+          # {{ quotation.quotationNumber || 'Generating...' }}
+        </p>
+      </div>
     </div>
-    <div class="text-gray-500 text-sm space-y-2">
-      <p>
-        Quotation Date :
-        <span class="ml-2 text-black font-semibold">{{
-          formatDate(formData.quotationDate)
-        }}</span>
-      </p>
-      <p>
-        Expiry Date :
-        <span class="ml-2 text-black font-semibold">{{
-          formatDate(formData.expiryDate)
-        }}</span>
-      </p>
-      <p>
-        Reference :
-        <span class="ml-2 text-black font-semibold">{{
-          formData.reference
-        }}</span>
-      </p>
-      <p>
-        Sales Person :
-        <span class="ml-2 text-black font-semibold">{{
-          formData.salesPerson
-        }}</span>
-      </p>
-      <p>
-        Payment Term :
-        <span class="ml-2 text-black font-semibold">{{
-          formData.paymentTerm
-        }}</span>
-      </p>
+
+    <!-- Customer & Quotation Details -->
+    <div class="grid grid-cols-2 gap-50">
+      <div class="space-y-1">
+        <p class="font-bold">{{ quotation.companyName }}</p>
+        <p>{{ quotation.address }}</p>
+        <p>{{ quotation.contactNo }}</p>
+        <p>TIN-{{ quotation.tin }}</p>
+        <p>{{ quotation.clientName }}</p>
+      </div>
+      <div class="text-gray-500 text-sm space-y-2">
+        <p>
+          Quotation Date:
+          <span class="ml-2 text-black font-semibold">
+            {{ formatDate(quotation.quotationDate) }}
+          </span>
+        </p>
+        <p>
+          Expiry Date:
+          <span class="ml-2 text-black font-semibold">
+            {{ formatDate(quotation.expiryDate) }}
+          </span>
+        </p>
+        <p>
+          Reference:
+          <span class="ml-2 text-black font-semibold">
+            {{ quotation.reference }}
+          </span>
+        </p>
+        <p>
+          Sales Person:
+          <span class="ml-2 text-black font-semibold">
+            {{ quotation.salesPerson }}
+          </span>
+        </p>
+        <p>
+          Payment Term:
+          <span class="ml-2 text-black font-semibold">
+            {{ quotation.paymentTerm }}
+          </span>
+        </p>
+      </div>
     </div>
-  </div>
-  <!-- Display Selected Products in Table -->
-<div class="flex flex-col mt-4">
-  <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-    <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-      <div class="overflow-hidden">
 
-        <!-- Quotation Table -->
-        <table class="min-w-full border border-gray-300 rounded-lg overflow-hidden shadow-md text-left text-sm font-light bg-white text-black">
-          <thead class="border-b border-gray-300 bg-gray-900 text-white font-medium">
-            <tr>
-              <th scope="col" class="px-6 py-4 w-12 text-center">#</th>
-              <th scope="col" class="px-6 py-4">Item</th>
-              <th scope="col" class="px-6 py-4 text-center">Qty</th>
-              <th scope="col" class="px-6 py-4 text-right">Rate</th>
-              <th scope="col" class="px-6 py-4 text-right">Discount</th>
-              <th scope="col" class="px-6 py-4 text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-300">
-            <tr *ngFor="let product of selectedProducts; let i = index" class="hover:bg-gray-100">
-              <td class="px-6 py-4 text-center font-medium">{{ i + 1 }}</td>
-              <td class="px-6 py-4">{{ product.productName }}</td>
+    <!-- Table of Selected Products/Items -->
+    <div class="flex flex-col mt-4">
+      <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+          <div class="overflow-hidden">
+            <table
+              class="min-w-full border border-gray-300 rounded-lg overflow-hidden shadow-md text-left text-sm font-light bg-white text-black"
+            >
+              <thead class="border-b border-gray-300 bg-gray-900 text-white font-medium">
+                <tr>
+                  <th scope="col" class="px-6 py-4 w-12 text-center">#</th>
+                  <th scope="col" class="px-6 py-4">Item</th>
+                  <th scope="col" class="px-6 py-4 text-center">Qty</th>
+                  <th scope="col" class="px-6 py-4 text-right">Rate</th>
+                  <th scope="col" class="px-6 py-4 text-right">Discount</th>
+                  <th scope="col" class="px-6 py-4 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-300">
+                <tr
+                  *ngFor="let product of quotation.items; let j = index"
+                  class="hover:bg-gray-100"
+                >
+                  <td class="px-6 py-4 text-center font-medium">{{ j + 1 }}</td>
+                  <td class="px-6 py-4">{{ product.productName }}</td>
+                  <td class="px-6 py-4 text-center">{{ product.qty }}</td>
+                  <td class="px-6 py-4 text-right">
+                    {{ product.price | currency:'PHP':'symbol' }}
+                  </td>
+                  <td class="px-6 py-4 text-right">{{ product.discount }}%</td>
+                  <td class="px-6 py-4 text-right font-semibold">
+                    {{ calculateAmount(product) | currency:'PHP':'symbol' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-              <!-- Quantity -->
-              <td class="px-6 py-4 text-center">{{ product.qty }}</td>
-
-              <!-- Rate (per-item price) -->
-              <td class="px-6 py-4 text-right">
-                {{ product.price | currency:'PHP':'symbol' }}
-              </td>
-
-              <!-- Discount (as a percentage) -->
-              <td class="px-6 py-4 text-right">{{ product.discount }}%</td>
-
-              <!-- Amount = (price * qty) * (1 - discount%/100) -->
-              <td class="px-6 py-4 text-right font-semibold">
-                {{ calculateAmount(product) | currency:'PHP':'symbol' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-
-        <!-- Divider -->
-        <div class="my-5">
-          <hr class="my-2 border-gray-300" />
-        </div>
-
-        <!-- Summary Section -->
-        <div class="space-y-2">
-
-          <!-- Row 1: Items in total (left) and Sub Total (right) -->
-          <div class="flex justify-between items-start">
-            <!-- Left side: Items in Total -->
-            <p class="font-semibold">
-              Items in Total: {{ selectedProducts.length }}
-            </p>
-
-            <!-- Right side: Sub Total + (Tax Inclusive) -->
-            <div class="text-right">
-              <p>
-                Sub total:
-                <span class="ms-10 me-5"> {{ subTotal | currency:'PHP':'symbol' }}</span>
-              </p>
-
-              <p>
-                Total Taxable Amount:
-                <!-- Replace `taxableAmount` with your own calculated property -->
-                <span class="ms-10 me-5"> {{ taxableAmount | currency:'PHP':'symbol' }}</span>
-
-              </p>
-              <p>
-                Total Discount:
-                <span class="ms-10 me-5">
-                  {{ totalDiscount | currency:'PHP':'symbol' }}
-                </span>
-              </p>
-
-              <p>
-                VAT (12%):
-                <!-- Replace `vatAmount` with your own calculated property -->
-                <span class="ms-10 me-5"> {{ vatTotalAmount | currency:'PHP':'symbol' }}</span>
-              </p>
+            <!-- Divider -->
+            <div class="my-5">
+              <hr class="my-2 border-gray-300" />
             </div>
-          </div>
 
-          <!-- Optional horizontal divider to separate details from total -->
-          <hr class="my-2 border-gray-300" />
+            <!-- Summary Section -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-start">
+                <p class="font-semibold">
+                  Items in Total: {{ quotation.items.length }}
+                </p>
+                <div class="text-right">
+                  <p>
+                    Sub total:
+                    <span class="ms-10 me-5">
+                      {{ quotation.subTotal | currency:'PHP':'symbol' }}
+                    </span>
+                  </p>
+                  <p>
+                    Taxable Amount:
+                    <span class="ms-10 me-5">
+                      {{ quotation.totalTaxableAmount | currency:'PHP':'symbol' }}
+                    </span>
+                  </p>
+                  <p>
+                    Total Discount:
+                    <span class="ms-10 me-5">
+                      {{ quotation.totalDiscount | currency:'PHP':'symbol' }}
+                    </span>
+                  </p>
+                  <p>
+                    VAT (12%):
+                    <span class="ms-10 me-5">
+                      {{ quotation.vatTotalAmount | currency:'PHP':'symbol' }}
+                    </span>
+                  </p>
+                </div>
+              </div>
 
-          <!-- Row 3: Highlighted Total Amount on the right -->
-          <div class="flex justify-end">
-            <div class="bg-gray-100 px-4 py-2">
-              <p class="font-bold">
-                Total Amount:
-                <!-- Replace `grandTotal` with your own calculated property -->
-                <span class="text-red-600">
-                  {{ grandTotal | currency:'PHP':'symbol' }}
-                </span>
-              </p>
+              <!-- Horizontal Divider -->
+              <hr class="my-2 border-gray-300" />
+
+              <!-- Grand Total -->
+              <div class="flex justify-end">
+                <div class="bg-gray-100 px-4 py-2">
+                  <p class="font-bold">
+                    Total Amount:
+                    <span class="text-red-600">
+                      {{ quotation.grandTotal | currency:'PHP':'symbol' }}
+                    </span>
+                  </p>
+                </div>
+              </div>
             </div>
+
+            <!-- (Optional) Submit Quotation Button -->
+            <!--
+            <button
+              (click)="submitQuotation()"
+              class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-lg px-6 py-3 mt-4"
+            >
+              Submit Quotation
+            </button>
+            -->
           </div>
         </div>
-
-        <!-- Submit Button -->
-        <!-- <button (click)="submitQuotation()"
-                class="w-full text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-lg px-6 py-3 mt-4">
-          Submit Quotation
-        </button> -->
-
       </div>
     </div>
   </div>
 </div>
-</div>
 
-
-
-
-<!-- Modal -->
+<!-- Modal for Creating/Editing a Quotation -->
 <div
   *ngIf="showModal"
   class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 transition-opacity duration-700"
@@ -267,7 +285,7 @@
         class="w-full border border-gray-300 rounded-lg px-3 py-1 text-sm" />
     </div>
 
-    <!-- Table -->
+    <!-- Product Selection -->
     <div>
       <label for="productSelect" class="block text-sm font-medium text-gray-700">
         Select a Product:
@@ -291,20 +309,16 @@
       </button>
     </div>
 
+    <!-- Selected Products List -->
     <div class="mt-2">
-      <!-- Section Label -->
       <label class="block text-xs font-medium text-gray-700">
         Selected Products:
       </label>
-
-      <!-- Scrollable container with reduced max height -->
       <div class="mt-2 max-h-48 overflow-y-auto">
-        <!-- Repeat for each selected product -->
         <div
           *ngFor="let product of selectedProducts"
           class="mt-2 border rounded-md p-2"
         >
-          <!-- Product Name Field -->
           <div class="mb-2">
             <label class="block text-xs font-medium text-gray-700">
               Product Name:
@@ -315,18 +329,16 @@
               class="mt-1 block w-full border border-gray-300 rounded px-2 py-1 text-sm"
             />
           </div>
-
-          <!-- QTY & Discount Fields -->
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-xs font-medium text-gray-700">QTY</label>
               <input
-              type="number"
-              [(ngModel)]="product.qty"
-              min="1"
-              [max]="product.stockLevel"
-              (change)="validateDesiredQty(product)"
-              class="mt-1 block w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                type="number"
+                [(ngModel)]="product.qty"
+                min="1"
+                [max]="product.stockLevel"
+                (change)="validateDesiredQty(product)"
+                class="mt-1 block w-full border border-gray-300 rounded px-2 py-1 text-sm"
               />
             </div>
             <div>
@@ -338,8 +350,6 @@
               />
             </div>
           </div>
-
-          <!-- Remove Button -->
           <button
             (click)="removeProduct(product)"
             class="text-red-600 text-xs mt-2"
@@ -350,22 +360,14 @@
       </div>
     </div>
 
-
-
-
-
-
-    <!-- Buttons -->
+    <!-- Modal Buttons -->
     <div class="mt-4 flex justify-end space-x-2">
-      <button (click)="close()" class="px-3 py-1 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition text-xs">Cancel</button>
-      <button (click)="submit()" class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs">Save</button>
+      <button (click)="close()" class="px-3 py-1 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition text-xs">
+        Cancel
+      </button>
+      <button (click)="submit()" class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs">
+        Save
+      </button>
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
