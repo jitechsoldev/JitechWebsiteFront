@@ -228,7 +228,7 @@
             formControlName="clientName"
             type="text"
             placeholder="Enter client name"
-            class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+            class="w-full mt-1 px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
           />
           <div
             *ngIf="
@@ -250,7 +250,7 @@
             <input
               formControlName="dateOfPurchase"
               type="date"
-              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+              class="w-full mt-1 px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
             />
           </div>
 
@@ -258,7 +258,7 @@
             <label class="block text-gray-700 font-semibold">Warranty</label>
             <select
               formControlName="warranty"
-              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+              class="w-full mt-1 px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
             >
               <option value="">Select Warranty</option>
               <option value="3 Months">3 Months</option>
@@ -273,7 +273,7 @@
             >
             <select
               formControlName="termPayable"
-              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+              class="w-full mt-1 px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
             >
               <option value="">Select Term</option>
               <option value="15 Days">15 Days</option>
@@ -288,7 +288,7 @@
             >
             <select
               formControlName="modeOfPayment"
-              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+              class="w-full mt-1 px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
             >
               <option value="">Select Payment Mode</option>
               <option value="Cash">Cash</option>
@@ -301,7 +301,7 @@
             <label class="block text-gray-700 font-semibold">Status</label>
             <select
               formControlName="status"
-              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+              class="w-full mt-1 px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
             >
               <option value="">Select Status</option>
               <option value="Pending">Pending</option>
@@ -321,7 +321,7 @@
             <div
               *ngFor="let item of saleItems.controls; let i = index"
               [formGroupName]="i"
-              class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm hover:scale-[1.02] transition"
+              class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm"
             >
               <!-- ✅ Product & Remove Button -->
               <div class="flex justify-between items-center mb-3">
@@ -345,7 +345,7 @@
                   <select
                     formControlName="product"
                     (change)="updateItemTotal(i)"
-                    class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+                    class="w-full px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
                   >
                     <option value="">Select Product</option>
                     <option
@@ -367,7 +367,7 @@
                     type="number"
                     formControlName="quantity"
                     min="1"
-                    class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+                    class="w-full px-4 py-2 border rounded-lg border-gray-300 focus:ring focus:ring-blue-300"
                   />
                 </div>
 
@@ -380,7 +380,7 @@
                     type="text"
                     formControlName="itemTotal"
                     readonly
-                    class="w-full px-4 py-2 border bg-gray-100 rounded-lg shadow-sm cursor-not-allowed"
+                    class="w-full px-4 py-2 border bg-gray-100 rounded-lg border-gray-300 cursor-not-allowed"
                   />
                 </div>
               </div>
