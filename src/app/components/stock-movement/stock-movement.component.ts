@@ -31,6 +31,7 @@ export class StockMovementComponent implements OnInit {
   errors: string[] = [];
   isModalOpen: boolean = false;
   selectedInventoryId: any;
+  requiresSerialNumber: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,6 +48,11 @@ export class StockMovementComponent implements OnInit {
 
   ngOnInit() {
     this.loadInventory();
+
+    // Run form validation whenever the form value changes
+    this.stockMovementForm.valueChanges.subscribe(() => {
+      this.isFormValid();
+    });
   }
 
   loadInventory() {
@@ -58,13 +64,33 @@ export class StockMovementComponent implements OnInit {
   }
 
   onProductChange(event: any) {
-    this.selectedInventoryId = event.target.value; // ✅ Ensure value updates
-    console.log('🛠️ Selected Inventory ID:', this.selectedInventoryId);
+    this.selectedInventoryId = event.target.value;
 
     if (this.selectedInventoryId) {
+      const selectedInventory = this.inventory.find(
+        (inv) => inv._id === this.selectedInventoryId
+      );
+
+      if (selectedInventory && selectedInventory.productId) {
+        this.requiresSerialNumber =
+          selectedInventory.productId.requiresSerialNumber ?? false;
+      } else {
+        this.requiresSerialNumber = false;
+      }
+
       this.fetchAvailableSerialNumbers();
+    }
+  }
+
+  updateSerialInputs() {
+    if (
+      this.requiresSerialNumber &&
+      this.stockMovementForm.get('type')?.value === 'INCREASE'
+    ) {
+      this.generateSerialFields();
     } else {
-      console.warn('⚠️ No product selected, cannot fetch serial numbers.');
+      this.serialNumbers = [];
+      this.stockMovementForm.setControl('serialNumbers', this.fb.array([]));
     }
   }
 
@@ -80,80 +106,32 @@ export class StockMovementComponent implements OnInit {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
 
-        // ✅ Extract Serial Numbers as an Array
         let serials: string[] = XLSX.utils
           .sheet_to_json(sheet, { header: 1 })
-          .flat() as unknown[] as string[];
-        console.log('📂 Extracted Serial Numbers from File:', serials);
+          .flat() as string[];
 
-        // ✅ Filter out empty or undefined serials
         serials = serials
-          .map((serial) => serial?.toString().trim()) // Ensure it's a string & trim spaces
-          .filter((serial) => serial); // Remove empty values
+          .map((serial) => serial?.toString().trim())
+          .filter((serial) => serial);
+
+        serials = Array.from(new Set(serials));
 
         if (serials.length === 0) {
           this.errors.push('⚠️ No valid serial numbers found in the file.');
           return;
         }
 
-        // ✅ Detect Duplicate Serial Numbers in the Uploaded File
-        const uniqueSerials = new Set(serials);
-        if (uniqueSerials.size !== serials.length) {
-          this.errors.push(
-            '⚠️ Duplicate serial numbers found in the uploaded file. Ensure all serials are unique.'
-          );
-          return;
-        }
-
-        // ✅ Ensure Serial Numbers Do Not Exist in Inventory
-        if (!this.availableSerialNumbers) {
-          console.error('❌ Error: Available serial numbers not set.');
-          this.errors.push(
-            '⚠️ Unable to check for existing serial numbers. Please select a product first.'
-          );
-          return;
-        }
-
-        const duplicates = serials.filter((serial) =>
-          this.availableSerialNumbers.includes(serial)
-        );
-
-        console.log(
-          '🔍 Checking against inventory:',
-          this.availableSerialNumbers
-        );
-        console.log('⚠️ Duplicates Found:', duplicates);
-
-        if (duplicates.length > 0) {
-          this.errors.push(
-            `⚠️ The following serial numbers already exist in inventory: ${duplicates.join(
-              ', '
-            )}`
-          );
-          return;
-        }
-
-        // ✅ Update Quantity Field in Form
-        this.stockMovementForm.patchValue({ quantity: serials.length });
-
-        // ✅ Populate Serial Numbers in Form
+        // ✅ Clear existing serial numbers before adding new ones
+        this.serialNumbersArray.clear();
         this.serialNumbers = serials.map((value, id) => ({ id, value }));
 
-        // ✅ Sync Serial Numbers with FormArray
-        const serialNumberFormArray = this.stockMovementForm.get(
-          'serialNumbers'
-        ) as FormArray;
-        serialNumberFormArray.clear();
         serials.forEach((serial) =>
-          serialNumberFormArray.push(new FormControl(serial))
+          this.serialNumbersArray.push(new FormControl(serial))
         );
 
-        console.log('✅ Final Serial Numbers Added:', this.serialNumbers);
+        this.stockMovementForm.patchValue({ quantity: serials.length });
       } catch (error) {
-        console.error('❌ Error processing file:', error);
-        this.errors.push(
-          '⚠️ An error occurred while processing the file. Please try again.'
-        );
+        this.errors.push('⚠️ Error processing file.');
       }
     };
 
@@ -186,45 +164,23 @@ export class StockMovementComponent implements OnInit {
   }
 
   fetchAvailableSerialNumbers() {
-    this.errors = [];
-
-    if (!this.selectedInventoryId) {
-      console.log('❌ No product selected!');
-      return;
-    }
+    if (!this.selectedInventoryId) return;
 
     const selectedInventory = this.inventory.find(
       (inv) => inv._id === this.selectedInventoryId
     );
 
     if (selectedInventory) {
-      console.log('🟢 Selected Inventory Data:', selectedInventory);
+      this.requiresSerialNumber =
+        selectedInventory.productId?.requiresSerialNumber || false;
 
-      if (
-        selectedInventory.serialNumbers &&
-        selectedInventory.serialNumbers.length > 0
-      ) {
-        this.availableSerialNumbers = Array.from(
-          new Set(selectedInventory.serialNumbers)
-        ); // ✅ Convert to Set for fast lookup
-      } else {
-        console.warn('⚠️ No serial numbers found in selected inventory.');
-        this.availableSerialNumbers = [];
-      }
-    } else {
-      console.warn('⚠️ Selected inventory item not found!');
-      this.availableSerialNumbers = [];
+      this.availableSerialNumbers = this.requiresSerialNumber
+        ? [...new Set(selectedInventory.serialNumbers as string[])]
+        : [];
     }
-
-    console.log(
-      '🔎 Available Serial Numbers in Inventory:',
-      this.availableSerialNumbers
-    );
   }
 
   toggleSerialSelection(serial: string) {
-    this.errors = [];
-
     if (this.selectedSerialNumbers.includes(serial)) {
       this.selectedSerialNumbers = this.selectedSerialNumbers.filter(
         (sn) => sn !== serial
@@ -241,6 +197,34 @@ export class StockMovementComponent implements OnInit {
         );
       }
     }
+
+    this.stockMovementForm.patchValue({
+      serialNumbers: [...this.selectedSerialNumbers],
+    });
+
+    this.isFormValid();
+  }
+
+  isFormValid(): boolean {
+    if (this.stockMovementForm.value.type === 'INCREASE') {
+      const allSerialsValid = this.serialNumbersArray.controls.every(
+        (sn) => sn.valid && sn.value.trim() !== ''
+      );
+      return this.stockMovementForm.valid && allSerialsValid;
+    }
+
+    if (this.stockMovementForm.value.type === 'DECREASE') {
+      if (
+        this.selectedSerialNumbers.length !==
+        this.stockMovementForm.value.quantity
+      ) {
+        return false;
+      }
+
+      return this.stockMovementForm.valid;
+    }
+
+    return this.stockMovementForm.valid;
   }
 
   validateStockMovement(): boolean {
@@ -255,7 +239,7 @@ export class StockMovementComponent implements OnInit {
       this.errors.push('⚠️ Quantity must be greater than zero.');
     }
 
-    if (type === 'INCREASE') {
+    if (this.requiresSerialNumber && type === 'INCREASE') {
       const enteredSerials = this.serialNumbersArray.value.map((sn: string) =>
         sn.trim()
       );
@@ -272,7 +256,7 @@ export class StockMovementComponent implements OnInit {
       }
     }
 
-    if (type === 'DECREASE') {
+    if (this.requiresSerialNumber && type === 'DECREASE') {
       if (this.selectedSerialNumbers.length !== quantity) {
         this.errors.push(
           `⚠️ Please select exactly ${quantity} serial numbers.`
@@ -295,77 +279,86 @@ export class StockMovementComponent implements OnInit {
     return this.stockMovementForm.get('serialNumbers') as FormArray;
   }
 
-  generateSerialFields() {
-    this.errors = [];
-
-    if (this.stockMovementForm.value.type === 'INCREASE') {
-      this.serialNumbers = []; // ✅ Clear previous serial numbers
-
-      if (this.stockMovementForm.value.quantity > 0) {
-        for (let i = 0; i < this.stockMovementForm.value.quantity; i++) {
-          this.serialNumbers.push({ id: i, value: '' });
-        }
-
-        // ✅ Ensure FormArray is populated with new serials
-        const serialNumberFormArray = this.stockMovementForm.get(
-          'serialNumbers'
-        ) as FormArray;
-        serialNumberFormArray.clear();
-
-        this.serialNumbers.forEach((serial) =>
-          serialNumberFormArray.push(
-            new FormControl(serial.value, Validators.required)
-          )
-        );
-      }
-    } else {
-      this.serialNumbers = [];
-    }
-  }
-
   updateStock() {
     if (!this.isFormValid() || this.stockMovementForm.invalid) {
-      return; // Prevent submission if form is invalid
+      console.error('❌ Cannot submit, form is invalid.');
+      return;
     }
+
+    // ✅ Prevent multiple API calls
+    if (this.stockMovementForm.disabled) {
+      console.warn(
+        '⚠️ Submission already in progress. Preventing duplicate request.'
+      );
+      return;
+    }
+
+    this.stockMovementForm.disable(); // Disable form to prevent resubmission
 
     const stockMovement = {
       inventoryId: this.stockMovementForm.value.inventoryId,
       type: this.stockMovementForm.value.type,
       quantity: this.stockMovementForm.value.quantity,
-      serialNumbers:
-        this.stockMovementForm.value.type === 'INCREASE'
-          ? this.serialNumbersArray.value.map((sn: string) => sn.trim())
-          : this.selectedSerialNumbers,
+      serialNumbers: this.requiresSerialNumber
+        ? this.serialNumbersArray.value.map((sn: string) => sn.trim())
+        : undefined, // ⛔️ FIX: Don't send empty array, send `undefined` instead
     };
 
+    console.log('📤 Submitting Stock Movement:', stockMovement);
+
     this.stockMovementService.addStockMovement(stockMovement).subscribe(
-      (response) => {
-        this.stockUpdated.emit(); // ✅ Notify parent component to refresh UI
-        this.loadInventory(); // ✅ Reload inventory immediately after update
+      () => {
+        this.stockUpdated.emit();
+        this.loadInventory();
         this.stockMovementForm.reset();
-        this.errors = [];
         this.closeModal();
+        this.stockMovementForm.enable(); // ✅ Re-enable form after success
       },
       (error) => {
-        this.errors.push(`❌ Error: ${error.error.message}`);
+        console.error('❌ API Error:', error);
+        this.errors.push(`❌ Error: ${error.error.message || 'Unknown error'}`);
+        this.stockMovementForm.enable(); // ✅ Ensure form is re-enabled on error
       }
     );
   }
 
-  isFormValid(): boolean {
-    console.log('🔍 Checking Form Validity...');
+  generateSerialFields() {
+    this.errors = [];
+    const quantity = this.stockMovementForm.get('quantity')?.value || 0;
 
-    if (this.stockMovementForm.value.type === 'INCREASE') {
-      const allSerialsValid = this.serialNumbersArray.controls.every(
-        (sn) => sn.valid && sn.value.trim() !== ''
+    console.log(
+      `⚡ Generating Serial Fields | Requires Serial Number: ${this.requiresSerialNumber}, Quantity: ${quantity}`
+    );
+
+    if (this.requiresSerialNumber && quantity > 0) {
+      this.serialNumbers = Array.from({ length: quantity }, (_, i) => ({
+        id: i,
+        value: this.serialNumbers[i]?.value || '', // ✅ Preserve previous values
+      }));
+
+      // ✅ Ensure FormArray updates dynamically
+      const serialNumberFormArray = this.stockMovementForm.get(
+        'serialNumbers'
+      ) as FormArray;
+      serialNumberFormArray.clear();
+
+      this.serialNumbers.forEach((serial) =>
+        serialNumberFormArray.push(
+          new FormControl(serial.value, Validators.required)
+        )
       );
-      console.log('✅ Serial Numbers Valid:', allSerialsValid);
 
-      return this.stockMovementForm.valid && allSerialsValid;
+      console.log('✅ Serial Number Fields Created:', this.serialNumbers);
+    } else {
+      // ✅ If serials are NOT required, clear the array
+      this.serialNumbers = [];
+      this.stockMovementForm.setControl('serialNumbers', this.fb.array([]));
     }
 
-    console.log('✅ Form Valid:', this.stockMovementForm.valid);
-    return this.stockMovementForm.valid;
+    // ✅ Force UI update
+    setTimeout(() => {
+      this.stockMovementForm.updateValueAndValidity();
+    }, 10);
   }
 
   updateFormValidation() {

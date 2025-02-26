@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { InventoryService } from '../../services/inventory.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { StockMovementComponent } from '../stock-movement/stock-movement.component';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-inventory-dashboard',
@@ -180,4 +182,69 @@ export class InventoryDashboardComponent implements OnInit {
       this.loadStockMovements();
     }
   }
+
+  async exportStockMovementsToExcel() {
+    if (!this.recentMovements || this.recentMovements.length === 0) {
+      console.warn('⚠️ No stock movements available to export.');
+      return;
+    }
+
+    // ✅ Create a new Excel Workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Stock Movements');
+
+    // ✅ Define Columns with Proper Widths
+    worksheet.columns = [
+      { header: 'Product', key: 'productName', width: 25 },
+      { header: 'Movement Type', key: 'type', width: 15 },
+      { header: 'Quantity', key: 'quantity', width: 12 },
+      { header: 'Serial Numbers', key: 'serialNumbers', width: 40 },
+      { header: 'Timestamp', key: 'timestamp', width: 20 },
+    ];
+
+    // ✅ Apply Header Styling (Blue Background, White Bold Text)
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: 'FFFFFF' } };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '0070C0' }, // Blue Background
+      };
+      cell.alignment = { horizontal: 'center' };
+    });
+
+    // ✅ Format Data for Excel Export
+    this.recentMovements.forEach((movement) => {
+      worksheet.addRow({
+        productName: movement.inventoryId?.productName || 'Unknown',
+        type: movement.type === 'INCREASE' ? 'Incoming' : 'Outgoing',
+        quantity: movement.quantity,
+        serialNumbers: movement.serialNumbers?.join(', ') || 'N/A', // Join serials into a single cell
+        timestamp: new Date(movement.timestamp).toLocaleString(),
+      });
+    });
+
+    // ✅ Apply Borders to All Cells
+    worksheet.eachRow((row, rowNumber) => {
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          bottom: { style: 'thin' },
+          left: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    });
+
+    // ✅ Save Excel File
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(
+      new Blob([buffer]),
+      `Stock_Movements_${new Date().toISOString()}.xlsx`
+    );
+  }
 }
+
+const EXCEL_TYPE =
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';

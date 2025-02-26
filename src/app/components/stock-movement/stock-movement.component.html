@@ -76,12 +76,13 @@
       <!-- ✅ Serial Numbers Input for INCREASE -->
       <div
         *ngIf="
-          stockMovementForm.value.type === 'INCREASE' &&
-          stockMovementForm.value.quantity > 0
+          requiresSerialNumber &&
+          stockMovementForm.get('type')?.value === 'INCREASE' &&
+          stockMovementForm.get('quantity')?.value > 0
         "
         class="mt-4"
       >
-        <h4 class="font-semibold">Serial Numbers:</h4>
+        <h4 class="font-semibold">Enter Serial Numbers:</h4>
 
         <!-- ✅ FormArray Wrapper -->
         <div formArrayName="serialNumbers">
@@ -105,7 +106,8 @@
       <!-- ✅ Serial Numbers Selection for DECREASE -->
       <div
         *ngIf="
-          stockMovementForm.value.type === 'DECREASE' &&
+          requiresSerialNumber &&
+          stockMovementForm.get('type')?.value === 'DECREASE' &&
           availableSerialNumbers.length > 0
         "
         class="mt-4"
@@ -140,11 +142,11 @@
 
         <!-- ✅ Disable Update Stock Button When Errors Exist -->
         <button
-          type="submit"
-          [disabled]="!isFormValid() || stockMovementForm.invalid"
+          (click)="updateStock(); closeModal()"
+          [disabled]="!isFormValid()"
           class="px-4 py-2 rounded-lg transition duration-300 font-semibold"
           [ngClass]="
-            isFormValid() && stockMovementForm.valid
+            isFormValid()
               ? 'bg-green-600 text-white hover:bg-green-700'
               : 'bg-gray-400 text-gray-200 cursor-not-allowed'
           "

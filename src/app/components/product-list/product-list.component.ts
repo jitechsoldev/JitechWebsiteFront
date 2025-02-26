@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { InventoryService } from '../../services/inventory.service';
 import { ProductFormComponent } from '../product-form/product-form.component';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-product-list',
@@ -168,4 +170,76 @@ export class ProductListComponent implements OnInit {
       this.loadProducts();
     }
   }
+
+  async exportProductsToExcel() {
+    if (!this.products || this.products.length === 0) {
+      console.warn('⚠️ No products available to export.');
+      return;
+    }
+
+    // ✅ Create a new Excel Workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Product List');
+
+    // ✅ Define Columns with Proper Widths
+    worksheet.columns = [
+      { header: 'Product Name', key: 'productName', width: 25 },
+      { header: 'SKU', key: 'sku', width: 15 },
+      { header: 'Category', key: 'category', width: 15 },
+      { header: 'Price', key: 'price', width: 12 },
+      { header: 'Stock Level', key: 'stockLevel', width: 12 },
+      { header: 'Status', key: 'status', width: 12 },
+      {
+        header: 'Requires Serial Number',
+        key: 'requiresSerialNumber',
+        width: 20,
+      },
+      { header: 'Created Date', key: 'createdAt', width: 20 },
+    ];
+
+    // ✅ Apply Header Styling (Blue Background, White Bold Text)
+    const headerRow = worksheet.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: 'FFFFFF' } };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: '0070C0' }, // Blue Background
+      };
+      cell.alignment = { horizontal: 'center' };
+    });
+
+    // ✅ Format Data for Excel Export
+    this.products.forEach((product) => {
+      worksheet.addRow({
+        productName: product.productName,
+        sku: product.sku,
+        category: product.category,
+        price: `₱${product.price.toFixed(2)}`,
+        stockLevel: product.stockLevel,
+        status: product.active ? 'Active' : 'Inactive',
+        requiresSerialNumber: product.requiresSerialNumber ? 'Yes' : 'No',
+        createdAt: new Date(product.createdAt).toLocaleString(),
+      });
+    });
+
+    // ✅ Apply Borders to All Cells
+    worksheet.eachRow((row, rowNumber) => {
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          bottom: { style: 'thin' },
+          left: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+    });
+
+    // ✅ Save Excel File
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), `Product_List_${new Date().toISOString()}.xlsx`);
+  }
 }
+
+const EXCEL_TYPE =
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
