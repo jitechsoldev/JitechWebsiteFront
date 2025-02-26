@@ -1,320 +1,419 @@
-<div class="container mx-auto p-4">
-  <!-- Header & Actions -->
-  <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
-    <h2 class="text-3xl font-bold mb-2 sm:mb-0 text-blue-800">Sales Invoice</h2>
-    <!-- Search Input -->
-    <input type="text" [(ngModel)]="searchQuery" (input)="searchUpdated.next(searchQuery)"
-           placeholder="Search Sale ID or Client"
-           class="px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 w-full sm:w-64 mb-2 sm:mb-0" />
-    <div class="flex space-x-2">
-      <!-- Add Sale Button -->
-      <button (click)="openModal()"
-              class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto">
-        Add New Sale
+<div class="p-6">
+  <h2 class="text-4xl font-extrabold text-blue-900 mb-6 text-center">
+    📜 Sales Invoice
+  </h2>
+
+  <!-- ✅ Search, Filters, and Action Buttons -->
+  <div
+    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-6 rounded-lg shadow-md"
+  >
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="searchUpdated.next(searchQuery)"
+      placeholder="🔍 Search Sale ID or Client..."
+      class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-lg w-full sm:w-80"
+    />
+
+    <div class="flex space-x-4">
+      <button
+        (click)="exportToExcel()"
+        class="bg-green-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 font-semibold flex items-center gap-2"
+      >
+        📤 Export
       </button>
-      <!-- Export to Excel Button -->
-      <button (click)="exportToExcel()"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto">
-        Export to Excel
+      <button
+        (click)="openModal()"
+        class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold flex items-center gap-2"
+      >
+        ➕ Add Sale
       </button>
     </div>
   </div>
 
-  <!-- Sales Table -->
-  <div class="bg-white shadow-md rounded overflow-x-auto mb-6 w-full">
-    <table class="min-w-full w-full leading-normal">
+  <!-- ✅ Sales Table -->
+  <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+    <table class="w-full text-left border-collapse">
       <thead>
-        <tr>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
-              (click)="sortTable('saleID')">
-            Sale ID
-            <span *ngIf="sortColumn === 'saleID'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+        <tr class="bg-blue-900 text-white">
+          <th class="px-5 py-3 cursor-pointer" (click)="sortTable('saleID')">
+            ID
+            <span *ngIf="sortColumn === 'saleID'">{{
+              sortDirection === "asc" ? "🔼" : "🔽"
+            }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
-              (click)="sortTable('clientName')">
+          <th
+            class="px-5 py-3 cursor-pointer"
+            (click)="sortTable('clientName')"
+          >
             Client
-            <span *ngIf="sortColumn === 'clientName'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+            <span *ngIf="sortColumn === 'clientName'">{{
+              sortDirection === "asc" ? "🔼" : "🔽"
+            }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
-            Products
+          <th class="px-5 py-3">Products</th>
+          <th
+            class="px-5 py-3 cursor-pointer"
+            (click)="sortTable('overallTotalAmount')"
+          >
+            Total
+            <span *ngIf="sortColumn === 'overallTotalAmount'">{{
+              sortDirection === "asc" ? "🔼" : "🔽"
+            }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
-              (click)="sortTable('overallTotalAmount')">
-            Overall Total
-            <span *ngIf="sortColumn === 'overallTotalAmount'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
-          </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
-              (click)="sortTable('dateOfPurchase')">
+          <th
+            class="px-5 py-3 cursor-pointer"
+            (click)="sortTable('dateOfPurchase')"
+          >
             Date
-            <span *ngIf="sortColumn === 'dateOfPurchase'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+            <span *ngIf="sortColumn === 'dateOfPurchase'">{{
+              sortDirection === "asc" ? "🔼" : "🔽"
+            }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
-            Warranty
-          </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
-            Term Payable
-          </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
-            Mode of Payment
-          </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase cursor-pointer select-none"
-              (click)="sortTable('status')">
+          <th class="px-5 py-3">Warranty</th>
+          <th class="px-5 py-3">Payment Term</th>
+          <th class="px-5 py-3">MOP</th>
+          <th class="px-5 py-3 cursor-pointer" (click)="sortTable('status')">
             Status
-            <span *ngIf="sortColumn === 'status'">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+            <span *ngIf="sortColumn === 'status'">{{
+              sortDirection === "asc" ? "🔼" : "🔽"
+            }}</span>
           </th>
-          <th class="px-4 py-3 border-b border-blue-700 bg-blue-600 text-center text-xs font-semibold text-white uppercase">
-            Action
-          </th>
+          <th class="px-5 py-3">Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let sale of sales" class="hover:bg-blue-50 transition-colors duration-200">
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs font-black">{{ sale.saleID }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.clientName }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-left text-xs">
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let sale of sales" class="hover:bg-gray-100 transition">
+          <td class="px-5 py-3">{{ sale.saleID }}</td>
+          <td class="px-5 py-3">{{ sale.clientName }}</td>
+          <td class="px-5 py-3">
             <ul class="list-disc pl-5">
               <li *ngFor="let item of sale.saleItems">
-                {{ item.product?.productName || 'N/A' }} (Qty: {{ item.quantity }})
+                {{ item.product?.productName || "N/A" }} (Qty:
+                {{ item.quantity }})
               </li>
             </ul>
           </td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs text-right font-black">
-            {{ sale.overallTotalAmount | currency:'PHP':'symbol':'1.2-2' }}
+          <td class="px-5 py-3 text-right">
+            {{
+              sale.overallTotalAmount | currency : "PHP" : "symbol" : "1.2-2"
+            }}
           </td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">
-            {{ sale.dateOfPurchase | date:'mediumDate' }}
+          <td class="px-5 py-3">
+            {{ sale.dateOfPurchase | date : "mediumDate" }}
           </td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.warranty }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.termPayable }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">{{ sale.modeOfPayment }}</td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-center text-xs">
+          <td class="px-5 py-3">{{ sale.warranty }}</td>
+          <td class="px-5 py-3">{{ sale.termPayable }}</td>
+          <td class="px-5 py-3">{{ sale.modeOfPayment }}</td>
+          <td class="px-5 py-3 font-extrabold">
             <span [ngClass]="getBadgeClasses(sale.status)">
               {{ sale.status }}
             </span>
           </td>
-          <td class="px-4 py-3 border-b border-gray-200 bg-white text-xs text-center">
-            <ng-container *ngIf="sale.status !== 'Completed'">
-              <button (click)="editSale(sale)"
-                      class="bg-blue-500 hover:bg-blue-600 text-white font-light py-1 px-3 rounded transition duration-200">
-                Edit
-              </button>
-            </ng-container>
+          <td class="px-5 py-3">
+            <button
+              *ngIf="sale.status !== 'Completed'"
+              (click)="editSale(sale)"
+              class="py-1 px-3 rounded transition"
+            >
+              <img
+                src="./Edit.png"
+                class="w-5 h-5 hover:opacity-80 transition"
+              />
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
-    <div *ngIf="sales.length === 0" class="p-4 text-center text-gray-500">
-      No sales records found.
-    </div>
   </div>
 
-  <!-- Tailwind Paginator -->
-  <div class="flex flex-wrap justify-center items-center space-x-2 mt-4">
-    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
-      Previous
+  <div *ngIf="sales.length === 0" class="p-6 text-center text-gray-500">
+    No sales found.
+  </div>
+
+  <!-- ✅ Pagination Controls -->
+  <div class="flex justify-between items-center mt-6">
+    <button
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+    >
+      ◀ Previous
     </button>
-    <ng-container *ngFor="let page of pages">
-      <button (click)="goToPage(page)"
-              [ngClass]="{ 'bg-blue-500 text-white': page === currentPage, 'bg-gray-200 text-gray-700 hover:bg-gray-300': page !== currentPage }"
-              class="px-4 py-2 rounded transition mb-2 sm:mb-0">
-        {{ page }}
-      </button>
-    </ng-container>
-    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
-            class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
-      Next
+    <span class="text-gray-700 font-medium"
+      >Page {{ currentPage }} of {{ totalPages }}</span
+    >
+    <button
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+    >
+      Next ▶
     </button>
   </div>
+</div>
 
-  <!-- Custom Validation Modal -->
-  <div *ngIf="showValidationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-auto bg-opacity-50 backdrop-blur-md">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
-      <h4 class="text-lg font-semibold mb-4">Validation Error</h4>
-      <p class="text-gray-700 mb-4">{{ validationError }}</p>
-      <button (click)="closeValidationModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        OK
+<!-- Custom Validation Modal -->
+<div
+  *ngIf="showValidationModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-auto bg-opacity-50"
+>
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+    <h4 class="text-lg font-semibold mb-4">Validation Error</h4>
+    <p class="text-gray-700 mb-4">{{ validationError }}</p>
+    <button
+      (click)="closeValidationModal()"
+      class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      OK
+    </button>
+  </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div
+  *ngIf="showSubmitModal"
+  class="fixed inset-0 z-[9999] flex items-center justify-center bg-auto bg-opacity-50"
+>
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+    <h4 class="text-lg font-semibold mb-4">Confirm Submission</h4>
+    <p class="text-gray-700 mb-4">Are you sure you want to submit this Sale?</p>
+    <div class="flex justify-end space-x-2">
+      <button
+        (click)="confirmSubmit()"
+        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+      >
+        Submit
+      </button>
+      <button
+        (click)="cancelSubmit()"
+        class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded"
+      >
+        Cancel
       </button>
     </div>
   </div>
+</div>
 
-  <!-- Submit Confirmation Modal -->
-  <div *ngIf="showSubmitModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-auto bg-opacity-50 backdrop-blur-md">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
-      <h4 class="text-lg font-semibold mb-4">Confirm Submission</h4>
-      <p class="text-gray-700 mb-4">Are you sure you want to submit this Sale?</p>
-      <div class="flex justify-end space-x-2">
-        <button (click)="confirmSubmit()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-          Submit
-        </button>
-        <button (click)="cancelSubmit()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded">
-          Cancel
-        </button>
-      </div>
+<!-- ✅ Sale Modal (for Add/Edit) -->
+<div
+  *ngIf="isModalOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center overflow-auto"
+>
+  <!-- ✅ Modal Container -->
+  <div
+    class="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-screen overflow-hidden scale-95 opacity-0 transition-all duration-300"
+    [ngClass]="{ 'scale-100 opacity-100': isModalOpen }"
+  >
+    <!-- ✅ Modal Header -->
+    <div class="p-5 text-black flex justify-between items-center">
+      <h3 class="text-xl font-semibold">
+        {{ isEditMode ? "✏ Edit Sale" : "➕ Add New Sale" }}
+      </h3>
+      <button
+        (click)="closeModal()"
+        class="text-red-500 text-2xl hover:text-red-600 transition"
+      >
+        ✖
+      </button>
     </div>
-  </div>
 
-  <!-- Sale Modal (for Add/Edit) -->
-  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center overflow-auto">
-    <!-- Modal Backdrop -->
-    <div class="absolute inset-0 bg-black opacity-50 backdrop-blur-md"></div>
-    <!-- Modal Content -->
-    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 p-4 max-h-full">
-      <div class="flex justify-between items-center mb-3 border-b pb-2">
-        <h3 class="text-xl font-semibold text-gray-800">
-          {{ isEditMode ? 'Edit Sale' : 'Add New Sale' }}
-        </h3>
-        <button (click)="closeModal()" class="text-gray-600 hover:text-gray-800 text-2xl leading-none">&times;</button>
-      </div>
-      <!-- Main Sale Form -->
-      <form (ngSubmit)="doSubmit()" [formGroup]="saleForm" class="space-y-3">
-        <!-- Client Name -->
+    <!-- ✅ Scrollable Modal Body -->
+    <div class="p-6 overflow-y-auto" style="max-height: calc(100vh - 220px)">
+      <form (ngSubmit)="doSubmit()" [formGroup]="saleForm" class="space-y-4">
+        <!-- 📌 Client Name -->
         <div>
-          <label for="clientName" class="block text-gray-700 text-sm">Client Name</label>
-          <input id="clientName" formControlName="clientName" type="text" placeholder="Enter client name"
-                 class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
-          <div *ngIf="saleForm.get('clientName')?.invalid && saleForm.get('clientName')?.touched" class="text-red-500 text-xs mt-1">
+          <label class="block text-gray-700 font-semibold">Client Name</label>
+          <input
+            formControlName="clientName"
+            type="text"
+            placeholder="Enter client name"
+            class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+          />
+          <div
+            *ngIf="
+              saleForm.get('clientName')?.invalid &&
+              saleForm.get('clientName')?.touched
+            "
+            class="text-red-500 text-xs mt-1"
+          >
             Client Name is required.
           </div>
         </div>
 
-        <!-- Date, Warranty, Term, Payment, Status -->
+        <!-- 📌 Date, Warranty, Term, Payment, Status -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="dateOfPurchase" class="block text-gray-700 text-sm">Date of Purchase</label>
-            <input id="dateOfPurchase" formControlName="dateOfPurchase" type="date"
-                   class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
-            <div *ngIf="saleForm.get('dateOfPurchase')?.invalid && saleForm.get('dateOfPurchase')?.touched" class="text-red-500 text-xs mt-1">
-              Date of Purchase is required.
-            </div>
+            <label class="block text-gray-700 font-semibold"
+              >Date of Purchase</label
+            >
+            <input
+              formControlName="dateOfPurchase"
+              type="date"
+              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+            />
           </div>
+
           <div>
-            <label for="warranty" class="block text-gray-700 text-sm">Warranty</label>
-            <select id="warranty" formControlName="warranty"
-                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+            <label class="block text-gray-700 font-semibold">Warranty</label>
+            <select
+              formControlName="warranty"
+              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+            >
               <option value="">Select Warranty</option>
               <option value="3 Months">3 Months</option>
               <option value="6 Months">6 Months</option>
               <option value="1 Year">1 Year</option>
             </select>
-            <div *ngIf="saleForm.get('warranty')?.invalid && saleForm.get('warranty')?.touched" class="text-red-500 text-xs mt-1">
-              Warranty is required.
-            </div>
           </div>
+
           <div>
-            <label for="termPayable" class="block text-gray-700 text-sm">Term Payable</label>
-            <select id="termPayable" formControlName="termPayable"
-                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+            <label class="block text-gray-700 font-semibold"
+              >Term Payable</label
+            >
+            <select
+              formControlName="termPayable"
+              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+            >
               <option value="">Select Term</option>
               <option value="15 Days">15 Days</option>
               <option value="1 Month">1 Month</option>
               <option value="3 Months">3 Months</option>
             </select>
-            <div *ngIf="saleForm.get('termPayable')?.invalid && saleForm.get('termPayable')?.touched" class="text-red-500 text-xs mt-1">
-              Term Payable is required.
-            </div>
           </div>
+
           <div>
-            <label for="modeOfPayment" class="block text-gray-700 text-sm">Mode of Payment</label>
-            <select id="modeOfPayment" formControlName="modeOfPayment"
-                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+            <label class="block text-gray-700 font-semibold"
+              >Mode of Payment</label
+            >
+            <select
+              formControlName="modeOfPayment"
+              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+            >
               <option value="">Select Payment Mode</option>
               <option value="Cash">Cash</option>
               <option value="Cheque">Cheque</option>
               <option value="Bank Transfer">Bank Transfer</option>
             </select>
-            <div *ngIf="saleForm.get('modeOfPayment')?.invalid && saleForm.get('modeOfPayment')?.touched" class="text-red-500 text-xs mt-1">
-              Mode of Payment is required.
-            </div>
           </div>
+
           <div>
-            <label for="status" class="block text-gray-700 text-sm">Status</label>
-            <select id="status" formControlName="status"
-                    class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+            <label class="block text-gray-700 font-semibold">Status</label>
+            <select
+              formControlName="status"
+              class="w-full mt-1 px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+            >
               <option value="">Select Status</option>
               <option value="Pending">Pending</option>
               <option value="Completed">Completed</option>
               <option value="Cancelled">Cancelled</option>
             </select>
-            <div *ngIf="saleForm.get('status')?.invalid && saleForm.get('status')?.touched" class="text-red-500 text-xs mt-1">
-              Status is required.
-            </div>
           </div>
         </div>
 
-        <!-- Sale Items: Scrollable Container -->
-        <div class="border rounded p-2" style="max-height: 300px; overflow-y: auto;">
+        <!-- 📌 Sale Items: Scrollable Container -->
+        <div
+          class="bg-gray-100 shadow-md rounded-xl p-4 max-h-80 overflow-y-auto"
+        >
+          <h4 class="text-lg font-semibold text-gray-700 mb-2">Products</h4>
+
           <div formArrayName="saleItems" class="space-y-4">
-            <div *ngFor="let item of saleItems.controls; let i = index" [formGroupName]="i" class="border p-3 rounded">
-              <div class="flex justify-between items-center mb-2">
-                <h4 class="text-lg font-semibold">Product {{ i + 1 }}</h4>
-                <button *ngIf="saleItems.length > 1" type="button" (click)="removeSaleItem(i)"
-                        class="text-red-600 hover:text-red-800">
-                  Remove
+            <div
+              *ngFor="let item of saleItems.controls; let i = index"
+              [formGroupName]="i"
+              class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm hover:scale-[1.02] transition"
+            >
+              <!-- ✅ Product & Remove Button -->
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="text-gray-800 font-semibold">Product {{ i + 1 }}</h4>
+                <button
+                  *ngIf="saleItems.length > 1"
+                  type="button"
+                  (click)="removeSaleItem(i)"
+                  class="text-red-500 hover:text-red-700 transition"
+                >
+                  ✖ Remove
                 </button>
               </div>
+
+              <!-- 📌 Product Form Fields -->
               <div class="grid grid-cols-2 gap-4">
-                <!-- Product Dropdown -->
                 <div>
-                  <label class="block text-gray-700 text-sm">Product</label>
-                  <select formControlName="product" (change)="updateItemTotal(i)"
-                          class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200">
+                  <label class="block text-gray-600 text-sm font-medium"
+                    >Product</label
+                  >
+                  <select
+                    formControlName="product"
+                    (change)="updateItemTotal(i)"
+                    class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+                  >
                     <option value="">Select Product</option>
-                    <option *ngFor="let product of products" [value]="product._id">
-                      {{ product.productName }} - {{ product.price | currency:'PHP':'symbol':'1.2-2' }}
+                    <option
+                      *ngFor="let product of products"
+                      [value]="product._id"
+                    >
+                      {{ product.productName }} - ₱{{
+                        product.price | number : "1.2-2"
+                      }}
                     </option>
                   </select>
-                  <div *ngIf="item.get('product')?.invalid && item.get('product')?.touched" class="text-red-500 text-xs mt-1">
-                    Product is required.
-                  </div>
                 </div>
-                <!-- Quantity Input -->
+
                 <div>
-                  <label class="block text-gray-700 text-sm">Quantity</label>
-                  <input type="number" formControlName="quantity" min="1"
-                         [attr.max]="getAvailableStock(item.get('product')?.value)" (input)="updateItemTotal(i)"
-                         class="mt-1 block w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring focus:ring-blue-200" />
-                  <div *ngIf="item.get('quantity')?.invalid && item.get('quantity')?.touched" class="text-red-500 text-xs mt-1">
-                    <span *ngIf="item.get('quantity')?.hasError('exceedsAvailable')">
-                      Maximum available stock is {{ getAvailableStock(item.get('product')?.value) }}.
-                    </span>
-                    <span *ngIf="!item.get('quantity')?.hasError('exceedsAvailable')">
-                      Quantity is required.
-                    </span>
-                  </div>
+                  <label class="block text-gray-600 text-sm font-medium"
+                    >Quantity</label
+                  >
+                  <input
+                    type="number"
+                    formControlName="quantity"
+                    min="1"
+                    class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-300"
+                  />
                 </div>
-                <!-- Item Total (Read-only) -->
+
+                <!-- 📌 Item Total -->
                 <div class="col-span-2">
-                  <label class="block text-gray-700 text-sm">Item Total</label>
-                  <input type="text" formControlName="itemTotal" readonly
-                         class="mt-1 block w-full p-2 rounded-md border border-gray-300 bg-gray-100" />
+                  <label class="block text-gray-600 text-sm font-medium"
+                    >Item Total</label
+                  >
+                  <input
+                    type="text"
+                    formControlName="itemTotal"
+                    readonly
+                    class="w-full px-4 py-2 border bg-gray-100 rounded-lg shadow-sm cursor-not-allowed"
+                  />
                 </div>
               </div>
             </div>
           </div>
-          <button type="button" (click)="addSaleItem()"
-                  class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded">
-            Add Another Product
+
+          <!-- ✅ Add Product Button -->
+          <button
+            type="button"
+            (click)="addSaleItem()"
+            class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition"
+          >
+            ➕ Add Another Product
           </button>
         </div>
 
-        <!-- Overall Total Display -->
-        <div class="text-right">
-          <strong>Overall Total: </strong>
-          <span>{{ overallTotal | currency:'PHP':'symbol':'1.2-2' }}</span>
-        </div>
-
-        <!-- Submit Button (opens submit confirmation modal) -->
-        <div class="flex justify-end">
-          <button type="button" (click)="handleSubmit()" [disabled]="saleForm.invalid || isLoading"
-                  class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-green-200">
-            {{ isEditMode ? 'Update Sale' : 'Submit Sale' }}
-          </button>
-        </div>
-        <div *ngIf="errorMessage" class="mt-2 text-red-600 text-xs">
-          {{ errorMessage }}
+        <!-- ✅ Overall Total -->
+        <div class="text-right text-lg font-bold">
+          Total: ₱{{ overallTotal | number : "1.2-2" }}
         </div>
       </form>
+    </div>
+
+    <!-- ✅ Modal Footer -->
+    <div class="p-4 bg-gray-50 flex justify-end border-t">
+      <button
+        type="button"
+        (click)="handleSubmit()"
+        [disabled]="saleForm.invalid || isLoading"
+        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition"
+      >
+        {{ isEditMode ? "✔ Update Sale" : "💾 Submit Sale" }}
+      </button>
     </div>
   </div>
 </div>

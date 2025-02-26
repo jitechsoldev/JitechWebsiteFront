@@ -1,20 +1,27 @@
-<!-- ✅ Modal Background (Hidden by Default) -->
+<!-- ✅ Centered Modal Background -->
 <div
   *ngIf="isModalOpen"
-  class="fixed inset-0 bg-black/50 bg-opacity-50 flex justify-center items-center z-50"
+  class="fixed inset-0 z-50 flex items-center justify-center"
 >
   <!-- ✅ Modal Content -->
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-    <h2 class="text-2xl font-extrabold text-blue-900 mb-4">Stock Movement</h2>
+  <div class="bg-white p-6 rounded-xl shadow-2xl max-w-lg w-full">
+    <!-- ✅ Modal Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-extrabold text-blue-900">Stock Movement</h2>
+      <button
+        (click)="closeModal()"
+        class="text-red-500 text-2xl hover:text-red-600 transition"
+      >
+        ✖
+      </button>
+    </div>
 
-    <!-- ✅ Display Error Messages Clearly -->
+    <!-- ✅ Display Error Messages -->
     <div
       *ngIf="errors.length > 0"
       class="bg-red-100 border-l-4 border-red-600 p-3 mb-4 rounded-lg"
     >
-      <h4 class="text-red-700 font-semibold">
-        Please fix the following errors:
-      </h4>
+      <h4 class="text-red-700 font-semibold">Please fix the following:</h4>
       <ul class="list-disc list-inside text-red-600">
         <li *ngFor="let error of errors">{{ error }}</li>
       </ul>
@@ -24,11 +31,11 @@
     <form [formGroup]="stockMovementForm" (ngSubmit)="updateStock()">
       <!-- ✅ Product Selection -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold">Product Name:</label>
+        <label class="block font-semibold text-gray-700">Product Name:</label>
         <select
           formControlName="inventoryId"
           (change)="onProductChange($event)"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
         >
           <option *ngFor="let item of inventory" [value]="item._id">
             {{ item.productId.productName }} ({{ item.stockLevel }} in stock)
@@ -38,11 +45,11 @@
 
       <!-- ✅ Change Type Selection -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold">Movement Type:</label>
+        <label class="block font-semibold text-gray-700">Movement Type:</label>
         <select
           formControlName="type"
           (change)="generateSerialFields(); fetchAvailableSerialNumbers()"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
         >
           <option value="INCREASE">Incoming</option>
           <option value="DECREASE">Outgoing</option>
@@ -51,25 +58,25 @@
 
       <!-- ✅ Upload File for Serial Numbers (Only for Incoming) -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold"
-          >Upload Serial Numbers (Excel):</label
-        >
+        <label class="block font-semibold text-gray-700">
+          Upload Serial Numbers (Excel):
+        </label>
         <input
           type="file"
           (change)="onFileUpload($event)"
           accept=".xls,.xlsx"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
 
       <!-- ✅ Stock Quantity Input -->
       <div class="mt-4">
-        <label class="block mb-2 font-semibold">Quantity:</label>
+        <label class="block font-semibold text-gray-700">Quantity:</label>
         <input
           type="number"
           formControlName="quantity"
           (input)="generateSerialFields(); fetchAvailableSerialNumbers()"
-          class="w-full border border-gray-300 rounded-lg px-4 py-2"
+          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
 
@@ -82,7 +89,7 @@
         "
         class="mt-4"
       >
-        <h4 class="font-semibold">Enter Serial Numbers:</h4>
+        <h4 class="font-semibold text-gray-700">Enter Serial Numbers:</h4>
 
         <!-- ✅ FormArray Wrapper -->
         <div formArrayName="serialNumbers">
@@ -92,7 +99,7 @@
           >
             <input
               [formControlName]="i"
-              class="w-full border border-gray-300 rounded-lg px-4 py-2"
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
               placeholder="Serial Number {{ i + 1 }}"
               (input)="updateFormValidation()"
             />
@@ -112,7 +119,9 @@
         "
         class="mt-4"
       >
-        <h4 class="font-semibold">Select Serial Numbers to Remove:</h4>
+        <h4 class="font-semibold text-gray-700">
+          Select Serial Numbers to Remove:
+        </h4>
         <div
           class="max-h-40 overflow-y-auto border border-gray-300 p-2 rounded-lg"
         >
@@ -135,16 +144,15 @@
         <button
           type="button"
           (click)="closeModal()"
-          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+          class="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-700 transition"
         >
           Cancel
         </button>
 
-        <!-- ✅ Disable Update Stock Button When Errors Exist -->
         <button
           (click)="updateStock(); closeModal()"
           [disabled]="!isFormValid()"
-          class="px-4 py-2 rounded-lg transition duration-300 font-semibold"
+          class="px-5 py-2 rounded-lg transition duration-300 font-semibold"
           [ngClass]="
             isFormValid()
               ? 'bg-green-600 text-white hover:bg-green-700'

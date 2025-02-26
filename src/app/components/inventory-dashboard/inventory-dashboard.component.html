@@ -1,98 +1,90 @@
-<div class="container mx-auto p-6">
-  <h2 class="text-3xl font-extrabold text-blue-900 mb-6">
-    Inventory Dashboard
+<div class="p-6">
+  <h2 class="text-4xl font-extrabold text-blue-900 mb-6 text-center">
+    📦 Inventory Dashboard
   </h2>
 
-  <!-- ✅ Centered Summary Cards -->
+  <!-- ✅ Summary Cards -->
   <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center justify-center items-center mx-auto max-w-5xl"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center mx-auto max-w-6xl"
   >
     <div
-      class="bg-gradient-to-br from-blue-500 to-blue-700 text-white p-6 rounded-xl shadow-lg flex flex-col items-center"
+      class="bg-gradient-to-br from-blue-500 to-blue-700 text-white p-6 rounded-xl shadow-lg flex flex-col items-center hover:scale-105 transition-all"
     >
       <h3 class="text-lg font-semibold">Total Products</h3>
-      <p class="text-3xl font-bold">{{ totalStock }}</p>
+      <p class="text-4xl font-bold">{{ totalStock }}</p>
     </div>
 
     <div
-      class="bg-gradient-to-br from-green-500 to-green-700 text-white p-6 rounded-xl shadow-lg flex flex-col items-center"
+      class="bg-gradient-to-br from-green-500 to-green-700 text-white p-6 rounded-xl shadow-lg flex flex-col items-center hover:scale-105 transition-all"
     >
       <h3 class="text-lg font-semibold">Incoming Products</h3>
-      <p class="text-3xl font-bold">{{ incomingStock }}</p>
+      <p class="text-4xl font-bold">{{ incomingStock }}</p>
     </div>
 
     <div
-      class="bg-gradient-to-br from-red-500 to-red-700 text-white p-6 rounded-xl shadow-lg flex flex-col items-center"
+      class="bg-gradient-to-br from-red-500 to-red-700 text-white p-6 rounded-xl shadow-lg flex flex-col items-center hover:scale-105 transition-all"
     >
       <h3 class="text-lg font-semibold">Outgoing Products</h3>
-      <p class="text-3xl font-bold">{{ outgoingStock }}</p>
+      <p class="text-4xl font-bold">{{ outgoingStock }}</p>
     </div>
   </div>
 
   <!-- ✅ Filters and Product Movement Button -->
   <div
-    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-4 rounded-lg shadow-md mt-6"
+    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-6 rounded-lg shadow-md mt-6"
   >
     <div class="flex flex-wrap gap-4 w-full sm:w-auto">
       <!-- 📅 Date Range Filters -->
-      <div class="relative">
-        <input
-          type="date"
-          [(ngModel)]="startDate"
-          (change)="filterStockMovements()"
-          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 border rounded-lg px-3 py-2 w-full sm:w-44"
-        />
-      </div>
+      <input
+        type="date"
+        [(ngModel)]="startDate"
+        (change)="filterStockMovements()"
+        class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-lg w-full sm:w-48"
+      />
 
-      <div class="relative">
-        <input
-          type="date"
-          [(ngModel)]="endDate"
-          (change)="filterStockMovements()"
-          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 border rounded-lg px-3 py-2 w-full sm:w-44"
-        />
-      </div>
+      <input
+        type="date"
+        [(ngModel)]="endDate"
+        (change)="filterStockMovements()"
+        class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-lg w-full sm:w-48"
+      />
 
       <!-- 📂 Type Filter -->
-      <div class="relative">
-        <select
-          [(ngModel)]="selectedType"
-          (change)="filterStockMovements()"
-          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 pr-8 border rounded-lg px-3 py-2 w-full sm:w-44"
-        >
-          <option value="">Types</option>
-          <option value="INCREASE">Incoming</option>
-          <option value="DECREASE">Outgoing</option>
-        </select>
-      </div>
+      <select
+        [(ngModel)]="selectedType"
+        (change)="filterStockMovements()"
+        class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-lg w-full sm:w-48"
+      >
+        <option value="">Types</option>
+        <option value="INCREASE">Incoming</option>
+        <option value="DECREASE">Outgoing</option>
+      </select>
     </div>
 
-    <button
-      (click)="exportStockMovementsToExcel()"
-      class="bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 font-semibold"
-    >
-      📤 Export Stock Movements
-    </button>
+    <div class="flex space-x-4">
+      <button
+        (click)="exportStockMovementsToExcel()"
+        class="bg-green-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 font-semibold flex items-center gap-2"
+      >
+        📤 Export
+      </button>
 
-    <!-- ✅ Product Movement Button (Aligned to the Right) -->
-    <button
-      (click)="openStockMovementModal()"
-      class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold"
-    >
-      + Product Movement
-    </button>
+      <button
+        (click)="openStockMovementModal()"
+        class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold flex items-center gap-2"
+      >
+        ➕ Add Product Movement
+      </button>
+    </div>
   </div>
 
   <!-- ✅ Recent Stock Movements Table -->
-  <div class="mt-4 bg-white shadow-md rounded-lg overflow-hidden">
-    <h3 class="text-xl font-bold text-blue-900 p-4 bg-blue-100">
-      Recent Stock Movements
-    </h3>
+  <div class="mt-4 bg-white shadow-lg rounded-lg overflow-hidden">
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="bg-blue-900 text-white">
           <th
-            class="px-4 py-3 cursor-pointer"
+            class="px-5 py-3 cursor-pointer"
             (click)="setSort('inventoryId.productName')"
           >
             Product
@@ -100,20 +92,20 @@
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('type')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('type')">
             Movement
             <span *ngIf="sortColumn === 'type'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('quantity')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('quantity')">
             Quantity
             <span *ngIf="sortColumn === 'quantity'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3">Serial Numbers</th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('timestamp')">
+          <th class="px-5 py-3">Serial Numbers</th>
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('timestamp')">
             Date
             <span *ngIf="sortColumn === 'timestamp'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
@@ -126,17 +118,17 @@
           *ngFor="let movement of filteredMovements"
           class="hover:bg-gray-100 transition"
         >
-          <td class="px-4 py-3">{{ movement.inventoryId?.productName }}</td>
+          <td class="px-5 py-3">{{ movement.inventoryId?.productName }}</td>
           <td
-            class="px-4 py-3 font-semibold"
+            class="px-5 py-3 font-semibold"
             [ngClass]="
               movement.type === 'INCREASE' ? 'text-green-600' : 'text-red-600'
             "
           >
             {{ movement.type }}
           </td>
-          <td class="px-4 py-3">{{ movement.quantity }}</td>
-          <td class="px-4 py-3">
+          <td class="px-5 py-3 font-extrabold">{{ movement.quantity }}</td>
+          <td class="px-5 py-3">
             <div *ngIf="movement.serialNumbers?.length > 0; else noSerials">
               <span
                 *ngFor="let serial of movement.serialNumbers"
@@ -149,30 +141,37 @@
               <span class="text-gray-500">No Serial Numbers</span>
             </ng-template>
           </td>
-          <td class="px-4 py-3">{{ movement.timestamp | date : "short" }}</td>
+          <td class="px-5 py-3">{{ movement.timestamp | date : "short" }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  <div
+    *ngIf="recentMovements.length === 0"
+    class="p-6 text-center text-gray-500"
+  >
+    No stock movements found.
+  </div>
+
   <!-- ✅ Pagination Controls -->
-  <div class="flex justify-between items-center mt-4">
+  <div class="flex justify-between items-center mt-6">
     <button
       (click)="prevPage()"
       [disabled]="currentPage === 1"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+      class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
     >
-      Previous
+      ◀ Previous
     </button>
-    <span class="text-gray-600"
+    <span class="text-gray-700 font-medium"
       >Page {{ currentPage }} of {{ totalPages }}</span
     >
     <button
       (click)="nextPage()"
       [disabled]="currentPage === totalPages"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+      class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
     >
-      Next
+      Next ▶
     </button>
   </div>
 </div>

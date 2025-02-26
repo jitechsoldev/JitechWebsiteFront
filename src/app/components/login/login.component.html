@@ -1,19 +1,18 @@
-<div
-  class="flex min-h-screen bg-blue-100 items-center justify-center backdrop-blur-md"
->
-  <!-- Exit Button -->
+<div class="flex min-h-screen bg-blue-100 items-center justify-center">
+  <!-- ✅ Exit Button -->
   <button
     [routerLink]="['/landing']"
-    class="absolute top-5 right-5 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 transition z-50"
+    class="absolute top-6 right-6 bg-gray-800 text-white rounded-full w-12 h-12 flex items-center justify-center hover:bg-red-600 transition-all shadow-lg"
   >
     ✖
   </button>
+
   <div
-    class="w-full max-w-3xl bg-white shadow-lg rounded-3xl flex overflow-hidden"
+    class="w-full max-w-3xl bg-white shadow-2xl rounded-3xl flex overflow-hidden"
   >
-    <!-- Left Side (Illustration Carousel) -->
+    <!-- ✅ Left Side (Illustration Carousel) -->
     <div
-      class="hidden md:flex flex-1 flex-col items-center justify-center bg-blue-900 p-10 relative"
+      class="hidden md:flex flex-1 flex-col items-center justify-center bg-gradient-to-br from-blue-900 to-blue-700 p-10 relative"
     >
       <div
         class="carousel w-full relative flex items-center justify-center"
@@ -22,7 +21,7 @@
       >
         <div
           *ngFor="let slide of slides; let i = index"
-          class="carousel-item w-full text-center absolute inset-0 transition-opacity duration-1000 ease-in-out"
+          class="carousel-item w-full text-center absolute inset-0 transition-opacity duration-700 ease-in-out"
           [ngClass]="{
             'opacity-100': i === currentSlide,
             'opacity-0': i !== currentSlide
@@ -51,26 +50,26 @@
       </div>
     </div>
 
-    <!-- Right Side (Login Form) -->
+    <!-- ✅ Right Side (Login Form) -->
     <div class="flex-1 flex items-center justify-center p-8 bg-white">
       <div class="w-full max-w-md">
         <div class="flex justify-center mb-6">
-          <img src="./JitechBlue.png" class="h-18" />
+          <img src="./JitechBlue.png" class="h-20" />
         </div>
-        <form class="mt-6" (submit)="onSubmit()">
-          <!-- Only the password field is displayed. The username is set in the TS logic -->
-          <div class="mb-6 relative">
-            <label for="password" class="block text-blue-900 mb-1"
+        <form class="mt-6 space-y-6" (submit)="onSubmit()">
+          <!-- ✅ Password Field -->
+          <div class="relative">
+            <label for="password" class="block text-blue-900 font-semibold mb-1"
               >Password:</label
             >
             <div
-              class="flex items-center border border-blue-300 rounded-3xl px-4 py-2"
+              class="flex items-center border border-blue-300 rounded-xl px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-blue-500"
             >
               <img src="./lock-solid.svg" class="h-5 w-5 opacity-50" />
               <input
                 type="password"
                 id="password"
-                class="w-full outline-none pl-3"
+                class="w-full outline-none pl-3 bg-transparent text-gray-900 focus:ring-0"
                 [(ngModel)]="password"
                 name="password"
                 placeholder="Enter your password"
@@ -79,14 +78,17 @@
             </div>
           </div>
 
+          <!-- ✅ Login Button -->
           <button
             type="submit"
-            class="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2 rounded-lg hover:scale-105 hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            class="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-lg hover:scale-105 hover:shadow-xl transition-all flex items-center justify-center gap-2 font-semibold"
           >
             <img src="./LoginWhite.svg" class="h-5 w-5" />
-            Log-in
+            Log in
           </button>
-          <div *ngIf="errorMessage" class="mt-4 text-red-600">
+
+          <!-- ✅ Error Message Display -->
+          <div *ngIf="errorMessage" class="mt-4 text-red-600 text-center">
             {{ errorMessage }}
           </div>
         </form>

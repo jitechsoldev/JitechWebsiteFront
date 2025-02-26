@@ -27,7 +27,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   visibleItems: number = 1;
   selectedProduct: any = null;
   idleTimeout: any;
-  idleTime = 40 * 1000;
+  idleTime = 60 * 1000;
 
   products = [
     {

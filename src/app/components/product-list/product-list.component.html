@@ -1,109 +1,106 @@
-<div class="container mx-auto p-6">
-  <h2 class="text-3xl font-extrabold text-blue-900 mb-6">Product List</h2>
+<div class="p-6">
+  <h2 class="text-4xl font-extrabold text-blue-900 mb-6 text-center">
+    🛒 Product List
+  </h2>
 
-  <!-- ✅ Search, Filters, and Add Product Button in One Line -->
+  <!-- ✅ Search, Filters, and Add Product Button -->
   <div
-    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-4 rounded-lg shadow-md"
+    class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-100 p-6 rounded-lg shadow-md"
   >
     <div class="flex flex-wrap gap-4 w-full sm:w-auto">
       <!-- 🔍 Search Bar -->
-      <div class="relative">
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (input)="filterProducts()"
-          placeholder="Search by product name or SKU..."
-          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-4 border rounded-lg px-3 py-2 w-full sm:w-80"
-        />
-      </div>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="filterProducts()"
+        placeholder="🔍 Search by product name or SKU..."
+        class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-4 rounded-lg px-4 py-2 w-full sm:w-80"
+      />
 
       <!-- 📂 Category Filter -->
-      <div class="relative">
-        <select
-          [(ngModel)]="selectedCategory"
-          (change)="filterProducts()"
-          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 pr-8 border rounded-lg px-3 py-2 w-full sm:w-40"
-        >
-          <option value="">Categories</option>
-          <option *ngFor="let cat of uniqueCategories" [value]="cat">
-            {{ cat }}
-          </option>
-        </select>
-      </div>
+      <select
+        [(ngModel)]="selectedCategory"
+        (change)="filterProducts()"
+        class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-lg w-full sm:w-48"
+      >
+        <option value="">Categories</option>
+        <option *ngFor="let cat of uniqueCategories" [value]="cat">
+          {{ cat }}
+        </option>
+      </select>
 
       <!-- ✅ Status Filter -->
-      <div class="relative">
-        <select
-          [(ngModel)]="selectedStatus"
-          (change)="filterProducts()"
-          class="border-gray-300 focus:ring-blue-500 focus:border-blue-500 pl-3 pr-8 border rounded-lg px-3 py-2 w-full sm:w-40"
-        >
-          <option value="">Status</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
-        </select>
-      </div>
+      <select
+        [(ngModel)]="selectedStatus"
+        (change)="filterProducts()"
+        class="border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-lg w-full sm:w-48"
+      >
+        <option value="">Status</option>
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
+      </select>
     </div>
 
-    <button
-      (click)="exportProductsToExcel()"
-      class="bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 font-semibold"
-    >
-      📤 Export to Excel
-    </button>
+    <div class="flex space-x-4">
+      <button
+        (click)="exportProductsToExcel()"
+        class="bg-green-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 font-semibold flex items-center gap-2"
+      >
+        📤 Export
+      </button>
 
-    <!-- ✅ Add Product Button (Aligned to the Right) -->
-    <button
-      (click)="openProductFormModal()"
-      class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold"
-    >
-      + Add Product
-    </button>
+      <button
+        (click)="openProductFormModal()"
+        class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 font-semibold flex items-center gap-2"
+      >
+        ➕ Add Product
+      </button>
+    </div>
   </div>
 
-  <!-- ✅ Products Table -->
-  <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+  <!-- ✅ Product Table -->
+  <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="bg-blue-900 text-white">
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('productName')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('productName')">
             Product
             <span *ngIf="sortColumn === 'productName'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('sku')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('sku')">
             SKU
             <span *ngIf="sortColumn === 'sku'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('category')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('category')">
             Category
             <span *ngIf="sortColumn === 'category'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('stockLevel')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('stockLevel')">
             Quantity
             <span *ngIf="sortColumn === 'stockLevel'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('price')">
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('price')">
             Price
             <span *ngIf="sortColumn === 'price'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3">Serial Numbers</th>
-          <th class="px-4 py-3 cursor-pointer" (click)="setSort('active')">
+          <th class="px-5 py-3">Serial Numbers</th>
+          <th class="px-5 py-3 cursor-pointer" (click)="setSort('active')">
             Status
             <span *ngIf="sortColumn === 'active'">{{
               sortOrder === "asc" ? "🔼" : "🔽"
             }}</span>
           </th>
-          <th class="px-4 py-3 text-center">Actions</th>
+          <th class="px-5 py-3 text-center">Actions</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -111,21 +108,23 @@
           *ngFor="let product of filteredProducts"
           class="hover:bg-gray-100 transition"
         >
-          <td class="px-4 py-3">{{ product.productName }}</td>
-          <td class="px-4 py-3">{{ product.sku }}</td>
-          <td class="px-4 py-3">{{ product.category }}</td>
-          <td class="px-4 py-3">{{ product.stockLevel }}</td>
-          <td class="px-4 py-3 text-gray-700">₱{{ product.price }}</td>
+          <td class="px-5 py-3">{{ product.productName }}</td>
+          <td class="px-5 py-3">{{ product.sku }}</td>
+          <td class="px-5 py-3">{{ product.category }}</td>
+          <td class="px-5 py-3 font-extrabold">{{ product.stockLevel }}</td>
+          <td class="px-5 py-3 text-gray-700">
+            {{ product.price | currency : "PHP" : "symbol" : "1.2-2" }}
+          </td>
 
           <!-- ✅ Serial Numbers -->
-          <td class="px-4 py-3">
+          <td class="px-5 py-3">
             <div
               *ngIf="product.serialNumbers.length > 0; else noSerials"
               class="flex flex-wrap gap-2"
             >
               <span
                 *ngFor="let sn of product.serialNumbers"
-                class="px-3 py-1 text-sm font-semibold bg-gray-200 text-gray-800 rounded-full"
+                class="px-3 py-1 font-bold bg-gray-200 text-sm text-gray-800 rounded-full"
               >
                 {{ sn }}
               </span>
@@ -135,8 +134,8 @@
             </ng-template>
           </td>
 
-          <!-- ✅ Status Column (Displays "Active" or "Inactive") -->
-          <td class="px-4 py-3">
+          <!-- ✅ Status Column -->
+          <td class="px-5 py-3 font-extrabold">
             <span
               [ngClass]="product.active ? 'text-green-600' : 'text-red-600'"
             >
@@ -144,11 +143,10 @@
             </span>
           </td>
 
-          <!-- ✅ Actions Column (Contains Activate/Deactivate & Edit Buttons) -->
+          <!-- ✅ Actions -->
           <td
-            class="px-4 py-3 text-center flex justify-center items-center space-x-4"
+            class="px-5 py-3 text-center flex justify-center items-center space-x-4"
           >
-            <!-- Activate/Deactivate Button -->
             <button
               (click)="toggleProductStatus(product)"
               title="{{ product.active ? 'Deactivate' : 'Activate' }}"
@@ -165,7 +163,6 @@
               />
             </button>
 
-            <!-- Edit Button -->
             <button (click)="editProduct(product)" title="Edit">
               <img
                 src="./Edit.png"
@@ -178,24 +175,28 @@
     </table>
   </div>
 
+  <div *ngIf="products.length === 0" class="p-6 text-center text-gray-500">
+    No products found.
+  </div>
+
   <!-- ✅ Pagination Controls -->
-  <div class="flex justify-between items-center mt-4">
+  <div class="flex justify-between items-center mt-6">
     <button
       (click)="prevPage()"
       [disabled]="currentPage === 1"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+      class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
     >
-      Previous
+      ◀ Previous
     </button>
-    <span class="text-gray-600"
+    <span class="text-gray-700 font-medium"
       >Page {{ currentPage }} of {{ totalPages }}</span
     >
     <button
       (click)="nextPage()"
       [disabled]="currentPage === totalPages"
-      class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
+      class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 disabled:opacity-50"
     >
-      Next
+      Next ▶
     </button>
   </div>
 </div>

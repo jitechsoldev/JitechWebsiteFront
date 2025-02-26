@@ -1,6 +1,12 @@
 import { ProductService } from './../../services/product.service';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  FormsModule,
+} from '@angular/forms';
 import { SaleService } from '../../services/sale.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +21,7 @@ import { saveAs } from 'file-saver';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './sale.component.html',
-  styleUrls: ['./sale.component.css']
+  styleUrls: ['./sale.component.css'],
 })
 export class SaleComponent implements OnInit {
   saleForm: FormGroup;
@@ -125,11 +131,11 @@ export class SaleComponent implements OnInit {
 
   getBadgeClasses(status: string): string {
     const lowerStatus = status?.toLowerCase();
-    if (lowerStatus === 'completed') {
+    if (lowerStatus === 'Completed') {
       return 'bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs';
-    } else if (lowerStatus === 'pending') {
-      return 'bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs';
-    } else if (lowerStatus === 'cancelled') {
+    } else if (lowerStatus === 'In-progress') {
+      return 'bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs';
+    } else if (lowerStatus === 'Cancelled') {
       return 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
     }
     return 'bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs';
@@ -196,7 +202,9 @@ export class SaleComponent implements OnInit {
     this.editingSaleId = sale._id;
     this.saleForm.patchValue({
       clientName: sale.clientName,
-      dateOfPurchase: new Date(sale.dateOfPurchase).toISOString().substring(0, 10),
+      dateOfPurchase: new Date(sale.dateOfPurchase)
+        .toISOString()
+        .substring(0, 10),
       warranty: sale.warranty,
       termPayable: sale.termPayable,
       modeOfPayment: sale.modeOfPayment,
@@ -221,7 +229,9 @@ export class SaleComponent implements OnInit {
   handleSubmit(): void {
     if (this.saleForm.invalid) {
       this.saleForm.markAllAsTouched();
-      this.showValidationError('Please ensure all fields are filled correctly.');
+      this.showValidationError(
+        'Please ensure all fields are filled correctly.'
+      );
       return;
     }
     this.openSubmitModal();
@@ -244,36 +254,36 @@ export class SaleComponent implements OnInit {
     this.isLoading = true;
     const saleData = {
       ...this.saleForm.value,
-      overallTotalAmount: this.overallTotal
+      overallTotalAmount: this.overallTotal,
     };
-    console.log("🛒 Sale Data Sent to API:", saleData);
+    console.log('🛒 Sale Data Sent to API:', saleData);
     if (this.isEditMode && this.editingSaleId) {
       this.saleService.updateSale(this.editingSaleId, saleData).subscribe({
-        next: res => {
+        next: (res) => {
           console.log('✅ Sale updated successfully:', res);
           this.loadSales();
           this.isLoading = false;
           this.closeModal();
         },
-        error: err => {
+        error: (err) => {
           console.error('❌ Error updating sale:', err);
           this.errorMessage = err.error?.error || 'An error occurred';
           this.isLoading = false;
-        }
+        },
       });
     } else {
       this.saleService.createSale(saleData).subscribe({
-        next: res => {
+        next: (res) => {
           console.log('✅ Sale created successfully:', res);
           this.loadSales();
           this.isLoading = false;
           this.closeModal();
         },
-        error: err => {
+        error: (err) => {
           console.error('❌ Error creating sale:', err);
           this.errorMessage = err.error?.error || 'An error occurred';
           this.isLoading = false;
-        }
+        },
       });
     }
   }
@@ -290,29 +300,42 @@ export class SaleComponent implements OnInit {
 
   // ----- Export to Excel Feature for Sales -----
   exportToExcel(): void {
-    const exportData = this.sales.map(sale => ({
+    const exportData = this.sales.map((sale) => ({
       'Sale ID': sale.saleID,
       'Client Name': sale.clientName,
-      'Products': sale.saleItems.map((item: any) =>
-        `${item.product?.productName || 'N/A'} (Qty: ${item.quantity})`
-      ).join('; '),
+      Products: sale.saleItems
+        .map(
+          (item: any) =>
+            `${item.product?.productName || 'N/A'} (Qty: ${item.quantity})`
+        )
+        .join('; '),
       'Overall Total': sale.overallTotalAmount,
       'Date of Purchase': new Date(sale.dateOfPurchase).toLocaleDateString(),
-      'Warranty': sale.warranty,
+      Warranty: sale.warranty,
       'Term Payable': sale.termPayable,
       'Mode of Payment': sale.modeOfPayment,
-      'Status': sale.status
+      Status: sale.status,
     }));
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook: XLSX.WorkBook = { Sheets: { 'Sales': worksheet }, SheetNames: ['Sales'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const workbook: XLSX.WorkBook = {
+      Sheets: { Sales: worksheet },
+      SheetNames: ['Sales'],
+    };
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
     this.saveAsExcelFile(excelBuffer, 'Sales Report');
   }
 
   saveAsExcelFile(buffer: any, fileName: string): void {
-    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const EXCEL_TYPE =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const EXCEL_EXTENSION = '.xlsx';
     const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
-    saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+    saveAs(
+      data,
+      fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION
+    );
   }
 }

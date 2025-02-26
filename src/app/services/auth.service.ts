@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 import {jwtDecode} from 'jwt-decode';
+
 interface DecodedToken {
   id: string;
   username: string;
-  role: string; // 'admin' or 'user'
+  roles: string[]; // Ensure roles is an array (or string, based on your implementation)
   exp: number;
 }
 
@@ -66,5 +67,19 @@ export class AuthService {
       console.error('Error decoding token:', error);
       return false;
     }
+  }
+
+  // New method to get user info from the token
+  getUserInfo(): DecodedToken | null {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        return jwtDecode(token) as DecodedToken;
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        return null;
+      }
+    }
+    return null;
   }
 }
