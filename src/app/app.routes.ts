@@ -42,7 +42,7 @@ export const routes: Routes = [
     path: 'inventory-dashboard',
     component: InventoryDashboardComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['Super Admin', 'Admin'] }
+    data: { roles: ['Super Admin', 'Admin', 'User'] }
   },
   {
     path: 'product-movement',
