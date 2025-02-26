@@ -1,14 +1,17 @@
-<!-- ✅ Smooth Scrolling Instead of Router Links -->
-<nav
+<!-- ✅ Navbar Section -->
+<header
   id="navbar"
-  class="sticky-nav fixed top-0 left-0 w-full z-50 bg-white shadow-md text-blue-900 px-20 py-3 flex justify-between items-center"
+  class="fixed top-0 left-0 w-full z-50 bg-white shadow-md text-blue-900 px-8 lg:px-20 py-4 flex justify-between items-center transition-all duration-300"
 >
-  <div class="flex items-center">
-    <a [routerLink]="['/login']">
-      <img src="./JitechBlue.png" class="h-12" />
-    </a>
-  </div>
+  <!-- ✅ Logo -->
+  <a [routerLink]="['/login']">
+    <img
+      src="./JitechBlue.png"
+      class="h-12 transition-transform hover:scale-110"
+    />
+  </a>
 
+  <!-- ✅ Navigation Links -->
   <div class="hidden md:flex space-x-6">
     <button
       (click)="scrollToSection('home')"
@@ -29,9 +32,9 @@
       Contact
     </button>
   </div>
-</nav>
+</header>
 
-<!-- Hero Section -->
+<!-- ✅ Hero Section -->
 <header id="home" class="hero-bg text-white py-24">
   <div class="container mx-auto flex flex-col lg:flex-row items-center px-8">
     <div class="lg:w-1/2 text-center lg:text-left animate-fade-in">
@@ -65,50 +68,47 @@
   </div>
 </header>
 
-<!-- Product Section -->
+<!-- ✅ Enhanced Product Section -->
 <section id="products" class="py-20 bg-gray-100">
   <div class="container mx-auto px-8">
-    <!-- Section Title -->
-    <h2 class="text-center text-4xl font-extrabold text-blue-900 mb-12">
+    <!-- 🔹 Section Title -->
+    <h2
+      class="text-center text-4xl font-extrabold text-blue-900 mb-12 tracking-wide"
+    >
       Our Products
     </h2>
 
-    <!-- Product Grid -->
+    <!-- 🔹 Product Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
       <div
         *ngFor="let product of products"
-        class="relative group bg-white rounded-xl shadow-lg overflow-hidden transition transform"
+        class="relative group bg-white rounded-2xl shadow-lg overflow-hidden"
       >
-        <!-- Image Container -->
+        <!-- 🔹 Image Container -->
         <div
           class="relative w-full h-80 bg-gray-200 flex items-center justify-center overflow-hidden"
         >
           <img
             [src]="product.image"
             alt="{{ product.name }}"
-            class="w-80 h-73 object-cover transition"
+            class="w-full h-full object-cover"
           />
-          <div
-            class="absolute inset-0 bg-opacity-20 opacity-0 group-hover:opacity-100 transition"
-          ></div>
         </div>
 
-        <!-- Card Content -->
+        <!-- 🔹 Card Content -->
         <div class="p-6 text-center">
           <h3 class="text-2xl font-semibold text-blue-900">
             {{ product.name }}
           </h3>
-          <p class="text-gray-600 mt-2">
-            {{ product.description }}
-          </p>
+          <p class="text-gray-600 mt-2">{{ product.description }}</p>
 
-          <!-- Gradient Button with Glow Effect -->
+          <!-- 🔹 "Learn More" Button -->
           <button
             (click)="openProductModal(product)"
-            class="mt-4 inline-block px-6 py-3 text-white text-lg font-semibold rounded-lg shadow-md transition transform hover:scale-105"
+            class="mt-4 px-6 py-3 text-white text-lg font-semibold rounded-lg shadow-md transition-all duration-300 transform hover:scale-110"
             style="
               background: linear-gradient(90deg, #2563eb, #1e3a8a);
-              box-shadow: 0 4px 5px rgba(37, 99, 235, 0.4);
+              box-shadow: 0 4px 10px rgba(37, 99, 235, 0.5);
             "
           >
             Learn More
@@ -119,7 +119,7 @@
   </div>
 </section>
 
-<!-- Footer -->
+<!-- ✅ Footer Section -->
 <footer
   id="contact"
   class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-12"
@@ -127,7 +127,6 @@
   <div
     class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left"
   >
-    <!-- Contact Section -->
     <div>
       <h2 class="text-xl font-semibold mb-3">Contact Us</h2>
       <div class="flex items-center space-x-2 mb-5">
@@ -137,13 +136,12 @@
       <div class="flex items-start space-x-2 mt-2">
         <img src="./PinWhite.png" class="h-5 w-5" />
         <p>
-          Unit 204, Sonrisa Suites, Juana Osmeña <br />
-          Street, Cebu City, Philippines
+          Unit 204, Sonrisa Suites, Juana Osmeña <br />Street, Cebu City,
+          Philippines
         </p>
       </div>
     </div>
 
-    <!-- Logo & Tagline Section -->
     <div class="flex flex-col items-center">
       <img
         src="./Jitech.png"
@@ -153,7 +151,6 @@
       <p class="text-white">Innovate. Integrate. Succeed.</p>
     </div>
 
-    <!-- Follow Us Section -->
     <div class="flex flex-col items-center md:items-start">
       <h2 class="text-lg font-semibold mb-2">Follow Us</h2>
       <div class="flex space-x-4">
@@ -169,7 +166,6 @@
         </a>
       </div>
 
-      <!-- Our Emails Section (Dropdown) -->
       <details class="mt-4">
         <summary
           class="cursor-pointer text-white font-semibold hover:text-gray-300"
@@ -178,19 +174,17 @@
         </summary>
         <div class="mt-2 flex flex-col space-y-1 text-sm">
           <a
-            href="mailto:jitechsolutions8&#64;gmail.com"
+            href="mailto:jitechsolutions8@gmail.com"
             class="hover:text-gray-300"
-            >jitechsolutions8&#64;gmail.com</a
+            >jitechsolutions8&#64;.com</a
           >
           <a
             href="mailto:jitechsalesm3&#64;gmail.com"
             class="hover:text-gray-300"
             >jitechsalesm1&#64;gmail.com</a
           >
-          <a
-            href="mailto:jitechsalesm19&#64;gmail.com"
-            class="hover:text-gray-300"
-            >jitechsalesm3&#64;gmail.com</a
+          <a href="mailto:jitechsalesm3@gmail.com" class="hover:text-gray-300"
+            >jitechsalesm3&#64;.com</a
           >
           <a
             href="mailto:jitechsalesm1&#64;gmail.com"
@@ -207,13 +201,12 @@
     </div>
   </div>
 
-  <!-- Footer Bottom -->
   <div class="mt-10 border-t border-blue-500 pt-4 text-center text-sm">
     © Jitech Solutions. All Rights Reserved.
   </div>
 </footer>
 
-<!-- Fullscreen Video Modal (Screen Saver) -->
+<!-- ✅ Fullscreen Video Modal (Screen Saver) -->
 <div
   #videoModal
   class="fixed inset-0 bg-black flex justify-center items-center z-50 opacity-0 transition-opacity duration-700 ease-in-out"
@@ -226,12 +219,12 @@
     muted
     playsinline
   >
-    <source src="./SampleVid.mp4" type="video/mp4" />
+    <source src="./JitechADS.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
 </div>
 
-<!-- Product Details Modal (Redesigned) -->
+<!-- ✅ Product Details Modal (Enhanced Design) -->
 <div
   #productModal
   (click)="closeProductModalOutside($event)"
@@ -242,20 +235,19 @@
     #productModalContent
     class="relative bg-white rounded-lg overflow-hidden shadow-lg w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 p-6 transform scale-90 opacity-0 transition-all duration-500 ease-in-out flex flex-col md:flex-row"
   >
-    <!-- Previous Button -->
+    <!-- 🔹 Previous Button -->
     <button
       (click)="prevProduct()"
-      class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-r-lg shadow-md hover:bg-gray-700 transition"
+      class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-r-lg shadow-md hover:bg-gray-700 hover:scale-105 transition-all duration-300"
     >
       ◀
     </button>
-    <!-- Product Image Section -->
-    <div
-      class="md:w-1/2 flex justify-center items-center bg-gray-100 rounded-lg p-4"
-    >
+
+    <!-- 🔹 Product Image Section -->
+    <div class="md:w-1/2 flex justify-center items-center rounded-lg p-6">
       <img
         [src]="selectedProduct?.image"
-        class="w-full h-75 object-cover rounded-lg shadow-lg"
+        class="w-80 h-65 object-cover rounded-lg shadow-lg"
       />
     </div>
 
@@ -269,29 +261,30 @@
         ✖
       </button>
 
-      <h2 class="text-3xl font-bold text-blue-900">
+      <!-- 🔹 Product Name -->
+      <h2 class="text-3xl font-bold text-blue-900 tracking-wide">
         {{ selectedProduct?.name }}
       </h2>
 
-      <!-- Price -->
+      <!-- 🔹 Price -->
       <p class="mt-2 text-2xl font-semibold text-green-600">
         {{ selectedProduct?.price | currency : "PHP" }}
       </p>
 
-      <!-- Bullet-Point Description -->
-      <ul class="mt-4 space-y-2 text-lg">
+      <!-- 🔹 Bullet-Point Description -->
+      <ul class="mt-4 space-y-2 text-lg text-gray-700">
         <li
           *ngFor="let point of selectedProduct?.features"
           class="flex items-start"
         >
-          <span class="text-blue-500 mr-2">✔</span> {{ point }}
+          <span class="text-blue-500 mr-2 text-xl">✔</span> {{ point }}
         </li>
       </ul>
 
-      <!-- Next Button -->
+      <!-- 🔹 Next Button -->
       <button
         (click)="nextProduct()"
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-l-lg shadow-md hover:bg-gray-700 transition"
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-l-lg shadow-md hover:bg-gray-700 hover:scale-105 transition-all duration-300"
       >
         ▶
       </button>

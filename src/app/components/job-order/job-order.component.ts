@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormArray,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { JobOrderService } from '../../services/job-order.service';
 import { SaleService } from '../../services/sale.service';
 import { debounceTime, Subject } from 'rxjs';
@@ -11,7 +18,7 @@ import { saveAs } from 'file-saver';
   selector: 'app-job-order',
   imports: [ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './job-order.component.html',
-  styleUrls: ['./job-order.component.css']
+  styleUrls: ['./job-order.component.css'],
 })
 export class JobOrderComponent implements OnInit {
   jobOrderForm: FormGroup;
@@ -72,12 +79,24 @@ export class JobOrderComponent implements OnInit {
   }
 
   // Getters for form controls
-  get saleID() { return this.jobOrderForm.get('saleID'); }
-  get address() { return this.jobOrderForm.get('address'); }
-  get contactInfo() { return this.jobOrderForm.get('contactInfo'); }
-  get description() { return this.jobOrderForm.get('description'); }
-  get installationDate() { return this.jobOrderForm.get('installationDate'); }
-  get status() { return this.jobOrderForm.get('status'); }
+  get saleID() {
+    return this.jobOrderForm.get('saleID');
+  }
+  get address() {
+    return this.jobOrderForm.get('address');
+  }
+  get contactInfo() {
+    return this.jobOrderForm.get('contactInfo');
+  }
+  get description() {
+    return this.jobOrderForm.get('description');
+  }
+  get installationDate() {
+    return this.jobOrderForm.get('installationDate');
+  }
+  get status() {
+    return this.jobOrderForm.get('status');
+  }
 
   loadSales(): void {
     this.saleService.getSales().subscribe({
@@ -85,7 +104,7 @@ export class JobOrderComponent implements OnInit {
         this.sales = res.data || [];
         this.filteredSales = this.sales;
       },
-      error: (err) => console.error('Error fetching sales:', err)
+      error: (err) => console.error('Error fetching sales:', err),
     });
   }
 
@@ -93,9 +112,10 @@ export class JobOrderComponent implements OnInit {
     this.showSalesDropdown = true;
     const query = this.saleSearchQuery.trim().toLowerCase();
     this.filteredSales = query
-      ? this.sales.filter(sale =>
-          sale.clientName.toLowerCase().includes(query) ||
-          sale.saleID.toLowerCase().includes(query)
+      ? this.sales.filter(
+          (sale) =>
+            sale.clientName.toLowerCase().includes(query) ||
+            sale.saleID.toLowerCase().includes(query)
         )
       : this.sales;
     this.selectedSaleIndex = -1;
@@ -105,13 +125,19 @@ export class JobOrderComponent implements OnInit {
     if (!this.showSalesDropdown || !this.filteredSales.length) return;
     if (event.key === 'ArrowDown') {
       event.preventDefault();
-      this.selectedSaleIndex = (this.selectedSaleIndex + 1) % this.filteredSales.length;
+      this.selectedSaleIndex =
+        (this.selectedSaleIndex + 1) % this.filteredSales.length;
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      this.selectedSaleIndex = (this.selectedSaleIndex - 1 + this.filteredSales.length) % this.filteredSales.length;
+      this.selectedSaleIndex =
+        (this.selectedSaleIndex - 1 + this.filteredSales.length) %
+        this.filteredSales.length;
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      if (this.selectedSaleIndex >= 0 && this.selectedSaleIndex < this.filteredSales.length) {
+      if (
+        this.selectedSaleIndex >= 0 &&
+        this.selectedSaleIndex < this.filteredSales.length
+      ) {
         this.selectSale(this.filteredSales[this.selectedSaleIndex]);
       }
     }
@@ -128,7 +154,7 @@ export class JobOrderComponent implements OnInit {
     const queryParams: any = {
       page: this.currentPage,
       sortBy: this.sortColumn,
-      order: this.sortDirection
+      order: this.sortDirection,
     };
     if (this.searchQuery) queryParams.search = this.searchQuery;
     this.jobOrderService.getJobOrders(queryParams).subscribe({
@@ -138,7 +164,7 @@ export class JobOrderComponent implements OnInit {
         this.currentPage = res.currentPage || 1;
         this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
       },
-      error: (err) => console.error('Error fetching job orders:', err)
+      error: (err) => console.error('Error fetching job orders:', err),
     });
   }
 
@@ -169,7 +195,9 @@ export class JobOrderComponent implements OnInit {
   handleSubmit(): void {
     if (this.jobOrderForm.invalid) {
       this.jobOrderForm.markAllAsTouched();
-      this.showValidationError('Please ensure all fields are filled correctly.');
+      this.showValidationError(
+        'Please ensure all fields are filled correctly.'
+      );
       return;
     }
     // Optionally close/hide the main modal:
@@ -191,19 +219,25 @@ export class JobOrderComponent implements OnInit {
   }
 
   doSubmit(): void {
-    const jobOrderData = this.isEditMode ? this.jobOrderForm.getRawValue() : this.jobOrderForm.value;
+    const jobOrderData = this.isEditMode
+      ? this.jobOrderForm.getRawValue()
+      : this.jobOrderForm.value;
     if (this.isEditMode && this.editingJobOrderId) {
-      this.jobOrderService.updateJobOrder(this.editingJobOrderId, jobOrderData).subscribe({
-        next: (res) => {
-          console.log('Job Order updated successfully:', res);
-          this.loadJobOrders();
-          this.closeModal();
-        },
-        error: (err) => {
-          console.error('Error updating job order:', err);
-          this.showValidationError('Error updating job order. Please try again.');
-        }
-      });
+      this.jobOrderService
+        .updateJobOrder(this.editingJobOrderId, jobOrderData)
+        .subscribe({
+          next: (res) => {
+            console.log('Job Order updated successfully:', res);
+            this.loadJobOrders();
+            this.closeModal();
+          },
+          error: (err) => {
+            console.error('Error updating job order:', err);
+            this.showValidationError(
+              'Error updating job order. Please try again.'
+            );
+          },
+        });
     } else {
       this.jobOrderService.createJobOrder(jobOrderData).subscribe({
         next: (res) => {
@@ -213,8 +247,10 @@ export class JobOrderComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error creating job order:', err);
-          this.showValidationError('Error creating job order. Please try again.');
-        }
+          this.showValidationError(
+            'Error creating job order. Please try again.'
+          );
+        },
       });
     }
   }
@@ -228,7 +264,7 @@ export class JobOrderComponent implements OnInit {
       contactInfo: jobOrder.contactInfo,
       description: jobOrder.description,
       installationDate: jobOrder.installationDate,
-      status: jobOrder.status
+      status: jobOrder.status,
     });
     this.jobOrderForm.get('saleID')?.disable();
     this.openModal();
@@ -251,7 +287,7 @@ export class JobOrderComponent implements OnInit {
         error: (err) => {
           console.error('Error deleting job order:', err);
           this.cancelDelete();
-        }
+        },
       });
     }
   }
@@ -279,11 +315,11 @@ export class JobOrderComponent implements OnInit {
 
   getBadgeClasses(status: string): string {
     const lowerStatus = status?.toLowerCase();
-    if (lowerStatus === 'completed') {
+    if (lowerStatus === 'Completed') {
       return 'bg-green-200 text-green-800 px-2 py-1 rounded-full text-xs';
-    } else if (lowerStatus === 'pending') {
-      return 'bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs';
-    } else if (lowerStatus === 'cancelled') {
+    } else if (lowerStatus === 'In-progress') {
+      return 'bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs';
+    } else if (lowerStatus === 'Cancelled') {
       return 'bg-red-200 text-red-800 px-2 py-1 rounded-full text-xs';
     }
     return 'bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs';
@@ -291,25 +327,37 @@ export class JobOrderComponent implements OnInit {
 
   // ----- Export to Excel Feature -----
   exportToExcel(): void {
-    const exportData = this.jobOrders.map(order => ({
+    const exportData = this.jobOrders.map((order) => ({
       'Job Order ID': order.jobOrderID,
-      'Client': order.clientName,
-      'Address': order.address,
+      Client: order.clientName,
+      Address: order.address,
       'Contact Info': order.contactInfo,
-      'Description': order.description,
-      'Installation Date': new Date(order.installationDate).toLocaleDateString(),
-      'Status': order.status
+      Description: order.description,
+      'Installation Date': new Date(
+        order.installationDate
+      ).toLocaleDateString(),
+      Status: order.status,
     }));
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook: XLSX.WorkBook = { Sheets: { 'JobOrders': worksheet }, SheetNames: ['JobOrders'] };
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const workbook: XLSX.WorkBook = {
+      Sheets: { JobOrders: worksheet },
+      SheetNames: ['JobOrders'],
+    };
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
     this.saveAsExcelFile(excelBuffer, 'Job Orders Report');
   }
 
   saveAsExcelFile(buffer: any, fileName: string): void {
-    const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const EXCEL_TYPE =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const EXCEL_EXTENSION = '.xlsx';
     const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
-    saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+    saveAs(
+      data,
+      fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION
+    );
   }
 }
