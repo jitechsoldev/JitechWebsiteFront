@@ -54,7 +54,7 @@ export class JobOrderComponent implements OnInit {
     this.jobOrderForm = this.fb.group({
       saleID: ['', Validators.required],
       address: ['', [Validators.required, Validators.minLength(5)]],
-      contactInfo: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
+      contactInfo: ['', [Validators.required, Validators.pattern(/^[0-9-]+$/)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       installationDate: ['', Validators.required],
       status: ['', Validators.required],
