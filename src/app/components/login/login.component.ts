@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -11,23 +11,23 @@ import { RouterModule } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
-  currentSlide = 0;
-  // The username is hard-coded so only the password field is visible.
-  username: string = 'adminUser';
+export class LoginComponent implements OnInit {
+  // No username property needed now
   password: string = '';
   errorMessage: string = '';
 
+  // Carousel slides for aesthetics (unchanged)
   slides = [
     { image: './Innovate.png', title: 'Innovate' },
     { image: './Integrate.png', title: 'Integrate' },
-    { image: './Succeed.png', title: 'Succeed' },
+    { image: './Succeed.png', title: 'Succeed' }
   ];
+  currentSlide = 0;
 
-  constructor(private authService: AuthService, private router: Router) {
-    setInterval(() => {
-      this.nextSlide();
-    }, 4000);
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    // No query param or default username needed.
   }
 
   nextSlide() {
@@ -39,20 +39,19 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    // Prepare credentials using the hard-coded username and entered password.
-    const credentials = { username: this.username, password: this.password };
+    // Construct credentials with only the password.
+    const credentials = { password: this.password };
     console.log('Logging in with credentials:', credentials);
 
-    this.authService.login(credentials)
-      .subscribe({
-        next: (res) => {
-          console.log('Login successful, token received:', res.token);
-          this.router.navigate(['/schedule']);
-        },
-        error: (err) => {
-          console.error('Login error', err);
-          this.errorMessage = err.error.message || 'Login failed. Please check your password.';
-        }
-      });
+    this.authService.login(credentials).subscribe({
+      next: (res) => {
+        console.log('Login successful, token received:', res.token);
+        this.router.navigate(['/schedule']);
+      },
+      error: (err) => {
+        console.error('Login error', err);
+        this.errorMessage = err.error.message || 'Login failed. Please check your password.';
+      }
+    });
   }
 }

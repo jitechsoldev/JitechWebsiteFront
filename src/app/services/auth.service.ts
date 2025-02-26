@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken {
   id: string;
   username: string;
-  roles: string[]; // Ensure roles is an array (or string, based on your implementation)
+  roles: string[];
   exp: number;
 }
 
@@ -23,9 +22,8 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // Login now accepts both username and password.
-  // Your login component can hide the username input and automatically set it if needed.
-  login(credentials: { username: string; password: string }): Observable<LoginResponse> {
+  // Login now accepts only the password.
+  login(credentials: { password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         localStorage.setItem('token', response.token);
@@ -51,7 +49,7 @@ export class AuthService {
       return false;
     }
     try {
-      const decoded: DecodedToken =jwtDecode(token) as DecodedToken;
+      const decoded: DecodedToken = jwtDecode(token) as DecodedToken;
       console.log('Decoded token in isLoggedIn():', decoded);
       if (!decoded.exp) {
         console.error('Token missing exp field.');
@@ -69,7 +67,7 @@ export class AuthService {
     }
   }
 
-  // New method to get user info from the token
+  // New method to get user info from the token.
   getUserInfo(): DecodedToken | null {
     const token = localStorage.getItem('token');
     if (token) {
@@ -81,5 +79,21 @@ export class AuthService {
       }
     }
     return null;
+  }
+
+  // Fetch all users (with authentication)
+  getUsers(): Observable<any[]> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No token found. User may not be logged in.');
+      return new Observable(observer => {
+        observer.error({ status: 401, message: 'Unauthorized' });
+        observer.complete();
+      });
+    }
+
+    return this.http.get<any[]>(`${this.apiUrl}/users`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 }

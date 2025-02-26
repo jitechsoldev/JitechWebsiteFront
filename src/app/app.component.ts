@@ -24,6 +24,7 @@ export class AppComponent {
     { name: 'Sales Invoice', icon: './SalesWhite.png', routes: '/sale' },
     { name: 'Job Orders', icon: './JobOrderWhite.png', routes: '/job-order' },
     { name: 'Quotations', icon: './QuotationsWhite.png', routes: '/quotations'},
+    { name: 'User Management', icon: './QuotationsWhite.png', routes: '/user-management' },
   ];
 
   constructor(private router: Router, private authService: AuthService) {
